@@ -117,7 +117,7 @@ The helper is described by `python/pyproject.toml` so Flit, pip, or similar tool
 
 ### Source copier
 
-`python/rwtra_scripts/copy_sources.py` mirrors `.html`, `.scss`, `.json`, `.tsx`, `.ts`, and the root-level `bootstrap.js` into `dist/` while preserving directory structure. It ignores `.git`, `node_modules`, `dist`, `__pycache__`, and `.github` by default and accepts additional `--exclude-dir` entries.
+`python/rwtra_scripts/copy_sources.py` mirrors `.html`, `.scss`, `.json`, `.tsx`, `.ts`, and the root-level `bootstrap.js` into `dist/` while preserving directory structure. It ignores `.git`, `node_modules`, `dist`, `__pycache__`, `.github`, `.venv`/`venv` helper environments, `tests`, `e2e`, and `test-tooling`, along with `bun.lock`, `package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`, `poetry.lock`, `package.json`, and any hidden (`.`-prefixed) files or folders by default, and accepts additional `--exclude-dir` entries.
 
 ```bash
 python python/rwtra_scripts/copy_sources.py --clean

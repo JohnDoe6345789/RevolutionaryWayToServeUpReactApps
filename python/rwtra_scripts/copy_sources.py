@@ -11,7 +11,26 @@ from pathlib import Path
 
 EXTENSIONS = {".html", ".scss", ".json", ".tsx", ".ts"}
 ALWAYS_INCLUDE = {"bootstrap.js"}
-DEFAULT_EXCLUDE_DIRS = {".git", "node_modules", "dist", "__pycache__", ".github"}
+DEFAULT_EXCLUDE_DIRS = {
+    ".git",
+    "node_modules",
+    "dist",
+    "__pycache__",
+    ".github",
+    ".venv",
+    "venv",
+    "tests",
+    "e2e",
+    "test-tooling",
+}
+DEFAULT_EXCLUDE_FILES = {
+    "bun.lock",
+    "package-lock.json",
+    "pnpm-lock.yaml",
+    "yarn.lock",
+    "poetry.lock",
+    "package.json",
+}
 
 
 def collect_source_files(root: Path, dest: Path, exclude_dirs: set[str]) -> list[Path]:
@@ -27,6 +46,10 @@ def collect_source_files(root: Path, dest: Path, exclude_dirs: set[str]) -> list
             continue
         relative = path.relative_to(root)
         if any(part in exclude_dirs for part in relative.parts):
+            continue
+        if any(part.startswith(".") for part in relative.parts):
+            continue
+        if path.name in DEFAULT_EXCLUDE_FILES:
             continue
         files.append(path)
     return files
