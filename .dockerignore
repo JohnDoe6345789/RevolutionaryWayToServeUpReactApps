@@ -5,4 +5,3 @@ test-tooling/node_modules
 test-tooling/.cache
 test-tooling/*.log
 npm-debug.log
-package-lock.json
