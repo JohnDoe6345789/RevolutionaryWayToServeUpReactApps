@@ -4,14 +4,14 @@
 ![Node.js](https://img.shields.io/badge/node-18-blue)
 ![License](https://img.shields.io/github/license/JohnDoe6345789/RevolutionaryWayToServeUpReactApps)
 
-Revolutionary Way To Serve Up React Apps packages a RetroDeck-style landing page that is rendered entirely in the browser and validated by a Cypress smoke test that spins up the exact bundle created at runtime via `bootstrap.js`.
+Revolutionary Way To Serve Up React Apps packages a RetroDeck-style landing page that is rendered entirely in the browser and validated by a Playwright smoke test that spins up the exact bundle created at runtime via `bootstrap.js`.
 
 ## What is inside
 
 - `bootstrap.js` compiles the TSX/SCSS sources and exposes them through a client-rendered entry point served by `http-server`.
-- `cypress/e2e/page-load.cy.js` is the smoke test that verifies the landing page renders and becomes interactive.
+- `e2e/tests/page-load.spec.ts` is the Playwright smoke test that verifies the landing page renders and becomes interactive.
 - `test-tooling` contains additional unit tests that run in the CI workflow as a preliminary validation.
-- `Dockerfile` builds an environment where `npm run cy:run` can be executed headlessly with Node 18 and the proper browsers.
+- `e2e/Dockerfile` builds an environment where `npm run test --prefix e2e` can be executed headlessly with Playwright and the proper browsers.
 
 ## Getting started
 
@@ -25,6 +25,7 @@ Revolutionary Way To Serve Up React Apps packages a RetroDeck-style landing page
 ```bash
 npm install
 npm install --prefix test-tooling
+npm install --prefix e2e
 ```
 
 ### Run locally
@@ -35,10 +36,10 @@ npm install --prefix test-tooling
   npm run serve
   ```
 
-- In another shell, run the Cypress smoke test with the built bundle:
+- In another shell, run the Playwright smoke test with the built bundle:
 
   ```bash
-  npm run cy:run
+  npm run test --prefix e2e
   ```
 
 ### Run unit tests
@@ -51,13 +52,13 @@ npm test --prefix test-tooling
 
 The repository ships with a container image that mirrors the GitHub Actions environment and avoids managing local servers:
 
-1. Build the image (Node 18 ensures the Cypress CLI flags are supported):
+1. Build the image (Node 18 ensures Playwright runs against the bundled Chromium):
 
    ```bash
-   docker build -t rwtra-e2e .
+   docker build -f e2e/Dockerfile -t rwtra-e2e .
    ```
 
-2. Execute the containerized smoke test (it starts `http-server`, waits for `/`, and runs `cypress run --spec cypress/e2e/page-load.cy.js`):
+2. Execute the containerized smoke test (it starts `http-server`, waits for `/`, and runs `playwright test` via the `e2e` package):
 
    ```bash
    docker run --rm rwtra-e2e
@@ -67,8 +68,8 @@ The repository ships with a container image that mirrors the GitHub Actions envi
 
 ## Continuous integration
 
-- **CI workflow** (`ci.yml`): installs dependencies, runs the `test-tooling` unit suite, and launches `npm run cy:run`.
-- **Docker image build** (`docker-build.yml`): ensures a reproducible container can be produced for smoke-testing.
+- **CI workflow** (`ci.yml`): installs dependencies, runs the `test-tooling` unit suite, installs the Playwright e2e stack, and launches `npm run test --prefix e2e`.
+- **Docker image build** (`docker-build.yml`): ensures a reproducible Playwright container can be produced for smoke-testing.
 
 ## License
 

@@ -3,12 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "http-server -p 4173 -c-1",
-    "cy:run": "start-server-and-test serve http://127.0.0.1:4173 \"cypress run --spec cypress/e2e/page-load.cy.js\""
+    "serve": "http-server -p 4173 -c-1"
   },
   "devDependencies": {
-    "cypress": "^12.17.4",
-    "http-server": "^14.1.1",
-    "start-server-and-test": "^2.1.3"
+    "http-server": "^14.1.1"
   }
 }

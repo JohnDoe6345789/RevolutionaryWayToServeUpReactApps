@@ -10,7 +10,7 @@ on:
 
 jobs:
   smoke-test:
-    name: Cypress smoke test
+    name: Playwright smoke test
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -34,5 +34,8 @@ jobs:
       - name: Run unit tests
         run: npm test --prefix test-tooling
 
-      - name: Run Cypress smoke test
-        run: npm run cy:run
+      - name: Install e2e dependencies
+        run: npm ci --prefix e2e
+
+      - name: Run Playwright smoke test
+        run: npm run test --prefix e2e

@@ -15,3 +15,5 @@ node_modules/
 *.swp
 *.swo
 *.tmp
+/e2e/node_modules/
+/e2e/test-results/
