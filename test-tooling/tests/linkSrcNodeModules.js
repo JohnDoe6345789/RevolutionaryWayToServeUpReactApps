@@ -4,14 +4,28 @@ const path = require("path");
 const nodeModulesDir = path.resolve(__dirname, "../node_modules");
 const linkDir = path.resolve(__dirname, "../../src");
 const linkTarget = path.join(linkDir, "node_modules");
+const expectedTarget = fs.realpathSync(nodeModulesDir);
 
-const linkExists = fs.existsSync(linkTarget);
-const isSymlink = linkExists && fs.lstatSync(linkTarget).isSymbolicLink();
-
-if (!isSymlink) {
-  if (linkExists) {
-    fs.rmSync(linkTarget, { recursive: true, force: true });
+const linkPointsToTarget = () => {
+  try {
+    return fs.realpathSync(linkTarget) === expectedTarget;
+  } catch {
+    return false;
   }
+};
+
+if (!linkPointsToTarget()) {
+  fs.rmSync(linkTarget, { recursive: true, force: true });
   fs.mkdirSync(linkDir, { recursive: true });
-  fs.symlinkSync(nodeModulesDir, linkTarget, "junction");
+
+  try {
+    fs.symlinkSync(nodeModulesDir, linkTarget, "junction");
+  } catch (error) {
+    // If another worker created the correct link between checks, treat it as success.
+    if (error.code === "EEXIST" && linkPointsToTarget()) {
+      /* no-op */
+    } else {
+      throw error;
+    }
+  }
 }
