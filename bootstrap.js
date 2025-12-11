@@ -189,12 +189,12 @@ async function loadDynamicModule(name, config, registry) {
   return registry[name];
 }
 
-function createRequire(registry, config) {
+function createRequire(registry, config, dynamicModuleLoader = loadDynamicModule) {
   async function requireAsync(name) {
     if (registry[name]) return registry[name];
     const dynRules = config.dynamicModules || [];
     if (dynRules.some((r) => name.startsWith(r.prefix))) {
-      return loadDynamicModule(name, config, registry);
+      return dynamicModuleLoader(name, config, registry);
     }
     throw new Error("Module not registered: " + name);
   }
@@ -436,4 +436,34 @@ async function bootstrap() {
   }
 }
 
-bootstrap();
+const bootstrapExports = {
+  loadConfig,
+  loadScript,
+  normalizeProviderBase,
+  probeUrl,
+  resolveModuleUrl,
+  loadTools,
+  makeNamespace,
+  loadModules,
+  loadDynamicModule,
+  createRequire,
+  compileSCSS,
+  injectCSS,
+  collectDynamicModuleImports,
+  preloadDynamicModulesFromSource,
+  collectModuleSpecifiers,
+  preloadModulesFromSource,
+  compileTSX,
+  frameworkRender,
+  bootstrap
+};
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = bootstrapExports;
+}
+
+const isBrowser =
+  typeof window !== "undefined" && typeof document !== "undefined";
+if (isBrowser && !window.__RWTRA_BOOTSTRAP_TEST_MODE__) {
+  bootstrap();
+}
