@@ -48,12 +48,10 @@ Running `poetry install` creates the `bun-wrapper` console script and a `python/
 
 ## Install dependencies
 
-Bun's manifest lives inside the `bun/` directory, so install the shared runtime from there before installing the workspace packages:
+Each workspace defines its own Bun manifest, so install dependencies from within `test-tooling` and `e2e` before running the tests:
 
 ```bash
-cd bun
-bun install
-cd ../test-tooling
+cd test-tooling
 bun install
 cd ../e2e
 bun install
@@ -62,10 +60,10 @@ cd ..
 
 ## Run locally
 
-1. Start the static server (the script lives inside `bun/`, so it serves the repository root via `http-server ..`):
+1. Start the static server (the script lives inside `e2e/`, so it serves the repository root via `http-server ..`):
 
    ```bash
-   cd bun
+   cd e2e
    bun run serve
    ```
 
