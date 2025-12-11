@@ -40,11 +40,11 @@ python -m venv .venv
 python -m pip install --upgrade pip
 python -m pip install poetry toml
 cd python
-poetry install .
+poetry install
 cd ..
 ```
 
-Running `poetry install .` creates the `bun-wrapper` console script and a `python/.venv`-style dependency lock right next to the helper sources. You can also point your shell to `python/.venv/Scripts/activate` if you prefer isolating just the helper dependencies instead of the repo-wide `.venv`.
+Running `poetry install` creates the `bun-wrapper` console script and a `python/.venv`-style dependency lock right next to the helper sources. You can also point your shell to `python/.venv/Scripts/activate` if you prefer isolating just the helper dependencies instead of the repo-wide `.venv`.
 
 ## Install dependencies
 
@@ -104,24 +104,24 @@ Reproduces the GitHub Actions environment without installing Bun locally.
 
 ### Bun wrapper
 
-`python/bun_wrapper.py` fetches the latest Bun release, caches it under your XDG or APPDATA cache directory (or the path set by `BUN_WRAPPER_CACHE_DIR` / `--cache-dir`), and passes any supplied arguments directly to the Bun binary.
+`python/rwtra_scripts/bun_wrapper.py` fetches the latest Bun release, caches it under your XDG or APPDATA cache directory (or the path set by `BUN_WRAPPER_CACHE_DIR` / `--cache-dir`), and passes any supplied arguments directly to the Bun binary.
 
 ```bash
-python python/bun_wrapper.py -- bun --version
-python python/bun_wrapper.py -- bun run test --prefix test-tooling
+python python/rwtra_scripts/bun_wrapper.py -- bun --version
+python python/rwtra_scripts/bun_wrapper.py -- bun run test --prefix test-tooling
 ```
 
-Use `python python/bun_wrapper.py -p` to print the resolved Bun binary (handy for tooling) or `python python/bun_wrapper.py -f` to force a fresh download of the newest release.
+Use `python python/rwtra_scripts/bun_wrapper.py -p` to print the resolved Bun binary (handy for tooling) or `python python/rwtra_scripts/bun_wrapper.py -f` to force a fresh download of the newest release.
 
 The helper is described by `python/pyproject.toml` so Flit, pip, or similar tooling can install the shim and expose a `bun-wrapper` console script alongside the existing `.py` entry point.
 
 ### Source copier
 
-`python/copy_sources.py` mirrors `.html`, `.scss`, `.json`, `.tsx`, `.ts`, and the root-level `bootstrap.js` into `dist/` while preserving directory structure. It ignores `.git`, `node_modules`, `dist`, `__pycache__`, and `.github` by default and accepts additional `--exclude-dir` entries.
+`python/rwtra_scripts/copy_sources.py` mirrors `.html`, `.scss`, `.json`, `.tsx`, `.ts`, and the root-level `bootstrap.js` into `dist/` while preserving directory structure. It ignores `.git`, `node_modules`, `dist`, `__pycache__`, and `.github` by default and accepts additional `--exclude-dir` entries.
 
 ```bash
-python python/copy_sources.py --clean
-python python/copy_sources.py --src src --dest build/sources
+python python/rwtra_scripts/copy_sources.py --clean
+python python/rwtra_scripts/copy_sources.py --src src --dest build/sources
 ```
 
 ## License

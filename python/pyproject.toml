@@ -3,7 +3,7 @@ requires = ["flit_core >=3.8"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "rwtra-bun-wrapper"
+name = "rwtra-scripts"
 version = "0.1.0"
 description = "Python helpers that download Bun, cache it, and mirror specific sources into a dist folder."
 readme = "../README.md"
@@ -30,5 +30,8 @@ Repository = "https://github.com/JohnDoe6345789/RevolutionaryWayToServeUpReactAp
 "Bug Tracker" = "https://github.com/JohnDoe6345789/RevolutionaryWayToServeUpReactApps/issues"
 
 [project.scripts]
-bun-wrapper = "bun_wrapper:main"
-copy-sources = "copy_sources:main"
+bun-wrapper = "rwtra_scripts.bun_wrapper:main"
+copy-sources = "rwtra_scripts.copy_sources:main"
+
+[tool.flit.metadata]
+packages = ["rwtra_scripts"]
