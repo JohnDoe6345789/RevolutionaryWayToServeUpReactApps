@@ -1,7 +1,7 @@
 FROM node:20-alpine
 
 # Use a lightweight HTTP server to serve the static bundle
-RUN npm install -g http-server@0.14.1
+RUN npm install -g http-server@0.14.0
 
 WORKDIR /app
 
