@@ -167,7 +167,7 @@ def find_script(runner_dir: Path, base_name: str) -> Path:
     candidates = [runner_dir / f"{base_name}.sh", runner_dir / f"{base_name}.cmd"]
     for candidate in candidates:
         if candidate.exists():
-            return candidate
+            return candidate.resolve()
     raise FileNotFoundError(f"{base_name} script not found in {runner_dir}")
 
 

@@ -26,3 +26,5 @@ src/node_modules/
 venv/
 
 *.pyc
+
+actions-runner/
