@@ -1,10 +1,11 @@
-# GitHub Actions Local Runner (Docker + act)
+# GitHub Actions Local Runner (act binary)
 
-This project runs your repository's GitHub Actions workflows locally using Docker via the `nektos/act` image.
+This project runs your repository's GitHub Actions workflows locally using the official `act` binary from https://github.com/nektos/act/releases. When you do not provide an existing binary, the script downloads and caches the latest release for your platform so you can keep working without shipping a container image yourself.
 
 ## Prerequisites
 
-- Docker installed and running.
+- Docker installed and running (act itself still launches containers).
+- Python 3.10 or later.
 
 ## Usage
 
@@ -32,13 +33,20 @@ Provide secrets/env files (act format):
 python -m src.run_actions_local --repo-root /path/to/repo --secrets-file ./secrets.txt --env-file ./env.txt
 ```
 
-Print the docker command only:
+Print the act command only:
 
 ```bash
 python -m src.run_actions_local --repo-root /path/to/repo --dry-run
 ```
 
+Indicate an existing act binary if you have one already:
+
+```bash
+python -m src.run_actions_local --repo-root /path/to/repo --act-path /usr/local/bin/act
+```
+
 ## Notes
 
-- The repo is bind-mounted into the act container at `/repo` (override with `--bind-workdir`).
-- The act container uses the host Docker engine (via `/var/run/docker.sock`) to run job containers.
+- The latest act release is cached under `ACT_CACHE_DIR` (falls back to `$XDG_CACHE_HOME/act` or `~/.cache/act`).
+- When no binary exists locally, the script downloads it from the latest GitHub release before running.
+- The runner executes `act` from the repository root you point it at, so it does not rely on binding a directory inside another container.

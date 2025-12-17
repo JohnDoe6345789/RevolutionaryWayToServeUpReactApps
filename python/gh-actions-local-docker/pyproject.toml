@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 name = "gh-actions-local-docker"
 version = "0.1.0"
-description = "Run GitHub Actions workflows locally via Docker using nektos/act"
+description = "Run GitHub Actions workflows locally via the official act binary"
 authors = ["WardCrew"]
 readme = "README.md"
 license = "MIT"

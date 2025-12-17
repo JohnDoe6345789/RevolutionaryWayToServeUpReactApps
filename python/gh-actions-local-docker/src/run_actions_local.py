@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-"""Run GitHub Actions workflows locally via Docker using nektos/act.
+"""Run GitHub Actions workflows locally via the act binary.
 
 Design goals:
 - Run from any directory, targeting a repo root explicitly.
 - Do not modify the repo except what the workflow itself does.
 - Works on Linux/macOS/Windows (Docker Desktop) when Docker is running.
-- Uses a Docker container to run "act".
-- Executes jobs with the host Docker engine.
+- Download and cache the official act binary from github.com/nektos/act if needed.
 """
 
 from __future__ import annotations
@@ -14,28 +13,24 @@ from __future__ import annotations
 import argparse
 import shlex
 import subprocess
-import sys
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
-DEFAULT_ACT_IMAGE = "nektos/act:latest"
-DEFAULT_CONTAINER_WORKDIR = "/repo"
+from src.act_binary import ensure_act_binary
 
 
 @dataclass(frozen=True)
 class ActRunSpec:
     repo_root: Path
-    act_image: str
+    act_path: Path
     workflow: str | None
     event: str
     job: str | None
     platform: list[str]
     secrets_file: Path | None
     env_file: Path | None
-    bind_workdir: str
     reuse: bool
-    privileged: bool
     verbose: bool
     dry_run: bool
 
@@ -49,35 +44,6 @@ def _repo_root(path: str) -> Path:
     if not (root / ".github" / "workflows").exists():
         raise SystemExit(f"Repo root must contain .github/workflows: {root}")
     return root
-
-
-def _has_docker() -> bool:
-    return (
-        subprocess.call(
-            ["docker", "version"],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
-        == 0
-    )
-
-
-def _require_docker() -> None:
-    if not _has_docker():
-        raise SystemExit("Docker must be on PATH and running.")
-
-
-def _sock_mount_args() -> list[str]:
-    sock = Path("/var/run/docker.sock")
-    if sock.exists():
-        return ["-v", f"{sock}:{sock}"]
-    return []
-
-
-def _bind_mount_args(repo_root: Path, container_path: str) -> list[str]:
-    host = str(repo_root)
-    mount = f"{host}:{container_path}"
-    return ["-v", mount, "-w", container_path]
 
 
 def _file_arg(flag: str, path: Path | None) -> list[str]:
@@ -117,18 +83,8 @@ def _verbose_args(verbose: bool) -> list[str]:
     return ["-v"] if verbose else []
 
 
-def _privileged_args(privileged: bool) -> list[str]:
-    return ["--privileged"] if privileged else []
-
-
-def build_docker_command(spec: ActRunSpec) -> list[str]:
-    cmd: list[str] = ["docker", "run", "--rm", "-t"]
-    if sys.stdin.isatty():
-        cmd.append("-i")
-    cmd.extend(_privileged_args(spec.privileged))
-    cmd.extend(_sock_mount_args())
-    cmd.extend(_bind_mount_args(spec.repo_root, spec.bind_workdir))
-    cmd.append(spec.act_image)
+def build_act_command(spec: ActRunSpec) -> list[str]:
+    cmd: list[str] = [str(spec.act_path)]
     cmd.extend(_workflow_args(spec.workflow))
     cmd.extend(_job_args(spec.job))
     cmd.extend(_platform_args(spec.platform))
@@ -145,8 +101,8 @@ def _print_command(cmd: Sequence[str]) -> None:
     print(printable)
 
 
-def _run(cmd: Sequence[str]) -> int:
-    return subprocess.call(list(cmd))
+def _run(cmd: Sequence[str], cwd: Path) -> int:
+    return subprocess.call(list(cmd), cwd=cwd)
 
 
 def _maybe_print_and_exit(spec: ActRunSpec, cmd: Sequence[str]) -> None:
@@ -165,7 +121,6 @@ def _parse_platform(values: list[str] | None) -> list[str]:
 
 
 def _default_platforms() -> list[str]:
-    # Reasonable default: map "ubuntu-latest" to a modern act image.
     return ["ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest"]
 
 
@@ -173,11 +128,16 @@ def _platforms_or_default(items: list[str]) -> list[str]:
     return items if items else _default_platforms()
 
 
-def parse_args(argv: Sequence[str] | None = None) -> ActRunSpec:
+def _resolve_act_path(custom: Path | None) -> Path:
+    if custom:
+        return ensure_act_binary(custom)
+    return ensure_act_binary()
+
+
+def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(
         description=(
-            "Run GitHub Actions workflows locally (repo-root) using "
-            "Docker + act."
+            "Run GitHub Actions workflows locally (repo-root) using act." 
         )
     )
     p.add_argument(
@@ -218,33 +178,14 @@ def parse_args(argv: Sequence[str] | None = None) -> ActRunSpec:
         help="Path to act env file.",
     )
     p.add_argument(
-        "--act-image",
-        default=DEFAULT_ACT_IMAGE,
-        help=(
-            "Act Docker image to run. Defaults to "
-            f"{DEFAULT_ACT_IMAGE}."
-        ),
-    )
-    p.add_argument(
-        "--bind-workdir",
-        default=DEFAULT_CONTAINER_WORKDIR,
-        help=(
-            "Container path to mount the repo at "
-            f"(default: {DEFAULT_CONTAINER_WORKDIR})."
-        ),
+        "--act-path",
+        type=Path,
+        help="Path to an existing act binary (skip download).",
     )
     p.add_argument(
         "--reuse",
         action="store_true",
         help="Reuse containers between runs (act --reuse).",
-    )
-    p.add_argument(
-        "--privileged",
-        action="store_true",
-        help=(
-            "Run act container as privileged (sometimes needed for "
-            "Docker-in-Docker edge cases)."
-        ),
     )
     p.add_argument(
         "--verbose",
@@ -254,40 +195,41 @@ def parse_args(argv: Sequence[str] | None = None) -> ActRunSpec:
     p.add_argument(
         "--dry-run",
         action="store_true",
-        help="Print the docker command and exit without executing.",
+        help="Print the act command and exit without executing.",
     )
-    a = p.parse_args(argv)
+    return p.parse_args(argv)
 
-    repo_root = _repo_root(a.repo_root)
-    platforms = _platforms_or_default(_parse_platform(a.platform))
-    workflow = a.workflow
+
+def _build_spec(args: argparse.Namespace) -> ActRunSpec:
+    repo_root = _repo_root(args.repo_root)
+    platforms = _platforms_or_default(_parse_platform(args.platform))
+    workflow = args.workflow
     if workflow:
         wf = Path(workflow)
         if not wf.is_absolute():
             workflow = str((repo_root / wf).resolve())
+    act_path = _resolve_act_path(args.act_path)
     return ActRunSpec(
         repo_root=repo_root,
-        act_image=a.act_image,
+        act_path=act_path,
         workflow=workflow,
-        event=a.event,
-        job=a.job,
+        event=args.event,
+        job=args.job,
         platform=platforms,
-        secrets_file=a.secrets_file,
-        env_file=a.env_file,
-        bind_workdir=a.bind_workdir,
-        reuse=bool(a.reuse),
-        privileged=bool(a.privileged),
-        verbose=bool(a.verbose),
-        dry_run=bool(a.dry_run),
+        secrets_file=args.secrets_file,
+        env_file=args.env_file,
+        reuse=bool(args.reuse),
+        verbose=bool(args.verbose),
+        dry_run=bool(args.dry_run),
     )
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    spec = parse_args(argv)
-    _require_docker()
-    cmd = build_docker_command(spec)
+    args = parse_args(argv)
+    spec = _build_spec(args)
+    cmd = build_act_command(spec)
     _maybe_print_and_exit(spec, cmd)
-    return _run(cmd)
+    return _run(cmd, spec.repo_root)
 
 
 if __name__ == "__main__":
