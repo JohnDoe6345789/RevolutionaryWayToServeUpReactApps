@@ -40,6 +40,9 @@ jobs:
           bun x playwright --version
           bun x playwright test --list
 
+      - name: Link test dependencies into src
+        run: node test-tooling/tests/linkSrcNodeModules.js
+
       - name: Run unit tests
         run: bun test
         working-directory: test-tooling
