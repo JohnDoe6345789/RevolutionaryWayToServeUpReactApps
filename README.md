@@ -169,32 +169,28 @@ python python/rwtra_scripts/sync_config_versions.py --manifest ci/package.json -
 
 > The helper only mutates `package.json` declarations; regenerate the workspace lockfiles (e.g., `bun.lock` inside `test-tooling/` or `ci/`) by running `bun install` from the matching directory so Bun records the new versions. There are no `package-lock.json` files in this repo.
 
-### Self-hosted runner helper
+### GitHub Actions workflow runner
 
-`python/rwtra_scripts/actions_runner.py` automates downloading the [GitHub Actions runner](https://github.com/actions/runner), configuring it for a repository or organization, and starting the `run.sh`/`run.cmd` loop. Install the helper with `poetry install` (it exposes an `actions-runner` console script) or invoke it via `python -m rwtra_scripts.actions_runner`.
+`python/gh-actions-local-docker/src/run_actions_local.py` wraps the [`act`](https://github.com/nektos/act) binary so you can execute your workflows inside Docker containers without pushing to GitHub. The helper caches the correct `act` release for your platform, simulates GitHub events, and forwards workflow/job filtering, secrets, env files, verbosity, and reuse flags directly to `act`.
 
-1. Create a registration token with the `repo` (repository) or `admin:org` (organization) `actions` scope from GitHub.
-2. Bootstrap the runner (defaults to the `actions-runner` directory inside this repo):
-
-   ```bash
-   actions-runner setup --url https://github.com/<org-or-owner>/<repo> --token $GITHUB_RUNNER_TOKEN
-   ```
-
-   Add `--name`, `--labels`, `--runner-group`, or `--work-dir` to customize the registration. Supply `--force` to redownload the binaries.
-
-3. Execute the runner:
+1. Install the helper via Poetry inside its own workspace:
 
    ```bash
-   actions-runner start
+   cd python/gh-actions-local-docker
+   poetry install
    ```
 
-   Pass `--once` to stop after a single job or `--env RUNNER_ALLOW_RUNASROOT=1` if you are running as root on Linux.
-
-4. Remove the runner when it is no longer needed:
+2. Run `act` against this repo from any location by pointing `--repo-root` to the workspace root:
 
    ```bash
-   actions-runner remove --url https://github.com/<org-or-owner>/<repo> --token $GITHUB_RUNNER_TOKEN
+   poetry run gh-actions-local-docker --repo-root /home/r/RevolutionaryWayToServeUpReactApps --event push
    ```
+
+   * Use `--workflow .github/workflows/ci.yml` or `--job build` to limit the run.
+   * Provide `--secrets-file`/`--env-file` in [act format](https://github.com/nektos/act#secrets) when your workflow consumes secrets.
+   * Pass `--reuse` to keep containers warm, `--verbose` for extra logs, or `--dry-run` to print the generated `act` command.
+
+You can also call the helper directly with `python -m src.run_actions_local --repo-root ...` if you prefer not to use Poetry’s script shim.
 
 ## License
 
