@@ -44,7 +44,7 @@
   async function loadModules(modules) {
     const registry = {};
     for (const mod of modules) {
-      const url = await (helpers.network?.resolveModuleUrl || network.resolveModuleUrl)(mod);
+      const url = await resolveModuleUrl(mod);
       await loadScript(url);
       const globalObj = window[mod.global];
       if (!globalObj) {

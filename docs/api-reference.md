@@ -11,6 +11,10 @@ This guide documents the interactive surfaces that power the app bundle, the CI 
   - `bootstrap/helpers/dynamic-modules.js` – dynamic module resolution via prefix-based CDN probing.
   - `bootstrap/helpers/source-utils.js` – source scanning (`collectModuleSpecifiers`, `collectDynamicModuleImports`, preloads).
   - `bootstrap/helpers/local-loader.js` – SCSS/TSX compilation, require-style loader, and framework render helpers.
+  - `bootstrap/helpers/sass-compiler.js` – SCSS compilation + style injection used before the JS bundle renders.
+  - `bootstrap/helpers/tsx-compiler.js` – Babel source transformation, TSX compilation, and module execution with the test-friendly `moduleContextStack`.
+  - `bootstrap/helpers/local-paths.js` – canonical local module path utilities (`normalizeDir`, `getCandidateLocalPaths`, etc.).
+  - `bootstrap/helpers/local-module-loader.js` – fetches local TS/TSX files, preloads dependencies, and caches compiled exports for `createLocalModuleLoader`.
   - `bootstrap/helpers/module-loader.js` – combines the helpers above so the resulting bundle API stays unchanged.
   - The same bootstrap runtime is now composed of helper modules inside `bootstrap/helpers/`, so logging, CDN resolution, and module loading code can be understood and tested independently while still exposing the consolidated API surface through `bootstrap.js`.
   - Config-driven tool resolution (`loadTools`) and module loading (`loadModules`), each of which probes several CDN bases (via `resolveProvider`/`normalizeProviderBase`) and retries transient failures (`probeUrl`).
