@@ -27,6 +27,11 @@ jobs:
         run: bun install
         working-directory: ci
 
+      - name: Install Playwright browsers
+        working-directory: e2e
+        run: |
+          bun x playwright install --with-deps
+
       - name: Run unit tests
         run: bun test
         working-directory: test-tooling
