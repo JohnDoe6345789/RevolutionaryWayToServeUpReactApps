@@ -158,6 +158,17 @@ python python/rwtra_scripts/copy_sources.py --clean
 python python/rwtra_scripts/copy_sources.py --src src --dest build/sources
 ```
 
+### Config version sync
+
+`python/rwtra_scripts/sync_config_versions.py` reads the CDN graph from `config.json` and updates one or more package manifests so any dependency whose name matches a configured tool, module, or dynamic package uses the same version string (the default target is `test-tooling/package.json`). Pass `--manifest` repeatedly to target other workspace manifests, use `--config` when the config is not `config.json`, and add `--dry-run` to preview the planned changes.
+
+```bash
+python python/rwtra_scripts/sync_config_versions.py
+python python/rwtra_scripts/sync_config_versions.py --manifest ci/package.json --dry-run
+```
+
+> The helper only mutates `package.json` declarations; regenerate the workspace lockfiles (e.g., `bun.lock` inside `test-tooling/` or `ci/`) by running `bun install` from the matching directory so Bun records the new versions. There are no `package-lock.json` files in this repo.
+
 ### Self-hosted runner helper
 
 `python/rwtra_scripts/actions_runner.py` automates downloading the [GitHub Actions runner](https://github.com/actions/runner), configuring it for a repository or organization, and starting the `run.sh`/`run.cmd` loop. Install the helper with `poetry install` (it exposes an `actions-runner` console script) or invoke it via `python -m rwtra_scripts.actions_runner`.
