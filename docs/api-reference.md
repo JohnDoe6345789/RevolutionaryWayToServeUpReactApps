@@ -4,7 +4,14 @@ This guide documents the interactive surfaces that power the app bundle, the CI 
 
 ## Browser bootstrap API
 
-- `bootstrap.js:1` exports functions such as `bootstrap()`, `loadConfig()`, `loadScript()`, and `resolveModuleUrl()` that are used by the e2e server and Playwright suite to compile the `src`/`styles.scss` bundle inside the browser. The script enables:
+- `bootstrap.js:1` exports functions such as `bootstrap()`, `loadConfig()`, `loadScript()`, and `resolveModuleUrl()` that are used by the e2e server and Playwright suite to compile the `src`/`styles.scss` bundle inside the browser. Its implementation simply aggregates the helper modules listed below, so each helper can be unit-tested and documented separately:
+  - `bootstrap/helpers/logging.js` – CI-aware logging, `logClient`, and the `ciLogging` detector.
+  - `bootstrap/helpers/network.js` – CDN resolution helpers (`resolveModuleUrl`, `probeUrl`, etc.).
+  - `bootstrap/helpers/tools.js` – load tool bundles and create the namespace for exported globals.
+  - `bootstrap/helpers/dynamic-modules.js` – dynamic module resolution via prefix-based CDN probing.
+  - `bootstrap/helpers/source-utils.js` – source scanning (`collectModuleSpecifiers`, `collectDynamicModuleImports`, preloads).
+  - `bootstrap/helpers/local-loader.js` – SCSS/TSX compilation, require-style loader, and framework render helpers.
+  - `bootstrap/helpers/module-loader.js` – combines the helpers above so the resulting bundle API stays unchanged.
   - The same bootstrap runtime is now composed of helper modules inside `bootstrap/helpers/`, so logging, CDN resolution, and module loading code can be understood and tested independently while still exposing the consolidated API surface through `bootstrap.js`.
   - Config-driven tool resolution (`loadTools`) and module loading (`loadModules`), each of which probes several CDN bases (via `resolveProvider`/`normalizeProviderBase`) and retries transient failures (`probeUrl`).
   - Dynamic rules via `dynamicModules`: `loadDynamicModule` inspects the configured prefix list to build CDN candidates (including UMD/dist fallbacks), probes each candidate, loads the matching script, and merges the global into the async registry (`createRequire`/`require._async`). `collectDynamicModuleImports` and `preloadDynamicModulesFromSource` scan TSX/TS sources for imports/`require` statements to warm up the registry before execution.
