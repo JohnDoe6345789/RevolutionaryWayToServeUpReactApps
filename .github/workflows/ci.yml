@@ -32,12 +32,13 @@ jobs:
         run: |
           bun x playwright install --with-deps
 
-      - name: Verify Playwright browsers
+      - name: Verify Playwright browsers exist
         working-directory: e2e
         run: |
+          test -d "$HOME/.cache/ms-playwright"
+          ls -la "$HOME/.cache/ms-playwright"
           bun x playwright --version
-          echo "HOME=$HOME"
-          ls -la "$HOME/.cache/ms-playwright" || true
+          bun x playwright test --list
 
       - name: Run unit tests
         run: bun test
