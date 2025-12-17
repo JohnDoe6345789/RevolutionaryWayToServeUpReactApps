@@ -30,3 +30,4 @@ venv/
 
 actions-runner/
 python/runner_setup.txt
+.bun-cache
