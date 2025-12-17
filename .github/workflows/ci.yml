@@ -36,7 +36,8 @@ jobs:
         working-directory: e2e
         run: |
           bun x playwright --version
-          ls -la /root/.cache/ms-playwright || exit 1
+          echo "HOME=$HOME"
+          ls -la "$HOME/.cache/ms-playwright" || true
 
       - name: Run unit tests
         run: bun test
