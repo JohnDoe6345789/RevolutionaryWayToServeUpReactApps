@@ -14,6 +14,7 @@ import sys
 import tarfile
 import tempfile
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 import logging
@@ -36,6 +37,55 @@ def default_cache_root() -> Path:
         if not base:
             base = Path.home() / ".cache"
     return Path(base) / "rwtra-actions-runner"
+
+
+def _registration_token_base_url(repo_url: str) -> str:
+    parsed = urllib.parse.urlparse(repo_url)
+    if not (parsed.scheme and parsed.netloc):
+        raise RuntimeError(f"invalid repository URL: {repo_url}")
+    normalized_host = parsed.netloc.lower()
+    if normalized_host in {"github.com", "api.github.com"}:
+        return "https://api.github.com"
+    return f"{parsed.scheme}://{parsed.netloc}/api/v3"
+
+
+def registration_token_endpoint(url: str) -> str:
+    parsed = urllib.parse.urlparse(url)
+    path_parts = [segment for segment in parsed.path.split("/") if segment]
+    if len(path_parts) >= 2:
+        owner = path_parts[0]
+        repo = path_parts[1].removesuffix(".git")
+        return f"{_registration_token_base_url(url)}/repos/{owner}/{repo}/actions/runners/registration-token"
+    if len(path_parts) == 1:
+        org = path_parts[0]
+        return f"{_registration_token_base_url(url)}/orgs/{org}/actions/runners/registration-token"
+    raise RuntimeError(f"unable to derive registration endpoint from URL: {url}")
+
+
+def fetch_registration_token(pat: str, url: str) -> str:
+    endpoint = registration_token_endpoint(url)
+    logger.info("Requesting registration token from %s", endpoint)
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "Authorization": f"Bearer {pat}",
+        "User-Agent": USER_AGENT,
+    }
+    request = urllib.request.Request(endpoint, method="POST", headers=headers)
+    try:
+        with urllib.request.urlopen(request, timeout=DOWNLOAD_TIMEOUT_S) as response:
+            if response.status not in {200, 201}:
+                raise RuntimeError(f"unexpected response code {response.status}")
+            payload = json.load(response)
+    except urllib.error.HTTPError as exc:
+        body = exc.read().decode("utf-8", errors="ignore")
+        raise RuntimeError(f"failed to obtain registration token ({exc.code}): {body}") from exc
+    token = payload.get("token")
+    if not token:
+        raise RuntimeError("registration token response missing token")
+    expires_at = payload.get("expires_at")
+    if expires_at:
+        logger.info("Registration token expires at %s", expires_at)
+    return token
 
 
 def fetch_latest_release() -> Tuple[str, List[Dict[str, Any]]]:
@@ -257,6 +307,11 @@ def main() -> None:
     setup_parser.add_argument("--runner-group", help="Runner group the runner should join.")
     setup_parser.add_argument("--replace", action="store_true", help="Re-register if a runner with the same name already exists.")
     setup_parser.add_argument("--force", action="store_true", help="Redownload the runner even if cached.")
+    setup_parser.add_argument(
+        "--registration-pat",
+        help="PAT with repo/org scope to retrieve a registration token when --token is not supplied.",
+        default=os.environ.get("RUNNER_REGISTRATION_PAT") or os.environ.get("GITHUB_REGISTRATION_PAT"),
+    )
 
     start_parser = subparsers.add_parser("start", help="Run the configured runner.")
     start_parser.add_argument("--once", action="store_true", help="Exit after a single job run.")
@@ -274,14 +329,20 @@ def main() -> None:
     runner_dir = args.runner_dir
     cache_dir = args.cache_dir
     if args.command == "setup":
-        if not args.token:
-            parser.error("a runner token must be supplied via --token or the GITHUB_RUNNER_TOKEN/RUNNER_TOKEN env var")
+        token = args.token
+        if not token:
+            if not args.registration_pat:
+                parser.error(
+                    "a runner token must be supplied via --token or the GITHUB_RUNNER_TOKEN/RUNNER_TOKEN env var "
+                    "or a personal access token via --registration-pat/RUNNER_REGISTRATION_PAT/GITHUB_REGISTRATION_PAT"
+                )
+            token = fetch_registration_token(args.registration_pat, args.url)
         os_label, arch_label = resolve_platform(args.os_label, args.arch_label)
         ensure_runner_downloaded(cache_dir, runner_dir, os_label, arch_label, args.force)
         configure_runner(
             runner_dir,
             args.url,
-            args.token,
+            token,
             args.name,
             args.labels,
             args.work_dir,
