@@ -32,6 +32,12 @@ jobs:
         run: |
           bun x playwright install --with-deps
 
+      - name: Verify Playwright browsers
+        working-directory: e2e
+        run: |
+          bun x playwright --version
+          ls -la /root/.cache/ms-playwright || exit 1
+
       - name: Run unit tests
         run: bun test
         working-directory: test-tooling
