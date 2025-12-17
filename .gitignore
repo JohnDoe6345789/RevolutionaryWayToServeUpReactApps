@@ -28,3 +28,4 @@ venv/
 *.pyc
 
 actions-runner/
+python/runner_setup.txt
