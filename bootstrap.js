@@ -45,9 +45,22 @@ const {
 } = moduleLoader;
 
 async function loadConfig() {
+  if (typeof window !== "undefined") {
+    if (window.__rwtraConfig) {
+      return window.__rwtraConfig;
+    }
+    if (window.__rwtraConfigPromise) {
+      return window.__rwtraConfigPromise;
+    }
+  }
+
   const res = await fetch("config.json", { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to load config.json");
-  return res.json();
+  const config = await res.json();
+  if (typeof window !== "undefined") {
+    window.__rwtraConfig = config;
+  }
+  return config;
 }
 
 async function bootstrap() {

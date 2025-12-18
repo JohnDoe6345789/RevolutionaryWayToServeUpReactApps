@@ -8,7 +8,15 @@ export function makeNamespace<T = any>(globalObj: T): Record<string, any> & {
   default: T;
   __esModule: true;
 };
-export function loadModules(modules: Array<Record<string, any>>): Promise<Record<string, any>>;
+export interface LoadModulesOptions {
+  onResolve?: (mod: Record<string, any>, url: string) => void;
+  onBeforeImport?: () => void | Promise<void>;
+}
+
+export function loadModules(
+  modules: Array<Record<string, any>>,
+  options?: LoadModulesOptions
+): Promise<Record<string, any>>;
 export function loadDynamicModule(
   name: string,
   config: Record<string, any>,
