@@ -11,6 +11,7 @@ Design goals:
 from __future__ import annotations
 
 import argparse
+import logging
 import shlex
 import subprocess
 from collections.abc import Sequence
@@ -18,6 +19,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from src.act_binary import ensure_act_binary
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -99,15 +102,25 @@ def build_act_command(spec: ActRunSpec) -> list[str]:
 def _print_command(cmd: Sequence[str]) -> None:
     printable = " ".join(shlex.quote(part) for part in cmd)
     print(printable)
+    logger.info("Dry-run act command: %s", printable)
 
 
 def _run(cmd: Sequence[str], cwd: Path) -> int:
+    logger.info("Running act command from %s", cwd)
+    logger.debug("Act command: %s", shlex.join(cmd))
     return subprocess.call(list(cmd), cwd=cwd)
+
+
+def _configure_logging(verbose: bool) -> None:
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+    if verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
 
 
 def _maybe_print_and_exit(spec: ActRunSpec, cmd: Sequence[str]) -> None:
     if spec.dry_run:
         _print_command(cmd)
+        logger.info("Dry-run flag set; exiting without running act.")
         raise SystemExit(0)
 
 
@@ -208,7 +221,11 @@ def _build_spec(args: argparse.Namespace) -> ActRunSpec:
         wf = Path(workflow)
         if not wf.is_absolute():
             workflow = str((repo_root / wf).resolve())
+    logger.debug("Resolved repo root: %s", repo_root)
+    logger.debug("Platforms: %s", platforms)
+    logger.debug("Resolved workflow path: %s", workflow or '<none>')
     act_path = _resolve_act_path(args.act_path)
+    logger.debug("Act binary path: %s", act_path)
     return ActRunSpec(
         repo_root=repo_root,
         act_path=act_path,
@@ -226,8 +243,11 @@ def _build_spec(args: argparse.Namespace) -> ActRunSpec:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
+    _configure_logging(args.verbose)
     spec = _build_spec(args)
+    logger.debug("Act run spec: %s", spec)
     cmd = build_act_command(spec)
+    logger.debug("Act command to execute: %s", shlex.join(cmd))
     _maybe_print_and_exit(spec, cmd)
     return _run(cmd, spec.repo_root)
 

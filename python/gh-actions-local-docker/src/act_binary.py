@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import platform
 import shutil
@@ -17,6 +18,9 @@ import urllib.request
 
 RELEASE_URL = "https://api.github.com/repos/nektos/act/releases/latest"
 USER_AGENT = "gh-actions-local-docker"
+
+
+logger = logging.getLogger(__name__)
 
 
 class ActBinaryError(SystemExit):
@@ -134,12 +138,15 @@ def ensure_act_binary(act_path: Path | None = None) -> Path:
         resolved = act_path.expanduser().resolve()
         if not resolved.exists():
             raise ActBinaryError(f"act binary not found at {resolved}")
+        logger.info("Using act binary from --act-path: %s", resolved)
         return resolved
 
     release = _fetch_latest_release()
     asset = _select_asset(release)
     cache_root = _default_cache_root()
-    release_dir = cache_root / release.get("tag_name", "latest")
+    release_tag = release.get("tag_name", "latest")
+    logger.info("Resolved act release %s (cache %s)", release_tag, cache_root)
+    release_dir = cache_root / release_tag
     release_dir.mkdir(parents=True, exist_ok=True)
 
     asset_name = asset["name"]
@@ -148,11 +155,18 @@ def ensure_act_binary(act_path: Path | None = None) -> Path:
     binary_path = release_dir / binary_name
 
     if binary_path.exists():
+        logger.info("Using cached act binary at %s", binary_path)
         return binary_path
     if not asset_path.exists():
+        logger.info("Downloading act asset %s", asset["browser_download_url"])
         _download_asset(asset["browser_download_url"], asset_path)
+        logger.info("Downloaded act asset %s", asset_path)
+    else:
+        logger.debug("Reusing previously downloaded asset %s", asset_path)
+    logger.info("Extracting act asset %s", asset_path)
     _extract_archive(asset_path, release_dir)
     if not binary_path.exists():
         raise ActBinaryError("act binary missing after extracting release asset")
     _set_executable(binary_path)
+    logger.info("Act binary ready at %s", binary_path)
     return binary_path

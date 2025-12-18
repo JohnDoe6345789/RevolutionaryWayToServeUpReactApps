@@ -192,6 +192,8 @@ python python/rwtra_scripts/sync_config_versions.py --manifest ci/package.json -
 
 You can also call the helper directly with `python -m src.run_actions_local --repo-root ...` if you prefer not to use Poetry’s script shim.
 
+The helper now logs the resolved `act` command (INFO level) so you always see what will run, and adding `--verbose` enables debug logging that surfaces how the repo root, workflow, and platforms were resolved.
+
 ## License
 
 This project is distributed under the terms of the MIT License (see `LICENSE`).

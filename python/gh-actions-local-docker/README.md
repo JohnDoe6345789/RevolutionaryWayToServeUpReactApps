@@ -50,3 +50,4 @@ python -m src.run_actions_local --repo-root /path/to/repo --act-path /usr/local/
 - The latest act release is cached under `ACT_CACHE_DIR` (falls back to `$XDG_CACHE_HOME/act` or `~/.cache/act`).
 - When no binary exists locally, the script downloads it from the latest GitHub release before running.
 - The runner executes `act` from the repository root you point it at, so it does not rely on binding a directory inside another container.
+- The helper logs the resolved `act` command before invoking it; use `--verbose` for DEBUG-level context about how the workflow spec was resolved.
