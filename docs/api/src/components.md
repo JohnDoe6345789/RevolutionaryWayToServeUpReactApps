@@ -40,4 +40,4 @@ import HeroSection from "./components/HeroSection";
 
 ## Navigation
 
-- [Source modules index](index.md)
+- [Source modules README](README.md)

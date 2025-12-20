@@ -29,5 +29,5 @@ node server/server.js
 
 ## Navigation
 
-- [Server helpers index](index.md)
-- [API reference overview](../index.md)
+- [Server helpers index](README.md)
+- [API reference overview](../README.md)

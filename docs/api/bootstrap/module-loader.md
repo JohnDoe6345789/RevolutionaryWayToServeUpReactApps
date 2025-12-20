@@ -26,4 +26,4 @@ const { probeUrl, loadScript, frameworkRender } = require("./bootstrap/module-lo
 
 ## Navigation
 
-- [Bootstrap index](index.md)
+- [Bootstrap README](README.md)

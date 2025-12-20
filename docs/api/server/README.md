@@ -8,4 +8,4 @@ This folder records the small Express server that proxies CDN traffic and serves
 
 ## Navigation
 
-- [API reference overview](../index.md)
+- [API reference overview](../README.md)

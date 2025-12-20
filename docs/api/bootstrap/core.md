@@ -33,4 +33,4 @@ bootstrap().catch((err) => console.error("bootstrap failed", err));
 
 ## Navigation
 
-- [Bootstrap index](index.md)
+- [Bootstrap README](README.md)

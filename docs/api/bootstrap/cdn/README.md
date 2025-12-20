@@ -13,5 +13,5 @@ This folder holds the helper scripts that talk to CDNs, log bootstrap events, an
 
 ## Navigation
 
-- [Bootstrap index](../index.md)
-- [API reference overview](../../index.md)
+- [Bootstrap README](../README.md)
+- [API reference overview](../../README.md)

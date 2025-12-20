@@ -22,12 +22,10 @@ import { createRoot } from "react-dom/client";
 createRoot(document.getElementById("root")!).render(<App />);
 ```
 
-- `docs/api/src-data.md` documents the data that powers the hero/featured cards.
 ## Related docs
 
-- `docs/api/src/data.md` documents the data that powers the hero/featured cards.
+- [`docs/api/src/data.md`](data.md) documents the data that powers the hero/featured cards.
 
 ## Navigation
 
-- [Source modules index](index.md)
-- `docs/api/src-data.md` documents the data that powers the hero/featured cards.
+- [Source modules README](README.md)

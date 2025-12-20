@@ -11,11 +11,11 @@ This section documents the bootstrap runtime, CDN helpers, and the loader helper
 
 ## CDN helpers
 
-- [`cdn/index.md`](cdn/index.md) – Landing page for the CDN helpers (network, logging, dynamic modules).
+- [cdn/README.md](cdn/README.md) – Landing page for the CDN helpers (network, logging, dynamic modules).
 
 ## Local tooling
 
-- [`local/index.md`](local/index.md) – Landing page for the local loader plus Sass/TSX compiler helpers.
+- [local/README.md](local/README.md) – Landing page for the local loader plus Sass/TSX compiler helpers.
 
 ## Script helpers
 

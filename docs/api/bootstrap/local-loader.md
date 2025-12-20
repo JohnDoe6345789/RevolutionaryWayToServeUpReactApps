@@ -30,4 +30,4 @@ frameworkRender(bootstrapConfig, registry, App);
 
 ## Navigation
 
-- [Bootstrap local tools index](index.md)
+- [Bootstrap local tools README](README.md)

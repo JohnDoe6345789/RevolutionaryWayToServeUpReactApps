@@ -23,10 +23,10 @@ await loadLocalModule("components/Button", "src", requireFn, registry);
 
 ## Related docs
 
-- `docs/api/bootstrap/local/index.md` explains how this loader composes the TSX compiler, Sass helper, and path utilities.
+- `docs/api/bootstrap/local/README.md` explains how this loader composes the TSX compiler, Sass helper, and path utilities.
 - `docs/api/bootstrap/local/local-paths.js` shows how candidate paths and alias keys are generated.
 
 ## Navigation
 
-- [Bootstrap local tools index](index.md)
-- [Bootstrap index](../index.md)
+- [Bootstrap local tools README](README.md)
+- [Bootstrap README](../README.md)

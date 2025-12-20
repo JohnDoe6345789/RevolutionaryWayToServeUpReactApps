@@ -37,4 +37,4 @@ const candidates = getCandidateLocalPaths(resolved);
 
 ## Navigation
 
-- [Local path helpers index](index.md)
+- [Local path helpers README](README.md)

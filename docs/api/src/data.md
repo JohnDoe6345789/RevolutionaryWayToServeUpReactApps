@@ -30,8 +30,4 @@ console.log(primary.title, primary.genre.join(", "));
 
 ## Navigation
 
-- [Source modules index](index.md)
-
-## Navigation
-
-- [Source modules index](index.md)
+- [Source modules README](README.md)

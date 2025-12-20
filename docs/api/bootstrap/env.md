@@ -27,4 +27,4 @@
 
 ## Navigation
 
-- [Bootstrap index](index.md)
+- [Bootstrap README](README.md)

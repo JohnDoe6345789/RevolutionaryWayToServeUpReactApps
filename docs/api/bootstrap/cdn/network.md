@@ -36,5 +36,5 @@ const url = await resolveModuleUrl({ name: "icons/flame", provider: "https://cdn
 
 ## Navigation
 
-- [Bootstrap CDN index](index.md)
-- [Bootstrap index](../index.md)
+- [Bootstrap CDN README](README.md)
+- [Bootstrap README](../README.md)

@@ -33,5 +33,5 @@ if (detectCiLogging(config)) {
 
 ## Navigation
 
-- [Bootstrap CDN index](index.md)
-- [Bootstrap index](../index.md)
+- [Bootstrap CDN README](README.md)
+- [Bootstrap README](../README.md)

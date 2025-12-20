@@ -36,4 +36,4 @@ import { ThemeProvider } from "@mui/material";
 
 ## Navigation
 
-- [Source modules index](index.md)
+- [Source modules README](README.md)

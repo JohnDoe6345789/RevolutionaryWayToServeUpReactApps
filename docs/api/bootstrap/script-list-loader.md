@@ -19,9 +19,9 @@
 
 ## Related docs
 
-- `docs/api/bootstrap/index.md` describes how the manifest stage fits into the bootstrap pipeline.
+- `docs/api/bootstrap/README.md` describes how the manifest stage fits into the bootstrap pipeline.
 
 ## Navigation
 
-- [Bootstrap index](index.md)
-- [API reference overview](../index.md)
+- [Bootstrap index](README.md)
+- [API reference overview](../README.md)

@@ -25,4 +25,4 @@ await requireFn._async("icons/test");
 
 ## Navigation
 
-- [Bootstrap index](index.md)
+- [Bootstrap README](README.md)
