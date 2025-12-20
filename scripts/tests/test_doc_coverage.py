@@ -226,6 +226,79 @@ class TestDocCoverage(unittest.TestCase):
             self.assertNotIn("penalized", output)
             self.assertFalse(stub_path.exists())
 
+    def test_module_docs_require_module_heading(self):
+        with TemporaryDirectory() as tmpdir:
+            repo_root = Path(tmpdir) / "repo"
+            src_dir = repo_root / "src"
+            docs_dir = repo_root / "docs"
+            api_dir = docs_dir / "api"
+            src_dir.mkdir(parents=True)
+            api_dir.mkdir(parents=True)
+
+            (src_dir / "app.js").write_text("const foo = 1\n", encoding="utf-8")
+            (src_dir / "other.js").write_text("const bar = 2\n", encoding="utf-8")
+
+            (api_dir / "app.md").write_text("# Module: `src/app.js`\n", encoding="utf-8")
+            (api_dir / "other.md").write_text("This document mentions src/other.js but lacks a module heading.", encoding="utf-8")
+
+            argv_backup = sys.argv
+            try:
+                sys.argv = [
+                    "doc_coverage.py",
+                    "--code-root",
+                    str(repo_root),
+                    "--doc-root",
+                    "docs",
+                ]
+                buffer = StringIO()
+                with redirect_stdout(buffer):
+                    doc_coverage.main()
+                output = buffer.getvalue()
+            finally:
+                sys.argv = argv_backup
+
+            self.assertIn("Modules:    1/2 documented", output)
+            self.assertIn("Missing module docs:", output)
+            self.assertIn("- src/other.js", output)
+
+    def test_missing_readme_penalty_applied(self):
+        with TemporaryDirectory() as tmpdir:
+            repo_root = Path(tmpdir) / "repo"
+            src_dir = repo_root / "src"
+            doc_root = repo_root / "docs"
+            api_dir = doc_root / "api"
+            src_dir.mkdir(parents=True)
+            api_dir.mkdir(parents=True)
+            (api_dir / "README.md").write_text("# API docs\n", encoding="utf-8")
+
+            (src_dir / "feature.js").write_text("const feature = 1\n", encoding="utf-8")
+
+            feature_dir = api_dir / "feature"
+            feature_dir.mkdir()
+            (feature_dir / "feature.md").write_text(
+                "# Module: `src/feature.js`\n", encoding="utf-8"
+            )
+
+            argv_backup = sys.argv
+            try:
+                sys.argv = [
+                    "doc_coverage.py",
+                    "--code-root",
+                    str(repo_root),
+                    "--doc-root",
+                    "docs",
+                ]
+                buffer = StringIO()
+                with redirect_stdout(buffer):
+                    doc_coverage.main()
+                output = buffer.getvalue()
+            finally:
+                sys.argv = argv_backup
+
+            self.assertIn("Missing README.md in these directories:", output)
+            self.assertIn("- api/feature", output)
+            self.assertIn("Overall:    98.0%", output)
+
 
 if __name__ == "__main__":
     unittest.main()

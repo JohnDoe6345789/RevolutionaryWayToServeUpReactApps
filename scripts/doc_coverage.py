@@ -113,6 +113,42 @@ def compute_coverage(names: Iterable[str], doc_text: str) -> tuple[int, int]:
     return documented, len(names_set)
 
 
+def compute_module_coverage(
+    modules: Sequence[str], documented_modules: set[str]
+) -> tuple[int, int, list[str]]:
+    unique_modules = list(dict.fromkeys(modules))
+    documented = 0
+    missing: list[str] = []
+    for module in unique_modules:
+        key = module.lower()
+        if key in documented_modules:
+            documented += 1
+        else:
+            missing.append(module)
+    return documented, len(unique_modules), missing
+
+
+def find_missing_readmes(
+    api_root: Path, ignore_dirs: Sequence[Path] | None = None
+) -> list[Path]:
+    if not api_root.exists():
+        return []
+    ignore_paths = [ignore.resolve() for ignore in (ignore_dirs or [])]
+    directories: set[Path] = set()
+    for path in api_root.rglob("*.md"):
+        resolved = path.resolve()
+        if ignore_paths and any(resolved.is_relative_to(ignore) for ignore in ignore_paths):
+            continue
+        directories.add(path.parent)
+    missing: list[Path] = []
+    for directory in sorted(directories):
+        if directory == api_root:
+            continue
+        if not (directory / "README.md").exists():
+            missing.append(directory)
+    return missing
+
+
 @dataclass
 class ModuleSummary:
     path: str
@@ -258,7 +294,15 @@ def main() -> None:
             )
 
     doc_text = load_docs(doc_root, ignore_dirs=ignore_paths)
-    module_docged, module_total = compute_coverage(modules, doc_text)
+    module_heading_re = re.compile(r"#\s*Module:\s*`([^`]+)`", re.IGNORECASE)
+    documented_modules = {
+        match.group(1).lower()
+        for match in module_heading_re.finditer(doc_text)
+        if match.group(1)
+    }
+    module_docged, module_total, missing_modules = compute_module_coverage(
+        modules, documented_modules
+    )
     globals_docged, globals_total = compute_coverage(globals_names, doc_text)
     functions_docged, functions_total = compute_coverage(functions_names, doc_text)
 
@@ -266,12 +310,6 @@ def main() -> None:
     overall_docged = module_docged + globals_docged + functions_docged
     coverage_pct = (overall_docged / overall_total * 100) if overall_total else 100.0
 
-    module_heading_re = re.compile(r"#\s*Module:\s*`([^`]+)`", re.IGNORECASE)
-    documented_modules = {
-        match.group(1).lower()
-        for match in module_heading_re.finditer(doc_text)
-        if match.group(1)
-    }
     stub_templates = []
     matched_stubs: list[Path] = []
     for path in stub_path.rglob("*.md"):
@@ -290,7 +328,10 @@ def main() -> None:
                 continue
         stub_templates.append(path)
     stub_penalty = min(len(stub_templates) * 2.0, 100.0)
-    coverage_with_penalty = max(coverage_pct - stub_penalty, 0.0)
+    missing_readmes = find_missing_readmes(doc_root / "api", ignore_dirs=ignore_paths)
+    readme_penalty = min(len(missing_readmes) * 2.0, 100.0)
+    total_penalty = min(stub_penalty + readme_penalty, 100.0)
+    coverage_with_penalty = max(coverage_pct - total_penalty, 0.0)
 
     if args.fix_stubs and matched_stubs:
         for path in matched_stubs:
@@ -306,19 +347,42 @@ def main() -> None:
     print("Documentation coverage")
     print("----------------------")
     print(f"Modules:    {module_docged}/{module_total} documented")
+    if missing_modules:
+        print("Missing module docs:")
+        for module in missing_modules:
+            print(f"  - {module}")
     print(f"Globals:    {globals_docged}/{globals_total}")
     print(f"Functions:  {functions_docged}/{functions_total}")
-    if stub_penalty:
+    if total_penalty:
+        penalty_reasons: list[str] = []
+        if stub_penalty:
+            plural = "template" if len(stub_templates) == 1 else "templates"
+            penalty_reasons.append(f"{len(stub_templates)} stub {plural}")
+        if missing_readmes:
+            plural = "README" if len(missing_readmes) == 1 else "READMEs"
+            penalty_reasons.append(f"{len(missing_readmes)} missing {plural}")
+        reason = " and ".join(penalty_reasons)
         print(
-            f"Overall:    {coverage_with_penalty:.1f}% (penalized {stub_penalty:.1f}% for {len(stub_templates)} stub templates)"
+            f"Overall:    {coverage_with_penalty:.1f}% (penalized {total_penalty:.1f}% for {reason})"
         )
+    else:
+        print(f"Overall:    {coverage_pct:.1f}%")
+
+    if stub_penalty:
         print(
             "...convert or delete these matching templates so the penalty vanishes:"
         )
         for stub in stub_templates:
             print(f"  - {stub.relative_to(doc_root)}")
-    else:
-        print(f"Overall:    {coverage_pct:.1f}%")
+
+    if missing_readmes:
+        print("Missing README.md in these directories:")
+        for path in missing_readmes:
+            try:
+                rel = path.relative_to(doc_root)
+            except ValueError:
+                rel = path
+            print(f"  - {rel}")
 
 
 if __name__ == "__main__":
