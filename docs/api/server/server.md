@@ -7,7 +7,16 @@
 
 ## Globals
 
-- _None:_ the file exports a self-starting HTTP server that runs as soon as `server.js` is required.
+- `express`, `http`, `fs`, and `path` — Core Node helpers used to build the static server, proxy middleware, and logging helpers.
+- `config`, `host`, `port`, `rawPort`, and `parsedPort` — Derived from `config.server` so missing values fail fast before the HTTP listener starts.
+- `rootDir`, `logPath`, `logStream`, and `maxLogBodyLength` — Control where logs are written and how large request bodies are before they get truncated.
+- `proxyTarget`, `esmTarget`, `proxyPath`, `proxyRewrite`, `esmProxy`, and `proxyMode` — Proxy helpers that route CDN/ESM traffic through the configured mirror hosts and honor the CI-targeted modes.
+
+## Helpers
+
+- `assertConfigValue(key, value)` — Throws an error when the required configuration value is missing so the server exits early instead of running with incomplete settings.
+- `formatBody(body)` — Serializes request bodies (truncating them via `maxLogBodyLength`) before writing them to logs so the files stay readable.
+- `shouldProxyEsm(pathname)` — Detects ESM-style requests (`@scope/name@version`) so the middleware forwards them through the `esmProxy` rather than the CDN proxy.
 
 ## Behavior
 

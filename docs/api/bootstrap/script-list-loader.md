@@ -7,6 +7,8 @@
 
 ## Behavior
 
+- **`loadFromManifest()`** orchestrates the manifest fetch and iterates the parsed `<script>` tags, awaiting `loadScript` for each entry so the helpers load sequentially.
+- Each injected script attaches `onload`/`onerror` callbacks to resolve or reject the helper promise while logging failures through `rwtra:scripts`.
 - Loads `bootstrap/script-list.html` with `cache: "no-store"`, parses the returned HTML, and extracts every `<script src="..."></script>` entry.
 - The helper scripts are injected with `async=false` so they execute in the manifest order, and the loader stops once every script resolves or rejects with a logged error.
 - Errors are reported via `console.error` with the `rwtra:scripts` prefix so CI loggers can correlate manifest failures.

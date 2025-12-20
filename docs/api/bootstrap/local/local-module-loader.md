@@ -13,6 +13,7 @@
 
 - **`createLocalModuleLoader(entryDir)`** — Returns an async loader that normalizes the base directory, resolves local candidates via `localPaths`, preloads dependencies (`sourceUtils.preloadModulesFromSource`), transforms the source (`tsxCompiler.executeModuleSource`), and caches the results so the same module path is never recompiled twice.
 - **`fetchLocalModuleSource(basePath)`** — Walks every `getCandidateLocalPaths` variant, attempts to fetch the first 200 response, and throws a descriptive error if the local module cannot be found.
+- **`loadPromise`** — Internal promise cache that prevents the same local module from being compiled twice when parallel loaders request the same path.
 
 ## Examples
 

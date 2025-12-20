@@ -31,6 +31,15 @@ bootstrap().catch((err) => console.error("bootstrap failed", err));
 
 - `docs/api/bootstrap/declarations.md` describes the TypeScript declarations for every helper exported from this module.
 
+## Runtime globals
+
+- `bootstrapExports` – The CommonJS exports object that tests and tooling can `require` so they can inspect helpers without rerunning the entire bootstrap flow.
+- `bootstrapNamespace` – Aliased to `window.__rwtraBootstrap` so helper modules can register themselves in one shared namespace.
+- `globalRoot` – Detects the proper global object (`globalThis`, `window`, or `self`) before attaching the bootstrap namespace in either browser or Node contexts.
+- `helpersNamespace` – Contains the merged helper namespaces (`helpers.logging`, `helpers.network`, etc.) that other runtime scripts consume.
+- `isBrowser` – Set when the script runs in a browser so certain DOM mutations (`document.createElement`) are permitted.
+- `isCommonJs` – `true` when running inside Node/Bun so the script exports helpers via `module.exports` instead of mutating `window`.
+
 ## Navigation
 
 - [Bootstrap README](README.md)

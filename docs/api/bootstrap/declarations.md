@@ -11,6 +11,7 @@
 - `loadScript(url: string): Promise<void>` — injects a script tag and resolves when the script loads, logging success or failure.
 - `normalizeProviderBase(...)`, `probeUrl(...)`, `resolveModuleUrl(...)` — family of helpers shared with the CDN layer for building normalized CDN URLs and probing them.
 - `loadModules(...)`, `createRequire(...)`, `loadDynamicModule(...)` — module registry helpers that track preloaded modules, support asynchronous entry loading, and expose async `require` variants for dynamic content.
+- `RequireFn` — The type returned by `createRequire`, which mixes synchronous `require()` with the `_async` loader helpers that the inline compilers and tests rely on.
 - `compileSCSS(...)`, `injectCSS(..)`, `compileTSX(...)`, `frameworkRender(...)`, `bootstrap()` — CSS/TSX compilation and render helpers that tie into the runtime pipeline.
 - Utility helpers like `collectDynamicModuleImports(...)`, `preloadDynamicModulesFromSource(...)`, `collectModuleSpecifiers(...)`, and `preloadModulesFromSource(...)` are declared here so build-time code generation tasks can leverage them without importing runtime files directly.
 

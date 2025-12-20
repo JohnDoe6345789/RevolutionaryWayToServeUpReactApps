@@ -12,6 +12,7 @@
 ## Functions
 
 - **`collectDynamicModuleImports(source, config)`** — Parses `import ... from` and `require()` calls, filters them against `config.dynamicModules`, and returns every matching specifier so the dynamic loader can preload icons before rendering.
+- **`maybeAdd(spec)`** — Ensures each collected specifier matches one of the configured dynamic prefixes and avoids duplicates before preloading.
 - **`preloadDynamicModulesFromSource(source, requireFn, config)`** — Bridges the dynamic module collector with `requireFn._async`, warning when any preload fails but otherwise returning once all promises settle.
 - **`collectModuleSpecifiers(source)`** — Collects every import/require specifier so the loader can detect all dependencies referenced inside a source string.
 - **`preloadModulesFromSource(source, requireFn, baseDir = "")`** — Invokes `_async` for each collected specifier, awaits the results, and throws an aggregated error if any preload fails so calling code can surface helpful diagnostics.

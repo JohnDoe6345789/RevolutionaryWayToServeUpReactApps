@@ -22,6 +22,15 @@
 - **`probeUrl(url, opts)`** — Sends repeated `HEAD`/`GET` probes with exponential backoff to find the first reachable URL before trying the next fallback.
 - **`resolveModuleUrl(mod)`** — Iterates over each provider path, builds candidate URLs based on `package`, `file`, `pathPrefix`, etc., probes them with `probeUrl`, and throws if none respond.
 
+## Internal helpers
+
+- **`DEFAULT_PROVIDER_ALIASES`** — Base alias map derived from `config.json` or the running `__rwtraConfig`, providing canonical hosts when no alias is declared.
+- **`addBase(base)` / `collectBases()`** — Normalize and deduplicate provider URLs before `resolveModuleUrl` probes them; the same helpers ensure `probeUrl` never retries the same base.
+- **`createAliasMap(source)`** — Converts alias object literals into a `Map` with normalized URLs so `normalizeProviderBase` can quickly lookup replacements.
+- **`isCiLikeHost()`** — Detects `localhost`/`127.0.0.1` so the loader can prefer proxy providers while developing locally.
+- **`normalizeProviderBaseRaw(provider)`** — Adds protocols and trailing slashes when the config supplies bare hostnames (used by both `normalizeProviderBase` and `createAliasMap`).
+- **`onload` / `onerror`** — Script-loaded handlers wired via `loadScript` so CDN probes can log success/failure through `logging.logClient`.
+
 ## Examples
 
 ```ts

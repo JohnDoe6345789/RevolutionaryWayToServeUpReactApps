@@ -14,6 +14,12 @@
 - **`loadDynamicModule(name, config, registry)`** — Matches the requested name against `config.dynamicModules`, builds candidate URLs from configured providers/aliases, probes each endpoint, loads the module either via `import()` (for `esm` rules) or `<script>` injection, and caches the namespace so subsequent calls reuse the same exports.
 - **`makeNamespace(globalObj)`** — Safely wraps either a module namespace or an existing global object so it behaves like an ES module with a default export; promoted helper for downstream tooling.
 
+## Internals
+
+- **`addBase(base)`** — Normalizes each provider base once and avoids duplicates when building candidate URLs.
+- **`addProvidersInOrder(providers)`** — Pushes the CI or production providers based on the detected host so the loader prefers the right mirrors.
+- **`createNamespace(globalObj)`** — Wraps globals or module exports with a `default` property before caching them on the registry.
+
 ## Examples
 
 ```ts
