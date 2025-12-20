@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
+import { afterEach, beforeEach, describe, expect, it, jest } from "./testGlobals";
 
 const createLocation = (href: string) => {
   const url = new URL(href);

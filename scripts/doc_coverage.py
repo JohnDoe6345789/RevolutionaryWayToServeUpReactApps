@@ -83,9 +83,21 @@ def load_docs(doc_root: Path, ignore_dirs: Sequence[Path] | None = None) -> str:
 def is_documented(name: str, doc_text: str) -> bool:
     if not doc_text:
         return False
+
     escaped = re.escape(name)
     if re.search(rf"\b{escaped}\b", doc_text):
         return True
+
+    if ":" in name:
+        module_path, symbol = name.rsplit(":", 1)
+        symbol_escaped = re.escape(symbol)
+        if re.search(rf"\b{symbol_escaped}\b", doc_text):
+            return True
+        module_escaped = re.escape(module_path)
+        combined_pattern = rf"{module_escaped}.*{symbol_escaped}"
+        if re.search(combined_pattern, doc_text):
+            return True
+
     return bool(re.search(escaped, doc_text))
 
 

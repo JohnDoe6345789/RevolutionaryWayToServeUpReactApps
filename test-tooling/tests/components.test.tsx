@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, cleanup } from "@testing-library/react";
 import { ThemeProvider } from "@mui/material";
 
 import theme from "../../src/theme";
@@ -10,6 +10,8 @@ import { FEATURED_GAMES, SYSTEM_TAGS } from "../../src/data";
 
 const renderWithTheme = (ui: React.ReactElement) =>
   render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>);
+
+afterEach(() => cleanup());
 
 describe("HeroSection", () => {
   it("renders the hero heading and system tags", () => {
