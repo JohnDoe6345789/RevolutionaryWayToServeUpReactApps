@@ -10,17 +10,23 @@
     ciLoggingEnabled = !!enabled;
   }
 
-  function detectCiLogging(config) {
+  function detectCiLogging(config, locationOverride) {
     if (typeof window !== "undefined") {
       if (typeof window.__RWTRA_CI_MODE__ === "boolean") {
         return window.__RWTRA_CI_MODE__;
       }
-      const params = new URLSearchParams(window.location.search || "");
+    }
+
+    const locationObject =
+      locationOverride ||
+      (typeof window !== "undefined" ? window.location : undefined);
+    if (locationObject) {
+      const params = new URLSearchParams(locationObject.search || "");
       const q = params.get(CI_LOG_QUERY_PARAM);
       if (q && (q === "1" || q.toLowerCase() === "true")) {
         return true;
       }
-      const host = window.location.hostname;
+      const host = locationObject.hostname;
       if (host === "127.0.0.1" || host === "localhost") {
         return true;
       }

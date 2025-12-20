@@ -1,10 +1,21 @@
 const path = require("path");
 
 module.exports = {
-  preset: "ts-jest",
   testEnvironment: "jsdom",
-  rootDir: ".",
-  testMatch: ["**/tests/**/*.test.ts?(x)"],
+  transform: {
+    "^.+\\.(ts|tsx)$": require.resolve("ts-jest")
+  },
+  rootDir: path.resolve(__dirname, ".."),
+  testMatch: ["<rootDir>/test-tooling/tests/**/*.test.ts?(x)"],
+  collectCoverage: true,
+  collectCoverageFrom: [
+    "src/**/*.{ts,tsx}",
+    "bootstrap/cdn/logging.js",
+    "bootstrap/cdn/network.js",
+    "bootstrap/cdn/dynamic-modules.js",
+    "bootstrap/local/local-paths.js"
+  ],
+  coveragePathIgnorePatterns: ["/node_modules/", "<rootDir>/test-tooling/tests/"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
   moduleDirectories: ["node_modules"],
   modulePaths: [
@@ -12,8 +23,8 @@ module.exports = {
     path.resolve(__dirname, "../ci/node_modules")
   ],
   moduleNameMapper: {
-    "^@mui/material/(.*)$": "<rootDir>/node_modules/@mui/material/$1",
-    "^@mui/material$": "<rootDir>/node_modules/@mui/material",
+    "^@mui/material/(.*)$": "<rootDir>/test-tooling/node_modules/@mui/material/$1",
+    "^@mui/material$": "<rootDir>/test-tooling/node_modules/@mui/material",
     "^react/jsx-runtime$": require.resolve("react/jsx-runtime"),
     "^react/jsx-dev-runtime$": require.resolve("react/jsx-dev-runtime")
   },
@@ -22,5 +33,5 @@ module.exports = {
       tsconfig: "tsconfig.json"
     }
   },
-  setupFilesAfterEnv: ["<rootDir>/tests/setupTests.ts"]
+  setupFilesAfterEnv: ["<rootDir>/test-tooling/tests/setupTests.ts"]
 };

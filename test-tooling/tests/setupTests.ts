@@ -5,3 +5,7 @@ import "@testing-library/jest-dom";
 if (typeof window !== "undefined") {
   (window as typeof window & { __RWTRA_BOOTSTRAP_TEST_MODE__?: boolean }).__RWTRA_BOOTSTRAP_TEST_MODE__ = true;
 }
+
+if (typeof global.fetch !== "function") {
+  (global as typeof globalThis & { fetch?: jest.Mock }).fetch = jest.fn();
+}

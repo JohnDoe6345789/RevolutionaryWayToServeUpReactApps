@@ -1,10 +1,20 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from "bun:test";
+import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
+
+const createLocation = (href: string) => {
+  const url = new URL(href);
+  return {
+    href: url.href,
+    hostname: url.hostname,
+    search: url.search,
+    host: url.host,
+    origin: url.origin,
+    protocol: url.protocol,
+    pathname: url.pathname
+  };
+};
 
 const resetGlobals = () => {
-  // @ts-expect-error - test-only cleanup
   global.__rwtraBootstrap = { helpers: {} };
-  window.location.href = "http://localhost/";
-  // @ts-expect-error - ensure proxy mode is reset between cases
   delete global.__RWTRA_PROXY_MODE__;
 };
 
@@ -24,14 +34,20 @@ describe("logging helpers", () => {
 
   it("detects ci logging via query params and host", async () => {
     const logging = await loadLogging();
-    window.location.href = "http://localhost/?ci=1";
-    expect(logging.detectCiLogging({})).toBe(true);
+    expect(
+      logging.detectCiLogging({}, createLocation("http://localhost/?ci=1"))
+    ).toBe(true);
 
-    window.location.href = "https://example.com/?ci=true";
-    expect(logging.detectCiLogging({})).toBe(true);
+    expect(
+      logging.detectCiLogging({}, createLocation("https://example.com/?ci=true"))
+    ).toBe(true);
 
-    window.location.href = "https://example.com/";
-    expect(logging.detectCiLogging({ ciLogging: true })).toBe(true);
+    expect(
+      logging.detectCiLogging(
+        { ciLogging: true },
+        createLocation("https://example.com/")
+      )
+    ).toBe(true);
   });
 
   it("serializes errors and sends client logs when enabled", async () => {
@@ -52,22 +68,18 @@ describe("logging helpers", () => {
 
 describe("network helpers", () => {
   const loadNetwork = async () => {
-    const loggingPath = require.resolve("../../bootstrap/cdn/logging.js");
-    const originalLogging = require(loggingPath);
-    const loggingMock = {
-      ...originalLogging,
-      logClient: jest.fn(),
-      wait: jest.fn(() => Promise.resolve())
-    };
-
-    require.cache[loggingPath] = { exports: loggingMock } as unknown as NodeModule;
+    jest.resetModules();
+    const logging = require("../../bootstrap/cdn/logging.js");
+    const logClientSpy = jest
+      .spyOn(logging, "logClient")
+      .mockImplementation(() => {});
+    jest.spyOn(logging, "wait").mockImplementation(() => Promise.resolve());
 
     const networkPath = require.resolve("../../bootstrap/cdn/network.js");
     delete require.cache[networkPath];
     const network = require(networkPath);
 
-    require.cache[loggingPath] = { exports: originalLogging } as unknown as NodeModule;
-    return { network, loggingMock };
+    return { network, logClientSpy };
   };
 
   it("normalizes provider bases and resolves providers respecting proxy mode", async () => {
@@ -87,7 +99,7 @@ describe("network helpers", () => {
   });
 
   it("probes urls with retries and logs failures", async () => {
-    const { network, loggingMock } = await loadNetwork();
+    const { network, logClientSpy } = await loadNetwork();
     const fetchMock = jest.spyOn(global, "fetch");
     // First HEAD fails, GET succeeds
     fetchMock
@@ -99,10 +111,10 @@ describe("network helpers", () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
 
     // Now exhaust retries and ensure failure is logged
-    loggingMock.logClient.mockClear();
+    logClientSpy.mockClear();
     fetchMock.mockRejectedValueOnce(new Error("offline"));
     await expect(network.probeUrl("https://fail.test", { retries: 0 })).resolves.toBe(false);
-    expect(loggingMock.logClient).toHaveBeenCalled();
+    expect(logClientSpy).toHaveBeenCalled();
   });
 
   it("resolves module urls from candidates and throws when none respond", async () => {
@@ -129,31 +141,24 @@ describe("network helpers", () => {
 
 describe("dynamic modules", () => {
   const loadDynamicModules = async () => {
-    const loggingPath = require.resolve("../../bootstrap/cdn/logging.js");
-    const networkPath = require.resolve("../../bootstrap/cdn/network.js");
-    const originalLogging = require(loggingPath);
-    const originalNetwork = require(networkPath);
+    jest.resetModules();
+    const logging = require("../../bootstrap/cdn/logging.js");
+    const logClient = jest
+      .spyOn(logging, "logClient")
+      .mockImplementation(() => {});
+    jest.spyOn(logging, "wait").mockImplementation(() => Promise.resolve());
 
-    const logClient = jest.fn();
-    require.cache[loggingPath] = {
-      exports: { ...originalLogging, logClient }
-    } as unknown as NodeModule;
-
-    require.cache[networkPath] = {
-      exports: {
-        loadScript: jest.fn(() => Promise.resolve()),
-        probeUrl: jest.fn(async (url: string) => url.includes("ci")),
-        normalizeProviderBase: (b: string) => (b.endsWith("/") ? b : `${b}/`),
-        getFallbackProviders: () => ["https://fallback/"],
-        getDefaultProviderBase: () => "https://default/"
-      }
-    } as unknown as NodeModule;
+    jest.doMock("../../bootstrap/cdn/network.js", () => ({
+      loadScript: jest.fn(() => Promise.resolve()),
+      probeUrl: jest.fn(async (url: string) => url.includes("ci")),
+      normalizeProviderBase: (b: string) => (b.endsWith("/") ? b : `${b}/`),
+      getFallbackProviders: () => ["https://fallback/"],
+      getDefaultProviderBase: () => "https://default/"
+    }));
 
     delete require.cache[require.resolve("../../bootstrap/cdn/dynamic-modules.js")];
     const dynamicModules = require("../../bootstrap/cdn/dynamic-modules.js");
-
-    require.cache[loggingPath] = { exports: originalLogging } as unknown as NodeModule;
-    require.cache[networkPath] = { exports: originalNetwork } as unknown as NodeModule;
+    jest.dontMock("../../bootstrap/cdn/network.js");
 
     return { exports: dynamicModules, logClient };
   };
