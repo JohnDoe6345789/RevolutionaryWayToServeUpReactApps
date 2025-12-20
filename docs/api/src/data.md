@@ -26,7 +26,11 @@ console.log(primary.title, primary.genre.join(", "));
 
 ## Related docs
 
-- `docs/digital-twin.md` (generated) enumerates this module along with every constant once coverage runs.
+- This module feeds the hero/featured section docs and ensures coverage tracking knows about the shared metadata.
+
+## Navigation
+
+- [Source modules index](index.md)
 
 ## Navigation
 

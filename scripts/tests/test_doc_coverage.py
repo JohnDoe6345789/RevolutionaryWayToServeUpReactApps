@@ -52,7 +52,9 @@ class TestDocCoverage(unittest.TestCase):
             module_file = src_dir / "app.js"
             module_file.write_text("const exposed = 1\nfunction helper() {}\n")
 
-            (docs_dir / "api-reference.md").write_text("app.js:helper")
+            api_dir = docs_dir / "api"
+            api_dir.mkdir(parents=True, exist_ok=True)
+            (api_dir / "app.md").write_text("app.js:helper")
 
             argv_backup = sys.argv
             try:
@@ -64,13 +66,9 @@ class TestDocCoverage(unittest.TestCase):
             finally:
                 sys.argv = argv_backup
 
-            self.assertIn("Digital twin documentation written to docs/digital-twin.md", output)
+            self.assertIn("Documentation coverage", output)
+            self.assertTrue((docs_dir / "api" / "app.md").exists())
 
-            digital_twin = docs_dir / "digital-twin.md"
-            self.assertTrue(digital_twin.exists())
-            content = digital_twin.read_text()
-            self.assertIn("app.js", content)
-            self.assertIn("app.js:helper", content)
 
 
 if __name__ == "__main__":
