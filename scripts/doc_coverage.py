@@ -83,6 +83,16 @@ class DocCoverageConfig:
     fix_stubs: bool
 
 
+class ServiceRegistry(dict[str, object]):
+    """Simple registry for named services used in the workflow."""
+
+    def register(self, name: str, service: object) -> None:
+        self[name] = service
+
+    def get_service(self, name: str) -> object:
+        return self[name]
+
+
 @dataclass
 class ModuleSummary:
     """Tracks a module path and exposes collected globals/functions."""
@@ -423,7 +433,7 @@ class ExecutionContext:
     missing_modules: list[str] = field(default_factory=list)
 
 
-class ModuleCollector:
+class ModuleCollectorService:
     """Collects module summaries, globals, and functions from the codebase."""
     def __init__(self, config: ModuleCollectorConfig) -> None:
         self.code_root = config.code_root
@@ -455,7 +465,7 @@ class ModuleCollector:
             functions_list=functions_list,
         )
 
-class StubManager:
+class StubManagerService:
     """Manages stub/template directories and ignore lists."""
     def __init__(self, config: StubManagerConfig) -> None:
         self.config = config
@@ -479,7 +489,7 @@ class StubManager:
         self._populate_template_ignore()
 
 
-class TemplateGenerator:
+class TemplateGeneratorService:
     """Generates markdown templates for undocumented modules."""
     def __init__(self, template_root: Path | None) -> None:
         self.template_root = template_root
@@ -688,7 +698,7 @@ class MisplacedDocChecker:
                 misplaced.append((relative, expected))
         return misplaced
 
-class PenaltyCalculator:
+class PenaltyCalculatorService:
     """Centralizes penalty detection for stubs, missing READMEs, and extra docs."""
     def __init__(
         self,
@@ -776,7 +786,7 @@ class PenaltyCalculator:
                 continue
 
 
-class Reporter:
+class ReporterService:
     """Prints the documentation coverage summary and penalty sections."""
     def __init__(self, doc_root: Path) -> None:
         self.doc_root = doc_root
@@ -821,46 +831,37 @@ class DocCoverageRunner:
     """Entrypoint that wires the configuration into the coverage framework."""
     def __init__(self, config: DocCoverageConfig) -> None:
         self.config = config
-        self.stub_manager = StubManager(
+        self.services = ServiceRegistry()
+        stub_manager = StubManagerService(
             StubManagerConfig(self.config.doc_root, self.config.template_root)
         )
-        self.stub_manager.initialize()
-        self.module_collector = ModuleCollector(
-            ModuleCollectorConfig(self.config.code_root, self.config.extensions)
+        stub_manager.initialize()
+        self.services.register("stub_manager", stub_manager)
+        self.services.register(
+            "module_collector",
+            ModuleCollectorService(
+                ModuleCollectorConfig(self.config.code_root, self.config.extensions)
+            ),
         )
-        self.template_generator = TemplateGenerator(self.config.template_root)
-        self.reporter = Reporter(self.config.doc_root)
+        self.services.register("template_generator", TemplateGeneratorService(self.config.template_root))
+        self.services.register("reporter", ReporterService(self.config.doc_root))
 
     def run(self) -> int:
         """Execute the configured coverage workflow and return its exit code."""
-        deps = DocCoverageFrameworkDeps(
-            template_generator=self.template_generator,
-            module_collector=self.module_collector,
-            reporter=self.reporter,
-            stub_manager=self.stub_manager,
-        )
-        framework = DocCoverageFramework(self.config, deps)
+        framework = DocCoverageFramework(self.config, self.services)
         return framework.run()
-
-
-@dataclass
-class DocCoverageFrameworkDeps:
-    """Dependencies consumed by the workflow."""
-    template_generator: TemplateGenerator
-    module_collector: ModuleCollector
-    reporter: Reporter
-    stub_manager: StubManager
 
 
 class DocCoverageFramework:
     """Orchestrates the individual workflow steps to compute doc coverage."""
-    def __init__(self, config: DocCoverageConfig, deps: DocCoverageFrameworkDeps) -> None:
+    def __init__(self, config: DocCoverageConfig, services: ServiceRegistry) -> None:
         self.config = config
-        self.deps = deps
+        self.services = services
 
     def run(self) -> int:
         """Stepper that executes the configured workflow and reports the final status."""
-        context = ExecutionContext(ignore_paths=list(self.deps.stub_manager.ignore_paths))
+        stub_manager = self.services.get_service("stub_manager")
+        context = ExecutionContext(ignore_paths=list(stub_manager.ignore_paths))
         for step in self._workflow_steps():
             step.action(context)
         return 1 if context.strict_failure else 0
@@ -879,7 +880,8 @@ class DocCoverageFramework:
 
     def _collect_modules(self, context: ExecutionContext) -> None:
         """Scan source files and cache their summaries."""
-        result = self.deps.module_collector.collect(ModuleCollectionRequest())
+        module_collector = self.services.get_service("module_collector")
+        result = module_collector.collect(ModuleCollectionRequest())
         context.module_summaries = result.module_summaries
         context.modules = result.modules
         context.globals_list = result.globals_list
@@ -898,7 +900,8 @@ class DocCoverageFramework:
             module_summaries=context.module_summaries,
             existing_doc_text=context.existing_doc_text,
         )
-        self.deps.template_generator.generate(request)
+        template_generator = self.services.get_service("template_generator")
+        template_generator.generate(request)
 
     def _reload_docs(self, context: ExecutionContext) -> None:
         """Reload docs after templates may have been created."""
@@ -937,11 +940,12 @@ class DocCoverageFramework:
             documented_modules=context.documented_modules,
             entries=context.documented_entries,
         )
-        penalty_calculator = PenaltyCalculator(
+        stub_manager = self.services.get_service("stub_manager")
+        penalty_calculator = PenaltyCalculatorService(
             PenaltyCalculatorConfig(
                 doc_root=self.config.doc_root,
                 code_root=self.config.code_root,
-                stub_path=self.deps.stub_manager.stub_path,
+                stub_path=stub_manager.stub_path,
                 ignore_paths=context.ignore_paths,
                 modules=context.modules,
                 fix_stubs=self.config.fix_stubs,
@@ -972,7 +976,8 @@ class DocCoverageFramework:
             penalties=context.penalties or {},
         )
         context.metrics = metrics
-        self.deps.reporter.publish(metrics)
+        reporter = self.services.get_service("reporter")
+        reporter.publish(metrics)
 
 
 class DocCoverageCLI:
