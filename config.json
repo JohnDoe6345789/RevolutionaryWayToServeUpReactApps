@@ -22,7 +22,16 @@
   },
   "server": {
     "host": "0.0.0.0",
-    "port": 4173
+    "port": 4173,
+    "logFile": "server.log",
+    "jsonLimit": "1mb",
+    "cacheControl": "no-store, no-cache, must-revalidate",
+    "paths": {
+      "envScript": "/bootstrap/env.js",
+      "proxy": "/proxy/unpkg",
+      "clientLog": "/__client-log"
+    },
+    "logTruncateLength": 4000
   },
   "tools": [
     {

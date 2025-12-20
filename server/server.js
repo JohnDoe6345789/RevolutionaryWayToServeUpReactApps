@@ -6,13 +6,46 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 const config = require("../config.json");
 
 const { server: serverConfig = {}, providers = {} } = config;
-const host = process.env.HOST || serverConfig.host || "0.0.0.0";
-const rawPort = process.env.PORT ?? serverConfig.port ?? 4173;
+const {
+  host: configHost,
+  port: configPort,
+  logFile,
+  jsonLimit,
+  cacheControl,
+  paths: serverPaths = {},
+  logTruncateLength
+} = serverConfig;
+const host = process.env.HOST || configHost;
+const rawPort = process.env.PORT ?? configPort;
 const parsedPort = Number(rawPort);
-const port = Number.isNaN(parsedPort) ? 4173 : parsedPort;
+const port = Number.isNaN(parsedPort) ? undefined : parsedPort;
 const proxyTarget = process.env.CDN_PROXY_TARGET || providers.default;
 const esmTarget = process.env.ESM_PROXY_TARGET || providers.esm;
 const proxyMode = normalizeProxyMode(process.env.RWTRA_PROXY_MODE);
+const envScriptPath = serverPaths.envScript;
+const proxyPath = serverPaths.proxy;
+const clientLogPath = serverPaths.clientLog;
+
+function assertConfigValue(value, key) {
+  if (value === undefined || value === null || value === "") {
+    throw new Error(`Missing ${key} in config.json`);
+  }
+}
+
+assertConfigValue(host, "server.host");
+assertConfigValue(port, "server.port");
+assertConfigValue(logFile, "server.logFile");
+assertConfigValue(jsonLimit, "server.jsonLimit");
+assertConfigValue(cacheControl, "server.cacheControl");
+assertConfigValue(envScriptPath, "server.paths.envScript");
+assertConfigValue(proxyPath, "server.paths.proxy");
+assertConfigValue(clientLogPath, "server.paths.clientLog");
+assertConfigValue(logTruncateLength, "server.logTruncateLength");
+
+const maxLogBodyLength = Number(logTruncateLength);
+if (!Number.isFinite(maxLogBodyLength)) {
+  throw new Error("server.logTruncateLength must be a finite number");
+}
 
 if (!proxyTarget) {
   throw new Error("Missing CDN proxy target (providers.default) in config.json");
@@ -22,11 +55,11 @@ if (!esmTarget) {
 }
 
 const rootDir = path.resolve(__dirname, "..");
-const logPath = path.resolve(__dirname, "server.log");
+const logPath = path.resolve(__dirname, logFile);
 const logStream = fs.createWriteStream(logPath, { flags: "a" });
 
 const app = express();
-app.use(express.json({ limit: "1mb" }));
+app.use(express.json({ limit: jsonLimit }));
 
 function normalizeProxyMode(value) {
   if (!value) return "auto";
@@ -48,8 +81,8 @@ function formatBody(body) {
   try {
     const serialized =
       typeof body === "string" ? body : JSON.stringify(body, null, 2);
-    return serialized.length > 4000
-      ? serialized.slice(0, 4000) + "…(truncated)"
+    return serialized.length > maxLogBodyLength
+      ? serialized.slice(0, maxLogBodyLength) + "…(truncated)"
       : serialized;
   } catch (_err) {
     return "[unserializable body]";
@@ -65,9 +98,9 @@ app.use((req, _res, next) => {
   next();
 });
 
-app.get("/bootstrap/env.js", (_req, res) => {
+app.get(envScriptPath, (_req, res) => {
   res.type("application/javascript");
-  res.set("Cache-Control", "no-store, no-cache, must-revalidate");
+  res.set("Cache-Control", cacheControl);
   const modeBody =
     proxyMode === "auto"
       ? "global.__RWTRA_PROXY_MODE__ = \"auto\";"
@@ -80,12 +113,14 @@ app.get("/bootstrap/env.js", (_req, res) => {
   res.send(body);
 });
 
+const proxyRewrite = { [`^${proxyPath}`]: "" };
+
 app.use(
-  "/proxy/unpkg",
+  proxyPath,
   createProxyMiddleware({
     target: proxyTarget,
     changeOrigin: true,
-    pathRewrite: { "^/proxy/unpkg": "" },
+    pathRewrite: proxyRewrite,
     secure: false,
     logLevel: "warn",
     onProxyReq(_proxyReq, req) {
@@ -140,7 +175,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.post("/__client-log", (req, res) => {
+app.post(clientLogPath, (req, res) => {
   const body = formatBody(req.body);
   logLine("client", `${req.ip} ${req.method} ${req.originalUrl} ${body}`);
   res.status(204).end();
@@ -151,7 +186,7 @@ app.use(express.static(rootDir, { etag: false, maxAge: 0 }));
 const server = http.createServer(app);
 server.listen(port, host, () => {
   logLine("server", `Serving ${rootDir} on http://${host}:${port}`);
-  logLine("server", `Proxying /proxy/unpkg/* -> ${proxyTarget}`);
+  logLine("server", `Proxying ${proxyPath}/* -> ${proxyTarget}`);
   logLine("server", `Proxying ESM paths to ${esmTarget}`);
   logLine(
     "server",
