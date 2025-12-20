@@ -12,8 +12,8 @@
 
 ## Related docs
 
-- `docs/api/testing/README.md`
+- `docs/api/README.md`
 
 ## Navigation
 
-- [Testing overview](../../testing/README.md)
+- [Testing overview](../../README.md)

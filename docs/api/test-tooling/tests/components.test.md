@@ -13,4 +13,4 @@
 
 ## Navigation
 
-- [Testing overview](../../testing/README.md)
+- [Testing overview](../../README.md)

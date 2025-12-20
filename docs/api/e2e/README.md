@@ -10,7 +10,8 @@ These docs cover the Playwright-based smoke test that boots the RetroDeck bundle
 
 ## Related docs
 
-- [`docs/api/testing/README.md`](../testing/README.md) lists the testing area and links into this overview.
+- [`docs/api/README.md`](../README.md) links to every API section, including the testing area.
+
 ## Navigation
 
-- [Testing overview](../testing/README.md)
+- [API reference overview](../README.md)

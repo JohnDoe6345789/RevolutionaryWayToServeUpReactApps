@@ -244,11 +244,21 @@ def main() -> None:
     overall_docged = module_docged + globals_docged + functions_docged
     coverage_pct = (overall_docged / overall_total * 100) if overall_total else 100.0
 
-    stub_templates = [
-        path
-        for path in stub_path.rglob("*.md")
-        if "Module documentation template" in path.read_text(encoding="utf-8", errors="ignore")
-    ]
+    doc_text_lower = doc_text.lower()
+    stub_templates = []
+    for path in stub_path.rglob("*.md"):
+        try:
+            text = path.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        if "Module documentation template" not in text:
+            continue
+        module_match = re.search(r"## Module:\s*`([^`]+)`", text)
+        if module_match:
+            module_path = module_match.group(1)
+            if module_path and module_path.lower() in doc_text_lower:
+                continue
+        stub_templates.append(path)
     stub_penalty = min(len(stub_templates) * 2.0, 100.0)
     coverage_with_penalty = max(coverage_pct - stub_penalty, 0.0)
 
@@ -262,6 +272,11 @@ def main() -> None:
         print(
             f"Overall:    {coverage_with_penalty:.1f}% (penalized {stub_penalty:.1f}% for {len(stub_templates)} stub templates)"
         )
+        print(
+            "...convert or delete these matching templates so the penalty vanishes:"
+        )
+        for stub in stub_templates:
+            print(f"  - {stub.relative_to(doc_root)}")
     else:
         print(f"Overall:    {coverage_pct:.1f}%")
 
