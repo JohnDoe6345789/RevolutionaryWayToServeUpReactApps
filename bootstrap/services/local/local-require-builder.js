@@ -1,10 +1,19 @@
+const LocalRequireBuilderConfig = require("../../configs/local-require-builder.js");
+
 /**
  * Builds the customized require/_async helpers for local modules.
  */
 class LocalRequireBuilder {
-  constructor({ loadDynamicModule, isLocalModule } = {}) {
+  constructor(config = new LocalRequireBuilderConfig()) { this.config = config; this.initialized = false; }
+
+  initialize({ loadDynamicModule, isLocalModule }) {
+    if (this.initialized) {
+      throw new Error("LocalRequireBuilder already initialized");
+    }
     this.loadDynamicModule = loadDynamicModule;
     this.isLocalModule = isLocalModule;
+    this.initialized = true;
+    return this;
   }
 
   create({
@@ -15,6 +24,9 @@ class LocalRequireBuilder {
     dynamicModuleLoader,
     argumentCount = 0,
   }) {
+    if (!this.initialized) {
+      throw new Error("LocalRequireBuilder not initialized");
+    }
     const { resolvedEntryDir, resolvedDynamicModuleLoader } = this._resolveEntryDir(
       entryDir,
       dynamicModuleLoader,
@@ -89,3 +101,4 @@ class LocalRequireBuilder {
 }
 
 module.exports = LocalRequireBuilder;
+LocalRequireBuilder.Config = LocalRequireBuilderConfig;

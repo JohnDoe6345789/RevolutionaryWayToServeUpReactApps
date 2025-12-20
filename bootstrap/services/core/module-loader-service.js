@@ -11,8 +11,12 @@ class ModuleLoaderAggregator {
     if (this.initialized) {
       throw new Error("ModuleLoaderAggregator already initialized");
     }
+    const root = this.config.environmentRoot;
+    if (!root) {
+      throw new Error("Environment root required for ModuleLoaderAggregator");
+    }
+    this.environment = new ModuleLoaderEnvironment(root);
     this.initialized = true;
-    this.environment = new ModuleLoaderEnvironment();
     this.global = this.environment.global;
     this.helpers = this.environment.helpers;
     this.isCommonJs = this.environment.isCommonJs;

@@ -86,10 +86,16 @@ class LocalLoaderInitializer {
     if (!LocalRequireBuilder) {
       throw new Error("LocalRequireBuilder helper missing from helper registry");
     }
-    this.service.requireBuilder = new LocalRequireBuilder({
+    const builder = new LocalRequireBuilder(
+      new LocalRequireBuilder.Config({
+        helperRegistry: LocalLoaderService.helperRegistry,
+      })
+    );
+    builder.initialize({
       loadDynamicModule: this.service.loadDynamicModule,
       isLocalModule: this.service.isLocalModule,
     });
+    this.service.requireBuilder = builder;
   }
 
   _registerService() {

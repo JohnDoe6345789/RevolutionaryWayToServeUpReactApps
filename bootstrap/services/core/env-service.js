@@ -1,18 +1,19 @@
-const globalRoot = require("../../constants/global-root.js");
 const EnvInitializerConfig = require("../../configs/env.js");
 
 /**
  * Ensures the runtime proxy-mode flag is always defined.
  */
 class EnvInitializer {
-  constructor(config = new EnvInitializerConfig()) { this.config = config; this.initialized = false; }
+  constructor(config = new EnvInitializerConfig()) { this.config = config; }
 
   initialize() {
     if (this.initialized) {
       throw new Error("EnvInitializer already initialized");
     }
-    this.initialized = true;
-    this.global = this.config.global || globalRoot;
+    this.global = this.config.global;
+    if (!this.global) {
+      throw new Error("Global object required for EnvInitializer");
+    }
     this.ensureProxyMode();
     this.serviceRegistry = this.config.serviceRegistry;
     if (!this.serviceRegistry) {
@@ -22,6 +23,7 @@ class EnvInitializer {
       folder: "services/core",
       domain: "core",
     });
+    this.initialized = true;
   }
 
   ensureProxyMode() {
