@@ -246,8 +246,16 @@ def main() -> None:
     parser.add_argument("--doc-root", default="docs", help="API doc markdown folder")
     parser.add_argument(
         "--write-digital-twin",
+        dest="write_digital_twin",
         action="store_true",
-        help="Emit docs/digital-twin.md summarizing the scanned surface",
+        default=True,
+        help="Emit docs/digital-twin.md summarizing the scanned surface (default)",
+    )
+    parser.add_argument(
+        "--no-digital-twin",
+        dest="write_digital_twin",
+        action="store_false",
+        help="Skip writing docs/digital-twin.md",
     )
     parser.add_argument(
         "--template-root",
