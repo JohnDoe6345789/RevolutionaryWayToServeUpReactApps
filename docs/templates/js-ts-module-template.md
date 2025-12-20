@@ -2,6 +2,8 @@
 
 > Replace the placeholders below as you author the markdown for a single JS/TS module.
 
+> Consider adding a Table of Contents (use `[TOC]` or build one manually) and backlinks at the bottom so readers can jump between related API pages.
+
 ## Module: `<path/or/identifier>`
 
 ### Overview

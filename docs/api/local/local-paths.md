@@ -34,3 +34,7 @@ const candidates = getCandidateLocalPaths(resolved);
 ## Related docs
 
 - `docs/digital-twin.md` (auto-generated) reflects the coverage status once the doc coverage script runs.
+
+## Navigation
+
+- [Local path helpers index](index.md)

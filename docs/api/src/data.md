@@ -27,3 +27,7 @@ console.log(primary.title, primary.genre.join(", "));
 ## Related docs
 
 - `docs/digital-twin.md` (generated) enumerates this module along with every constant once coverage runs.
+
+## Navigation
+
+- [Source modules index](index.md)
