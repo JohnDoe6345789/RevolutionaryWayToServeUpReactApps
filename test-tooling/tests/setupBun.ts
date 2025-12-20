@@ -1,4 +1,5 @@
 import { JSDOM } from "jsdom";
+import "./linkSrcNodeModules";
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", {
   url: "http://localhost"
