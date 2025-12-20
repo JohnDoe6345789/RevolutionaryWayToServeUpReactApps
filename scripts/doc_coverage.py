@@ -194,6 +194,11 @@ def main() -> None:
         default=None,
         help="Directory for per-module markdown templates (optional)",
     )
+    parser.add_argument(
+        "--fix-stubs",
+        action="store_true",
+        help="Delete stub templates that already have fully documented counterparts.",
+    )
     args = parser.parse_args()
 
     code_root = Path(args.code_root).resolve()
@@ -244,13 +249,14 @@ def main() -> None:
     overall_docged = module_docged + globals_docged + functions_docged
     coverage_pct = (overall_docged / overall_total * 100) if overall_total else 100.0
 
-    doc_text_lower = doc_text.lower()
+    module_heading_re = re.compile(r"#\s*Module:\s*`([^`]+)`", re.IGNORECASE)
     documented_modules = {
         match.group(1).lower()
-        for match in re.finditer(r"## Module:\s*`([^`]+)`", doc_text, re.IGNORECASE)
+        for match in module_heading_re.finditer(doc_text)
         if match.group(1)
     }
     stub_templates = []
+    matched_stubs: list[Path] = []
     for path in stub_path.rglob("*.md"):
         try:
             text = path.read_text(encoding="utf-8", errors="ignore")
@@ -258,15 +264,26 @@ def main() -> None:
             continue
         if "Module documentation template" not in text:
             continue
-        module_match = re.search(r"## Module:\s*`([^`]+)`", text)
+        module_match = module_heading_re.search(text)
         if module_match:
             module_path = module_match.group(1)
             module_lower = module_path.lower() if module_path else ""
             if module_lower and module_lower in documented_modules:
+                matched_stubs.append(path)
                 continue
         stub_templates.append(path)
     stub_penalty = min(len(stub_templates) * 2.0, 100.0)
     coverage_with_penalty = max(coverage_pct - stub_penalty, 0.0)
+
+    if args.fix_stubs and matched_stubs:
+        for path in matched_stubs:
+            try:
+                path.unlink()
+            except OSError:
+                continue
+        print(
+            f"Removed {len(matched_stubs)} stub templates whose modules already have docs."
+        )
 
     print()
     print("Documentation coverage")

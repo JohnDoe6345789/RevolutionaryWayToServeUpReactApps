@@ -76,6 +76,88 @@ class TestDocCoverage(unittest.TestCase):
 
         self.assertTrue(doc_coverage.is_documented(symbol_name, doc_text))
 
+    def _write_stub(self, stub_path: Path, module_path: str) -> None:
+        stub_path.parent.mkdir(parents=True, exist_ok=True)
+        stub_path.write_text(
+            textwrap.dedent(
+                f"""
+            # Module documentation template
+
+            ## Module: `{module_path}`
+
+            ### Overview
+
+            - **Purpose:** Placeholder
+            """
+            ),
+            encoding="utf-8",
+        )
+
+    def test_stub_penalty_lists_missing_templates(self):
+        with TemporaryDirectory() as tmpdir:
+            repo_root = Path(tmpdir) / "repo"
+            src = repo_root / "src"
+            docs = repo_root / "docs" / "api"
+            (src / "foo.js").parent.mkdir(parents=True)
+            (src / "foo.js").write_text("const foo = 1\n", encoding="utf-8")
+            docs.mkdir(parents=True)
+            (docs / "foo.md").write_text("# Module: `src/foo.js`\n", encoding="utf-8")
+            stub_path = docs / "stubs" / "missing.md"
+            self._write_stub(stub_path, "missing/module.js")
+
+            argv_backup = sys.argv
+            try:
+                sys.argv = [
+                    "doc_coverage.py",
+                    "--code-root",
+                    str(repo_root),
+                    "--doc-root",
+                    "docs",
+                ]
+                buffer = StringIO()
+                with redirect_stdout(buffer):
+                    doc_coverage.main()
+                output = buffer.getvalue()
+            finally:
+                sys.argv = argv_backup
+
+            self.assertIn("penalized", output)
+            self.assertIn("api/stubs/missing.md", output)
+            self.assertTrue(stub_path.exists())
+
+    def test_fix_stubs_removes_templates_when_doc_present(self):
+        with TemporaryDirectory() as tmpdir:
+            repo_root = Path(tmpdir) / "repo"
+            doc_root = repo_root / "docs"
+            src = repo_root / "src"
+            (src / "bar.js").parent.mkdir(parents=True)
+            (src / "bar.js").write_text("const bar = 1\n", encoding="utf-8")
+            target_docs = doc_root / "api"
+            target_docs.mkdir(parents=True)
+            (target_docs / "bar.md").write_text("# Module: `src/bar.js`\n", encoding="utf-8")
+            stub_path = target_docs / "stubs" / "bar.md"
+            self._write_stub(stub_path, "src/bar.js")
+
+            argv_backup = sys.argv
+            try:
+                sys.argv = [
+                    "doc_coverage.py",
+                    "--code-root",
+                    str(repo_root),
+                    "--doc-root",
+                    "docs",
+                    "--fix-stubs",
+                ]
+                buffer = StringIO()
+                with redirect_stdout(buffer):
+                    doc_coverage.main()
+                output = buffer.getvalue()
+            finally:
+                sys.argv = argv_backup
+
+            self.assertNotIn("penalized", output)
+            self.assertFalse(stub_path.exists())
+
 
 if __name__ == "__main__":
     unittest.main()
