@@ -2,8 +2,10 @@
   const namespace = global.__rwtraBootstrap || (global.__rwtraBootstrap = {});
   const helpers = namespace.helpers || (namespace.helpers = {});
 
-  const CI_LOG_QUERY_PARAM = require("../constants/ci-log-query-param.js");
-  const CLIENT_LOG_ENDPOINT = require("../constants/client-log-endpoint.js");
+  const {
+    ciLogQueryParam: CI_LOG_QUERY_PARAM,
+    clientLogEndpoint: CLIENT_LOG_ENDPOINT,
+  } = require("../constants/common.js");
 
   class LoggingService {
     constructor() { this.initialized = false; }

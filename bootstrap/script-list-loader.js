@@ -5,7 +5,7 @@ const globalObj =
     : typeof global !== "undefined"
     ? global
     : {};
-const SCRIPT_MANIFEST_URL = require("./constants/script-manifest-url.js");
+const { scriptManifestUrl: SCRIPT_MANIFEST_URL } = require("./constants/common.js");
 
 const ScriptListLoaderConfig = require("./configs/script-list-loader.js");
 

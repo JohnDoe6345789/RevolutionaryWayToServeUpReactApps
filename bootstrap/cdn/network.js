@@ -6,8 +6,13 @@
   const logging = isCommonJs ? require("./logging.js") : helpers.logging;
   const { logClient = () => {}, wait = () => Promise.resolve() } = logging || {};
 
-  const DEFAULT_FALLBACK_PROVIDERS = require("../constants/default-fallback-providers.js");
-  const getDefaultProviderAliases = require("../constants/default-provider-aliases.js");
+  const {
+    defaultFallbackProviders: DEFAULT_FALLBACK_PROVIDERS,
+    getDefaultProviderAliases,
+    proxyModeAuto: PROXY_MODE_AUTO,
+    proxyModeProxy: PROXY_MODE_PROXY,
+    proxyModeDirect: PROXY_MODE_DIRECT,
+  } = require("../constants/common.js");
   const DEFAULT_PROVIDER_ALIASES = getDefaultProviderAliases(global, isCommonJs);
 
   function normalizeProviderBaseRawValue(provider) {
@@ -34,10 +39,6 @@
     }
     return map;
   }
-
-  const PROXY_MODE_AUTO = require("../constants/proxy-mode-auto.js");
-  const PROXY_MODE_PROXY = require("../constants/proxy-mode-proxy.js");
-  const PROXY_MODE_DIRECT = require("../constants/proxy-mode-direct.js");
 
   class NetworkService {
     constructor(logClientFn, waitFn) { this.logClient = logClientFn; this.wait = waitFn; this.initialized = false; }
