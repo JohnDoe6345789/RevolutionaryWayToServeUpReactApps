@@ -1,5 +1,5 @@
 const ModuleLoaderConfig = require("../../configs/module-loader.js");
-const globalRoot = require("../../constants/global-root.js");
+const ModuleLoaderEnvironment = require("./module-loader-environment.js");
 
 /**
  * Aggregates the CDN/local helpers and exposes the module loader façade.
@@ -12,12 +12,34 @@ class ModuleLoaderAggregator {
       throw new Error("ModuleLoaderAggregator already initialized");
     }
     this.initialized = true;
-    this.global = globalRoot;
-    this.namespace = this.global.__rwtraBootstrap || (this.global.__rwtraBootstrap = {});
-    this.helpers = this.namespace.helpers || (this.namespace.helpers = {});
-    this.isCommonJs = typeof module !== "undefined" && module.exports;
+    this.environment = new ModuleLoaderEnvironment();
+    this.global = this.environment.global;
+    this.helpers = this.environment.helpers;
+    this.isCommonJs = this.environment.isCommonJs;
     this.dependencies = this.config.dependencies || {};
     this._loadDependencies();
+    this._buildExports();
+    this._registerWithServiceRegistry();
+  }
+
+  _loadDependencies() {
+    this.network = this._requireOrHelper("../../cdn/network.js", "network");
+    this.tools = this._requireOrHelper("../../cdn/tools.js", "tools");
+    this.dynamicModules = this._requireOrHelper(
+      "../../cdn/dynamic-modules.js",
+      "dynamicModules"
+    );
+    this.sourceUtils = this._requireOrHelper(
+      "../../cdn/source-utils.js",
+      "sourceUtils"
+    );
+    this.localLoader = this._requireOrHelper(
+      "../../initializers/loaders/local-loader.js",
+      "localLoader"
+    );
+  }
+
+  _buildExports() {
     this.exports = Object.assign(
       {},
       this.network,
@@ -26,6 +48,9 @@ class ModuleLoaderAggregator {
       this.sourceUtils,
       this.localLoader
     );
+  }
+
+  _registerWithServiceRegistry() {
     this.serviceRegistry = this.config.serviceRegistry;
     if (!this.serviceRegistry) {
       throw new Error("ServiceRegistry required for ModuleLoaderAggregator");
@@ -34,17 +59,6 @@ class ModuleLoaderAggregator {
       folder: "services/core",
       domain: "core",
     });
-  }
-
-  _loadDependencies() {
-    this.network = this._requireOrHelper("../../cdn/network.js", "network");
-    this.tools = this._requireOrHelper("../../cdn/tools.js", "tools");
-    this.dynamicModules = this._requireOrHelper("../../cdn/dynamic-modules.js", "dynamicModules");
-    this.sourceUtils = this._requireOrHelper("../../cdn/source-utils.js", "sourceUtils");
-    this.localLoader = this._requireOrHelper(
-      "../../initializers/loaders/local-loader.js",
-      "localLoader"
-    );
   }
 
   _requireOrHelper(path, helperKey) {

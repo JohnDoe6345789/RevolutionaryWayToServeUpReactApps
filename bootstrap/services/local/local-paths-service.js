@@ -1,7 +1,6 @@
 const LocalPathsConfig = require("../../configs/local-paths.js");
 const { localModuleExtensions: LOCAL_MODULE_EXTENSIONS } =
   require("../../constants/common.js");
-const globalRoot = require("../../constants/global-root.js");
 
 
 /**
@@ -16,7 +15,7 @@ class LocalPathsService {
     }
     this.initialized = true;
     this.LOCAL_MODULE_EXTENSIONS = LOCAL_MODULE_EXTENSIONS;
-    this.namespace = globalRoot.__rwtraBootstrap || (globalRoot.__rwtraBootstrap = {});
+    this.namespace = this._resolveNamespace();
     this.helpers = this.namespace.helpers || (this.namespace.helpers = {});
     this.serviceRegistry = this.config.serviceRegistry;
     if (!this.serviceRegistry) {
@@ -109,6 +108,14 @@ class LocalPathsService {
     if (typeof module !== "undefined" && module.exports) {
       module.exports = exports;
     }
+  }
+
+  _resolveNamespace() {
+    const namespace = this.config.namespace;
+    if (!namespace) {
+      throw new Error("Namespace required for LocalPathsService");
+    }
+    return namespace;
   }
 }
 

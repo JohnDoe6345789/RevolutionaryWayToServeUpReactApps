@@ -1,4 +1,3 @@
-const globalRoot = require("../../constants/global-root.js");
 const LocalModuleLoaderConfig = require("../../configs/local-module-loader.js");
 
 /**
@@ -13,8 +12,7 @@ class LocalModuleLoaderService {
     }
     this.initialized = true;
     const dependencies = this.config.dependencies || {};
-    this.global = globalRoot;
-    this.namespace = this.global.__rwtraBootstrap || (this.global.__rwtraBootstrap = {});
+    this.namespace = this._resolveNamespace();
     this.helpers = this.namespace.helpers || (this.namespace.helpers = {});
     this.isCommonJs = typeof module !== "undefined" && module.exports;
     this.serviceRegistry = this.config.serviceRegistry;
@@ -49,10 +47,7 @@ class LocalModuleLoaderService {
     this.resolveLocalModuleBase = this.localPaths?.resolveLocalModuleBase;
     this.getModuleDir = this.localPaths?.getModuleDir;
     this.getCandidateLocalPaths = this.localPaths?.getCandidateLocalPaths;
-    this.fetchImpl =
-      typeof globalRoot.fetch === "function"
-        ? globalRoot.fetch.bind(globalRoot)
-        : undefined;
+    this.fetchImpl = this.config.fetch ?? dependencies.fetch;
   }
 
   createLocalModuleLoader(entryDir) {
@@ -124,6 +119,14 @@ class LocalModuleLoaderService {
         modulePromises.delete(resolvedPath);
       }
     };
+  }
+
+  _resolveNamespace() {
+    const namespace = this.config.namespace;
+    if (!namespace) {
+      throw new Error("Namespace required for LocalModuleLoaderService");
+    }
+    return namespace;
   }
 
   async fetchLocalModuleSource(basePath) {

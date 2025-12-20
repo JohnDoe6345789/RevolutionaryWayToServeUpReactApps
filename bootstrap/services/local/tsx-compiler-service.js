@@ -1,4 +1,3 @@
-const globalRoot = require("../../constants/global-root.js");
 const TsxCompilerConfig = require("../../configs/tsx-compiler.js");
 
 /**
@@ -17,8 +16,7 @@ class TsxCompilerService {
       throw new Error("ServiceRegistry required for TsxCompilerService");
     }
     const dependencies = this.config.dependencies || {};
-    this.global = globalRoot;
-    this.namespace = this.global.__rwtraBootstrap || (this.global.__rwtraBootstrap = {});
+    this.namespace = this._resolveNamespace();
     this.helpers = this.namespace.helpers || (this.namespace.helpers = {});
     this.isCommonJs = typeof module !== "undefined" && module.exports;
     this.logging =
@@ -30,14 +28,15 @@ class TsxCompilerService {
     this.logClient = (this.logging && this.logging.logClient) || (() => {});
     this.preloadModulesFromSource = this.sourceUtils?.preloadModulesFromSource;
     this.moduleContextStack = [];
+    this.fetchImpl = this.config.fetch ?? dependencies.fetch;
+    this.Babel = this.config.Babel ?? dependencies.Babel;
   }
 
   transformSource(source, filePath) {
-    const Babel = this.global.Babel;
-    if (!Babel) {
+    if (!this.Babel) {
       throw new Error("Babel is unavailable when transforming TSX");
     }
-    return Babel.transform(source, {
+    return this.Babel.transform(source, {
       filename: filePath,
       presets: [
         ["typescript", { allExtensions: true, isTSX: true }],
@@ -68,10 +67,10 @@ class TsxCompilerService {
   }
 
   async compileTSX(entryFile, requireFn, entryDir = "") {
-    if (typeof globalRoot.fetch !== "function") {
+    if (typeof this.fetchImpl !== "function") {
       throw new Error("Fetch is unavailable when compiling TSX");
     }
-    const res = await globalRoot.fetch(entryFile, { cache: "no-store" });
+    const res = await this.fetchImpl(entryFile, { cache: "no-store" });
     if (!res.ok) throw new Error("Failed to load " + entryFile);
     const tsxCode = await res.text();
 
@@ -106,6 +105,14 @@ class TsxCompilerService {
     if (this.isCommonJs) {
       module.exports = exports;
     }
+  }
+
+  _resolveNamespace() {
+    const namespace = this.config.namespace;
+    if (!namespace) {
+      throw new Error("Namespace required for TsxCompilerService");
+    }
+    return namespace;
   }
 }
 

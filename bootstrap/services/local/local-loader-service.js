@@ -1,5 +1,5 @@
 const LocalLoaderConfig = require("../../configs/local-loader.js");
-const globalRoot = require("../../constants/global-root.js");
+const helperRegistry = require("./helpers");
 
 /**
  * Combines sass/tsx/local helpers into the shared local loader surface.
@@ -12,40 +12,29 @@ class LocalLoaderService {
       throw new Error("LocalLoaderService already initialized");
     }
     this.initialized = true;
-    const dependencies = this.config.dependencies || {};
-    this.global = globalRoot;
-    this.namespace = this.global.__rwtraBootstrap || (this.global.__rwtraBootstrap = {});
-    this.helpers = this.namespace.helpers || (this.namespace.helpers = {});
-    this.isCommonJs = typeof module !== "undefined" && module.exports;
+    this.overrides = this.config.dependencies || {};
     this.serviceRegistry = this.config.serviceRegistry;
     if (!this.serviceRegistry) {
       throw new Error("ServiceRegistry required for LocalLoaderService");
     }
-    this.logging =
-      dependencies.logging ?? (this.isCommonJs ? require("../../cdn/logging.js") : this.helpers.logging);
-    this.dynamicModules =
-      dependencies.dynamicModules ??
-      (this.isCommonJs ? require("../../cdn/dynamic-modules.js") : this.helpers.dynamicModules);
-    this.sassCompiler =
-      dependencies.sassCompiler ??
-      (this.isCommonJs
-        ? require("../../initializers/compilers/sass-compiler.js")
-        : this.helpers.sassCompiler);
-    this.tsxCompiler =
-      dependencies.tsxCompiler ??
-      (this.isCommonJs
-        ? require("../../initializers/compilers/tsx-compiler.js")
-        : this.helpers.tsxCompiler);
-    this.localPaths =
-      dependencies.localPaths ??
-      (this.isCommonJs
-        ? require("../../initializers/path-utils/local-paths.js")
-        : this.helpers.localPaths);
-    this.moduleLoader =
-      dependencies.moduleLoader ??
-      (this.isCommonJs
-        ? require("../../initializers/loaders/local-module-loader.js")
-        : this.helpers.localModuleLoader);
+    const FrameworkRenderer = helperRegistry.getHelper("frameworkRenderer");
+    if (!FrameworkRenderer) {
+      throw new Error("FrameworkRenderer helper missing from helper registry");
+    }
+    const rendererConfig = new FrameworkRenderer.Config({
+      document: this.config.document,
+    });
+    this.frameworkRenderer = new FrameworkRenderer(rendererConfig);
+    this.frameworkRenderer.initialize();
+    this.namespace = this.config.namespace || {};
+    this.helpers = this.namespace.helpers || (this.namespace.helpers = {});
+    this.isCommonJs = typeof module !== "undefined" && module.exports;
+    this.logging = this._resolveDependency("logging");
+    this.dynamicModules = this._resolveDependency("dynamicModules");
+    this.sassCompiler = this._resolveDependency("sassCompiler");
+    this.tsxCompiler = this._resolveDependency("tsxCompiler");
+    this.localPaths = this._resolveDependency("localPaths");
+    this.moduleLoader = this._resolveDependency("localModuleLoader");
     this.logClient = (this.logging && this.logging.logClient) || (() => {});
     this.loadDynamicModule =
       (this.dynamicModules && this.dynamicModules.loadDynamicModule) ||
@@ -61,51 +50,22 @@ class LocalLoaderService {
     this.getModuleDir = this.localPaths?.getModuleDir;
     this.localModuleLoader = this.moduleLoader?.createLocalModuleLoader;
     this.fetchLocalModuleSource = this.moduleLoader?.fetchLocalModuleSource;
+    const LocalRequireBuilder = helperRegistry.getHelper("localRequireBuilder");
+    if (!LocalRequireBuilder) {
+      throw new Error("LocalRequireBuilder helper missing from helper registry");
+    }
+    this.requireBuilder = new LocalRequireBuilder({
+      loadDynamicModule: this.loadDynamicModule,
+      isLocalModule: this.isLocalModule,
+    });
     this.serviceRegistry.register("localLoader", this.exports, {
       folder: "services/local",
       domain: "local",
     });
   }
 
-  getModuleExport(mod, name) {
-    if (!mod) return null;
-    if (Object.prototype.hasOwnProperty.call(mod, name)) {
-      return mod[name];
-    }
-    if (mod.default && Object.prototype.hasOwnProperty.call(mod.default, name)) {
-      return mod.default[name];
-    }
-    return null;
-  }
-
   frameworkRender(config, registry, App) {
-    const rootId = config.render?.rootId || "root";
-    const rootEl = this.global.document.getElementById(rootId);
-    if (!rootEl) throw new Error("Root element not found: #" + rootId);
-
-    const domModuleName = config.render?.domModule;
-    const reactModuleName = config.render?.reactModule;
-    const domModule = domModuleName ? registry[domModuleName] : null;
-    const reactModule = reactModuleName ? registry[reactModuleName] : null;
-    if (!domModule) throw new Error("DOM render module missing: " + domModuleName);
-    if (!reactModule) throw new Error("React module missing: " + reactModuleName);
-
-    const createRootFn = this.getModuleExport(domModule, config.render.createRoot);
-    if (!createRootFn) {
-      throw new Error("createRoot not found: " + config.render.createRoot);
-    }
-
-    const root = createRootFn(rootEl);
-    const renderMethod = config.render.renderMethod || "render";
-    if (typeof root[renderMethod] !== "function") {
-      throw new Error("Render method not found: " + renderMethod);
-    }
-
-    const createElementFn = this.getModuleExport(reactModule, "createElement");
-    if (!createElementFn) {
-      throw new Error("createElement not found on React module");
-    }
-    root[renderMethod](createElementFn(App));
+    return this.frameworkRenderer.render(config, registry, App);
   }
 
   createRequire(
@@ -115,45 +75,25 @@ class LocalLoaderService {
     localModuleLoader,
     dynamicModuleLoader
   ) {
-    let resolvedEntryDir = "";
-    let resolvedDynamicModuleLoader = dynamicModuleLoader;
+    return this.requireBuilder.create({
+      registry,
+      config,
+      entryDir,
+      localModuleLoader,
+      dynamicModuleLoader,
+      argumentCount: arguments.length,
+    });
+  }
 
-    if (typeof entryDir === "function" && arguments.length === 3) {
-      resolvedDynamicModuleLoader = entryDir;
-    } else {
-      resolvedEntryDir = entryDir || "";
+  _resolveDependency(name) {
+    if (this.overrides[name]) {
+      return this.overrides[name];
     }
-
-    resolvedDynamicModuleLoader = resolvedDynamicModuleLoader || this.loadDynamicModule;
-
-    const requireFn = (name) => {
-      if (registry[name]) return registry[name];
-      throw new Error(
-        "Module not yet loaded: " +
-          name +
-          " (use a preload step via requireAsync for dynamic modules)"
-      );
-    };
-
-    const requireAsync = async (name, baseDir) => {
-      if (registry[name]) return registry[name];
-      if (localModuleLoader && this.isLocalModule && this.isLocalModule(name)) {
-        return localModuleLoader(
-          name,
-          baseDir || resolvedEntryDir,
-          requireFn,
-          registry
-        );
-      }
-      const dynRules = config.dynamicModules || [];
-      if (dynRules.some((r) => name.startsWith(r.prefix))) {
-        return resolvedDynamicModuleLoader(name, config, registry);
-      }
-      throw new Error("Module not registered: " + name);
-    };
-
-    requireFn._async = requireAsync;
-    return requireFn;
+    const service = this.serviceRegistry?.getService(name);
+    if (service) {
+      return service;
+    }
+    return this.helpers[name] || {};
   }
 
   get exports() {

@@ -1,4 +1,3 @@
-const globalRoot = require("../../constants/global-root.js");
 const SassCompilerConfig = require("../../configs/sass-compiler.js");
 
 /**
@@ -16,11 +15,11 @@ class SassCompilerService {
     if (!this.serviceRegistry) {
       throw new Error("ServiceRegistry required for SassCompilerService");
     }
-    this.fetchImpl =
-      this.config.fetch ??
-      (typeof globalRoot.fetch === "function" ? globalRoot.fetch.bind(globalRoot) : undefined);
-    this.document = this.config.document ?? globalRoot.document;
-    this.SassImpl = this.config.SassImpl ?? globalRoot.Sass;
+    this.fetchImpl = this.config.fetch;
+    this.document = this.config.document;
+    this.SassImpl = this.config.SassImpl;
+    this.namespace = this._resolveNamespace();
+    this.helpers = this.namespace.helpers || (this.namespace.helpers = {});
   }
 
   async compileSCSS(scssFile) {
@@ -106,8 +105,7 @@ class SassCompilerService {
       throw new Error("SassCompilerService not initialized");
     }
     const exports = this.exports;
-    const namespace = globalRoot.__rwtraBootstrap || (globalRoot.__rwtraBootstrap = {});
-    const helpers = namespace.helpers || (namespace.helpers = {});
+    const helpers = this.namespace.helpers || (this.namespace.helpers = {});
     helpers.sassCompiler = exports;
     this.serviceRegistry.register("sassCompiler", exports, {
       folder: "services/local",
@@ -116,6 +114,14 @@ class SassCompilerService {
     if (typeof module !== "undefined" && module.exports) {
       module.exports = exports;
     }
+  }
+
+  _resolveNamespace() {
+    const namespace = this.config.namespace;
+    if (!namespace) {
+      throw new Error("Namespace required for SassCompilerService");
+    }
+    return namespace;
   }
 }
 
