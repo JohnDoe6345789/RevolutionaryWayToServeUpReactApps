@@ -6,6 +6,9 @@ const globalRoot =
     ? global
     : this;
 
+/**
+ * Combines sass/tsx/local helpers into the shared local loader surface.
+ */
 class LocalLoaderService {
   constructor(config = new LocalLoaderConfig()) { this.config = config; this.initialized = false; }
 

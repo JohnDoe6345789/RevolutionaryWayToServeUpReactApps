@@ -6,6 +6,9 @@ const globalRoot =
     : this;
 const ToolsLoaderConfig = require("../configs/tools.js");
 
+/**
+ * Handles fetching globals/modules and normalizing them into namespace helpers.
+ */
 class ToolsLoaderService {
   constructor(config = new ToolsLoaderConfig()) { this.config = config; this.initialized = false; }
 

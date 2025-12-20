@@ -6,6 +6,9 @@ const globalRoot =
     : this;
 const TsxCompilerConfig = require("../configs/tsx-compiler.js");
 
+/**
+ * Transforms and executes TSX sources using Babel and inlined execution.
+ */
 class TsxCompilerService {
   constructor(config = new TsxCompilerConfig()) { this.config = config; this.initialized = false; }
 

@@ -6,6 +6,9 @@ const globalRoot =
     ? global
     : this;
 
+/**
+ * Aggregates the CDN/local helpers and exposes the module loader façade.
+ */
 class ModuleLoaderAggregator {
   constructor(config = new ModuleLoaderConfig()) { this.config = config; this.initialized = false; }
 

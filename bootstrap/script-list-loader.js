@@ -9,6 +9,9 @@ const { scriptManifestUrl: SCRIPT_MANIFEST_URL } = require("./constants/common.j
 
 const ScriptListLoaderConfig = require("./configs/script-list-loader.js");
 
+/**
+ * Loads the script manifest and sequentially injects each referenced script tag.
+ */
 class ScriptListLoader {
   constructor(config = new ScriptListLoaderConfig()) { this.config = config; this.initialized = false; }
 

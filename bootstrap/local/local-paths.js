@@ -7,6 +7,9 @@ const globalRoot =
     ? global
     : this;
 
+/**
+ * Normalizes local module paths and enumerates candidate URLs/extensions.
+ */
 class LocalPathsService {
   constructor(config = new LocalPathsConfig()) { this.config = config; this.initialized = false; }
 

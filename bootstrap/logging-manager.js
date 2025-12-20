@@ -1,6 +1,9 @@
 const hasWindow = typeof window !== "undefined";
 const LoggingManagerConfig = require("./configs/logging-manager.js");
 
+/**
+ * Wraps telemetry wiring for window-level error/unhandled rejection logging.
+ */
 class LoggingManager {
   constructor(config = new LoggingManagerConfig()) { this.config = config; this.initialized = false; }
 

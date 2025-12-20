@@ -6,6 +6,9 @@ const globalRoot =
     ? global
     : this;
 
+/**
+ * Parses source files for module specifiers and preloads dynamic dependencies.
+ */
 class SourceUtilsService {
   constructor(config = new SourceUtilsConfig()) { this.config = config; this.initialized = false; }
 

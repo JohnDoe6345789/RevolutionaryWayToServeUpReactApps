@@ -6,6 +6,9 @@ const globalRoot =
     : this;
 const LocalModuleLoaderConfig = require("../configs/local-module-loader.js");
 
+/**
+ * Provides asynchronous loading for local modules and caches their exports.
+ */
 class LocalModuleLoaderService {
   constructor(config = new LocalModuleLoaderConfig()) { this.config = config; this.initialized = false; }
 

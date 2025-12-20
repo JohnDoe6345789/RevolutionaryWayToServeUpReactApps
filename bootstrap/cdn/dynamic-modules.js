@@ -6,6 +6,9 @@ const globalRoot =
     : this;
 const DynamicModulesConfig = require("../configs/dynamic-modules.js");
 
+/**
+ * Resolves and loads icon-specific dynamic modules from configured providers.
+ */
 class DynamicModulesService {
   constructor(config = new DynamicModulesConfig()) { this.config = config; this.initialized = false; }
 

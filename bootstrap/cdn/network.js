@@ -40,6 +40,9 @@
     return map;
   }
 
+  /**
+   * Performs URL resolution, probing, and provider alias normalization for bootstrap modules.
+   */
   class NetworkService {
     constructor(logClientFn, waitFn) { this.logClient = logClientFn; this.wait = waitFn; this.initialized = false; }
 

@@ -7,6 +7,9 @@
     clientLogEndpoint: CLIENT_LOG_ENDPOINT,
   } = require("../constants/common.js");
 
+  /**
+   * Centralizes CI logging defaults, serialization helpers, and UI error forwarding.
+   */
   class LoggingService {
     constructor() { this.initialized = false; }
 

@@ -6,6 +6,9 @@ const globalRoot =
     : this;
 const SassCompilerConfig = require("../configs/sass-compiler.js");
 
+/**
+ * Wraps Sass compilation/injection using the configured Sass implementation.
+ */
 class SassCompilerService {
   constructor(config = new SassCompilerConfig()) { this.config = config; this.initialized = false; }
 

@@ -6,6 +6,9 @@ const globalRoot =
     : {};
 const hasWindow = typeof window !== "undefined";
 
+/**
+ * Loads config.json once and caches the promise/results for reuse.
+ */
 class BootstrapConfigLoader {
   constructor({ fetch } = {}) { this.config = { fetch }; this.initialized = false; this.cachedPromise = null; }
 

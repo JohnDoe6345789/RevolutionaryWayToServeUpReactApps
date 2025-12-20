@@ -1,5 +1,8 @@
 const ImportMapInitConfig = require("../configs/import-map-init.js");
 
+/**
+ * Populates the import map element by resolving each configured module URL.
+ */
 class ImportMapInitializer {
   constructor(config = new ImportMapInitConfig()) { this.config = config; this.initialized = false; }
 

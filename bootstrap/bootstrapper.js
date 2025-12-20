@@ -1,6 +1,9 @@
 const hasDocument = typeof document !== "undefined";
 const hasWindow = typeof window !== "undefined";
 
+/**
+ * Drives the overall bootstrap workflow (config, module loading, rendering, logging).
+ */
 class Bootstrapper {
   constructor(config) { this.config = config; this.initialized = false; }
 
