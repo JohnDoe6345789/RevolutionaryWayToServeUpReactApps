@@ -19,6 +19,6 @@ This section documents the bootstrap runtime, CDN helpers, and the loader helper
 
 ## Script helpers
 
-- [`script-list-loader.md`](script-list-loader.md) – Loads `bootstrap/script-list.html` so helper scripts can execute in order before `bootstrap.js`.
+- [`script-list-loader.md`](script-list-loader.md) – Loads `bootstrap/entrypoints/script-list.html` so helper scripts can execute in order before `bootstrap.js`.
 
 Use the links above to drill into the specific helpers you are working with.

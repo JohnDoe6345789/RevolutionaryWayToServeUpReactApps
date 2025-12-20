@@ -1,1 +1,1 @@
-module.exports = "bootstrap/script-list.html";
+module.exports = "bootstrap/entrypoints/script-list.html";

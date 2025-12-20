@@ -1,4 +1,4 @@
-# Module: `bootstrap/env.js`
+# Module: `bootstrap/entrypoints/env.js`
 
 ## Overview
 
@@ -17,7 +17,7 @@
 ## Examples
 
 ```html
-<script src="bootstrap/env.js"></script>
+<script src="bootstrap/entrypoints/env.js"></script>
 <script src="bootstrap.js"></script>
 ```
 

@@ -1,4 +1,4 @@
-# Module: `bootstrap/module-loader.js`
+# Module: `bootstrap/entrypoints/module-loader.js`
 
 ## Overview
 
@@ -17,7 +17,7 @@
 ## Examples
 
 ```ts
-const { probeUrl, loadScript, frameworkRender } = require("./bootstrap/module-loader.js");
+const { probeUrl, loadScript, frameworkRender } = require("./bootstrap/entrypoints/module-loader.js");
 ```
 
 ## Related docs

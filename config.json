@@ -27,7 +27,7 @@
     "jsonLimit": "1mb",
     "cacheControl": "no-store, no-cache, must-revalidate",
     "paths": {
-      "envScript": "/bootstrap/env.js",
+      "envScript": "/bootstrap/entrypoints/env.js",
       "proxy": "/proxy/unpkg",
       "clientLog": "/__client-log"
     },

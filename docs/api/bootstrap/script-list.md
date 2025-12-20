@@ -1,4 +1,4 @@
-# Module: `bootstrap/script-list.html`
+# Module: `bootstrap/entrypoints/script-list.html`
 
 ## Overview
 

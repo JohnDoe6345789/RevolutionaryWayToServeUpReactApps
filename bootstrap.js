@@ -16,7 +16,7 @@ const network = isCommonJs
   ? require("./bootstrap/cdn/network.js")
   : helpersNamespace.network;
 const moduleLoader = isCommonJs
-  ? require("./bootstrap/module-loader.js")
+  ? require("./bootstrap/entrypoints/module-loader.js")
   : helpersNamespace.moduleLoader;
 
 const {
