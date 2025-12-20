@@ -244,8 +244,12 @@ def main() -> None:
     overall_docged = module_docged + globals_docged + functions_docged
     coverage_pct = (overall_docged / overall_total * 100) if overall_total else 100.0
 
-    stub_docs = list(stub_path.rglob("*.md"))
-    stub_penalty = min(len(stub_docs) * 2.0, 100.0)
+    stub_templates = [
+        path
+        for path in stub_path.rglob("*.md")
+        if "Module documentation template" in path.read_text(encoding="utf-8", errors="ignore")
+    ]
+    stub_penalty = min(len(stub_templates) * 2.0, 100.0)
     coverage_with_penalty = max(coverage_pct - stub_penalty, 0.0)
 
     print()
@@ -255,7 +259,9 @@ def main() -> None:
     print(f"Globals:    {globals_docged}/{globals_total}")
     print(f"Functions:  {functions_docged}/{functions_total}")
     if stub_penalty:
-        print(f"Overall:    {coverage_with_penalty:.1f}% (penalized {stub_penalty:.1f}% for {len(stub_docs)} stub docs)")
+        print(
+            f"Overall:    {coverage_with_penalty:.1f}% (penalized {stub_penalty:.1f}% for {len(stub_templates)} stub templates)"
+        )
     else:
         print(f"Overall:    {coverage_pct:.1f}%")
 
