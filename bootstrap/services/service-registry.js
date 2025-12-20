@@ -30,6 +30,10 @@ class ServiceRegistry {
     const entry = this._services.get(name);
     return entry ? entry.metadata : undefined;
   }
+
+  isRegistered(name) {
+    return this._services.has(name);
+  }
 }
 
 module.exports = ServiceRegistry;

@@ -29,6 +29,10 @@ class HelperRegistry {
     const entry = this._helpers.get(name);
     return entry ? entry.metadata : undefined;
   }
+
+  isRegistered(name) {
+    return this._helpers.has(name);
+  }
 }
 
 module.exports = HelperRegistry;
