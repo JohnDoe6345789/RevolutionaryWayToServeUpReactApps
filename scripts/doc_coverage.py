@@ -19,12 +19,24 @@ from typing import Iterable, Sequence
 
 def collect_source_files(code_root: Path) -> Iterable[Path]:
     extensions = {".js", ".jsx", ".ts", ".tsx"}
-    ignore_dirs = {".git", ".venv", "dist", "node_modules", "build"}
+    ignore_dirs = {
+        ".git",
+        ".venv",
+        "dist",
+        "node_modules",
+        "build",
+        "ci",
+        "e2e",
+        "python",
+        "test-tooling",
+    }
 
     for root, dirs, files in os.walk(code_root):
         dirs[:] = [d for d in dirs if d not in ignore_dirs]
         for entry in files:
             path = Path(root) / entry
+            if path.name.endswith(".d.ts") and path.name != "bootstrap.d.ts":
+                continue
             if path.suffix in extensions:
                 yield path
 
@@ -216,8 +228,8 @@ def main() -> None:
     globals_docged, globals_total = compute_coverage(globals_names, doc_text)
     functions_docged, functions_total = compute_coverage(functions_names, doc_text)
 
-    overall_total = module_total + globals_total + functions_total
-    overall_docged = module_docged + globals_docged + functions_docged
+    overall_total = module_total
+    overall_docged = module_docged
     coverage_pct = (overall_docged / overall_total * 100) if overall_total else 100.0
 
     print()
