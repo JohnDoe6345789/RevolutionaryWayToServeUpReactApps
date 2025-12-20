@@ -1,4 +1,4 @@
-const SourceUtilsConfig = require("../configs/source-utils.js");
+const SourceUtilsConfig = require("../../configs/source-utils.js");
 const globalRoot =
   typeof globalThis !== "undefined"
     ? globalThis

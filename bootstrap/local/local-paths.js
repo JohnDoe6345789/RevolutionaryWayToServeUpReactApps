@@ -1,4 +1,4 @@
-const LocalPathsService = require("./local-paths-service.js");
+const LocalPathsService = require("../services/local/local-paths-service.js");
 
 const localPathsService = new LocalPathsService();
 localPathsService.initialize();

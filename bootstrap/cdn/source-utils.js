@@ -1,4 +1,4 @@
-const SourceUtilsService = require("./source-utils-service.js");
+const SourceUtilsService = require("../services/cdn/source-utils-service.js");
 
 const sourceUtilsService = new SourceUtilsService();
 sourceUtilsService.initialize();

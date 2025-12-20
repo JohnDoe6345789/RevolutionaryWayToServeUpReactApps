@@ -29,7 +29,7 @@ const {
 
 const BootstrapConfigLoader = require("./bootstrap/config-loader.js");
 const BootstrapConfigLoaderConfig = require("./bootstrap/configs/bootstrap-config-loader.js");
-const LoggingManager = require("./bootstrap/logging-manager.js");
+const LoggingManager = require("./bootstrap/services/core/logging-manager.js");
 const LoggingManagerConfig = require("./bootstrap/configs/logging-manager.js");
 const Bootstrapper = require("./bootstrap/bootstrapper.js");
 const BootstrapperConfig = require("./bootstrap/configs/bootstrapper.js");

@@ -4,7 +4,7 @@ const globalRoot =
     : typeof global !== "undefined"
     ? global
     : this;
-const ToolsLoaderConfig = require("../configs/tools.js");
+const ToolsLoaderConfig = require("../../configs/tools.js");
 
 /**
  * Handles fetching globals/modules and normalizing them into namespace helpers.
@@ -23,10 +23,10 @@ class ToolsLoaderService {
     this.isCommonJs = typeof module !== "undefined" && module.exports;
     this.logging =
       dependencies.logging ??
-      (this.isCommonJs ? require("./logging.js") : this.helpers.logging);
+      (this.isCommonJs ? require("../../cdn/logging.js") : this.helpers.logging);
     this.network =
       dependencies.network ??
-      (this.isCommonJs ? require("./network.js") : this.helpers.network);
+      (this.isCommonJs ? require("../../cdn/network.js") : this.helpers.network);
     this.logClient = (this.logging && this.logging.logClient) || (() => {});
     this.loadScript = this.network?.loadScript ?? (() => Promise.resolve());
     this.resolveModuleUrl = this.network?.resolveModuleUrl ?? (() => "");

@@ -1,8 +1,8 @@
 const {
   ciLogQueryParam: DEFAULT_CI_LOG_QUERY_PARAM,
   clientLogEndpoint: DEFAULT_CLIENT_LOG_ENDPOINT,
-} = require("../constants/common.js");
-const LoggingServiceConfig = require("../configs/logging-service.js");
+} = require("../../constants/common.js");
+const LoggingServiceConfig = require("../../configs/logging-service.js");
 
 /**
  * Centralizes CI logging defaults, serialization helpers, and UI error forwarding.

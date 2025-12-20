@@ -1,4 +1,4 @@
-const ToolsLoaderService = require("./tools-service.js");
+const ToolsLoaderService = require("../services/cdn/tools-service.js");
 
 const toolsLoaderService = new ToolsLoaderService();
 toolsLoaderService.initialize();

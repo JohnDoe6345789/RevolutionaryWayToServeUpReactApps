@@ -4,7 +4,7 @@ const globalRoot =
     : typeof global !== "undefined"
     ? global
     : this;
-const LocalModuleLoaderConfig = require("../configs/local-module-loader.js");
+const LocalModuleLoaderConfig = require("../../configs/local-module-loader.js");
 
 /**
  * Provides asynchronous loading for local modules and caches their exports.
@@ -23,15 +23,15 @@ class LocalModuleLoaderService {
     this.helpers = this.namespace.helpers || (this.namespace.helpers = {});
     this.isCommonJs = typeof module !== "undefined" && module.exports;
     this.logging =
-      dependencies.logging ?? (this.isCommonJs ? require("../cdn/logging.js") : this.helpers.logging);
+      dependencies.logging ?? (this.isCommonJs ? require("../../cdn/logging.js") : this.helpers.logging);
     this.dynamicModules =
-      dependencies.dynamicModules ?? (this.isCommonJs ? require("../cdn/dynamic-modules.js") : this.helpers.dynamicModules);
+      dependencies.dynamicModules ?? (this.isCommonJs ? require("../../cdn/dynamic-modules.js") : this.helpers.dynamicModules);
     this.sourceUtils =
-      dependencies.sourceUtils ?? (this.isCommonJs ? require("../cdn/source-utils.js") : this.helpers.sourceUtils);
+      dependencies.sourceUtils ?? (this.isCommonJs ? require("../../cdn/source-utils.js") : this.helpers.sourceUtils);
     this.tsxCompiler =
-      dependencies.tsxCompiler ?? (this.isCommonJs ? require("./tsx-compiler.js") : this.helpers.tsxCompiler);
+      dependencies.tsxCompiler ?? (this.isCommonJs ? require("../../local/tsx-compiler.js") : this.helpers.tsxCompiler);
     this.localPaths =
-      dependencies.localPaths ?? (this.isCommonJs ? require("./local-paths.js") : this.helpers.localPaths);
+      dependencies.localPaths ?? (this.isCommonJs ? require("../../local/local-paths.js") : this.helpers.localPaths);
     this.logClient = (this.logging && this.logging.logClient) || (() => {});
     this.loadDynamicModule =
       (this.dynamicModules && this.dynamicModules.loadDynamicModule) ||

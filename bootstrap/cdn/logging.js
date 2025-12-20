@@ -2,7 +2,7 @@
   const namespace = global.__rwtraBootstrap || (global.__rwtraBootstrap = {});
   const helpers = namespace.helpers || (namespace.helpers = {});
 
-  const LoggingService = require("./logging-service.js");
+  const LoggingService = require("../services/cdn/logging-service.js");
   const LoggingServiceConfig = require("../configs/logging-service.js");
 
   const loggingService = new LoggingService(new LoggingServiceConfig());

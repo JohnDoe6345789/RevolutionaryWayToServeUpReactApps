@@ -5,7 +5,7 @@ const globalRoot =
     ? global
     : this;
 
-const EnvInitializerConfig = require("./configs/env.js");
+const EnvInitializerConfig = require("../../configs/env.js");
 
 /**
  * Ensures the runtime proxy-mode flag is always defined.

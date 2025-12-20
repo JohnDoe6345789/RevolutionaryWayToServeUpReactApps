@@ -1,4 +1,4 @@
-const ModuleLoaderConfig = require("./configs/module-loader.js");
+const ModuleLoaderConfig = require("../../configs/module-loader.js");
 const globalRoot =
   typeof globalThis !== "undefined"
     ? globalThis
@@ -34,11 +34,11 @@ class ModuleLoaderAggregator {
   }
 
   _loadDependencies() {
-    this.network = this._requireOrHelper("./cdn/network.js", "network");
-    this.tools = this._requireOrHelper("./cdn/tools.js", "tools");
-    this.dynamicModules = this._requireOrHelper("./cdn/dynamic-modules.js", "dynamicModules");
-    this.sourceUtils = this._requireOrHelper("./cdn/source-utils.js", "sourceUtils");
-    this.localLoader = this._requireOrHelper("./local/local-loader.js", "localLoader");
+    this.network = this._requireOrHelper("../../cdn/network.js", "network");
+    this.tools = this._requireOrHelper("../../cdn/tools.js", "tools");
+    this.dynamicModules = this._requireOrHelper("../../cdn/dynamic-modules.js", "dynamicModules");
+    this.sourceUtils = this._requireOrHelper("../../cdn/source-utils.js", "sourceUtils");
+    this.localLoader = this._requireOrHelper("../../local/local-loader.js", "localLoader");
   }
 
   _requireOrHelper(path, helperKey) {

@@ -1,4 +1,4 @@
-const LocalLoaderService = require("./local-loader-service.js");
+const LocalLoaderService = require("../services/local/local-loader-service.js");
 
 const localLoaderService = new LocalLoaderService();
 localLoaderService.initialize();

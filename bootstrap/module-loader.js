@@ -1,4 +1,4 @@
-const ModuleLoaderAggregator = require("./module-loader-service.js");
+const ModuleLoaderAggregator = require("./services/core/module-loader-service.js");
 
 const moduleLoader = new ModuleLoaderAggregator();
 moduleLoader.initialize();

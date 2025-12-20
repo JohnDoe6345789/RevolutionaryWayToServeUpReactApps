@@ -1,4 +1,4 @@
-const LocalLoaderConfig = require("../configs/local-loader.js");
+const LocalLoaderConfig = require("../../configs/local-loader.js");
 const globalRoot =
   typeof globalThis !== "undefined"
     ? globalThis
@@ -23,19 +23,19 @@ class LocalLoaderService {
     this.helpers = this.namespace.helpers || (this.namespace.helpers = {});
     this.isCommonJs = typeof module !== "undefined" && module.exports;
     this.logging =
-      dependencies.logging ?? (this.isCommonJs ? require("../cdn/logging.js") : this.helpers.logging);
+      dependencies.logging ?? (this.isCommonJs ? require("../../cdn/logging.js") : this.helpers.logging);
     this.dynamicModules =
       dependencies.dynamicModules ??
-      (this.isCommonJs ? require("../cdn/dynamic-modules.js") : this.helpers.dynamicModules);
+      (this.isCommonJs ? require("../../cdn/dynamic-modules.js") : this.helpers.dynamicModules);
     this.sassCompiler =
-      dependencies.sassCompiler ?? (this.isCommonJs ? require("./sass-compiler.js") : this.helpers.sassCompiler);
+      dependencies.sassCompiler ?? (this.isCommonJs ? require("../../local/sass-compiler.js") : this.helpers.sassCompiler);
     this.tsxCompiler =
-      dependencies.tsxCompiler ?? (this.isCommonJs ? require("./tsx-compiler.js") : this.helpers.tsxCompiler);
+      dependencies.tsxCompiler ?? (this.isCommonJs ? require("../../local/tsx-compiler.js") : this.helpers.tsxCompiler);
     this.localPaths =
-      dependencies.localPaths ?? (this.isCommonJs ? require("./local-paths.js") : this.helpers.localPaths);
+      dependencies.localPaths ?? (this.isCommonJs ? require("../../local/local-paths.js") : this.helpers.localPaths);
     this.moduleLoader =
       dependencies.moduleLoader ??
-      (this.isCommonJs ? require("./local-module-loader.js") : this.helpers.localModuleLoader);
+      (this.isCommonJs ? require("../../local/local-module-loader.js") : this.helpers.localModuleLoader);
     this.logClient = (this.logging && this.logging.logClient) || (() => {});
     this.loadDynamicModule =
       (this.dynamicModules && this.dynamicModules.loadDynamicModule) ||

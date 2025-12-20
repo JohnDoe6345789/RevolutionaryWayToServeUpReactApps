@@ -4,7 +4,7 @@ const globalRoot =
     : typeof global !== "undefined"
     ? global
     : this;
-const DynamicModulesConfig = require("../configs/dynamic-modules.js");
+const DynamicModulesConfig = require("../../configs/dynamic-modules.js");
 
 /**
  * Resolves and loads icon-specific dynamic modules from configured providers.
@@ -23,10 +23,10 @@ class DynamicModulesService {
     this.isCommonJs = typeof module !== "undefined" && module.exports;
     this.logging =
       dependencies.logging ??
-      (this.isCommonJs ? require("./logging.js") : this.helpers.logging);
+      (this.isCommonJs ? require("../../cdn/logging.js") : this.helpers.logging);
     this.network =
       dependencies.network ??
-      (this.isCommonJs ? require("./network.js") : this.helpers.network);
+      (this.isCommonJs ? require("../../cdn/network.js") : this.helpers.network);
     const net = this.network || {};
     this.logClient = (this.logging && this.logging.logClient) || (() => {});
     this.loadScript = net.loadScript || (() => Promise.resolve());

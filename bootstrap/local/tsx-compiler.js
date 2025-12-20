@@ -1,4 +1,4 @@
-const TsxCompilerService = require("./tsx-compiler-service.js");
+const TsxCompilerService = require("../services/local/tsx-compiler-service.js");
 
 const tsxCompilerService = new TsxCompilerService();
 tsxCompilerService.initialize();

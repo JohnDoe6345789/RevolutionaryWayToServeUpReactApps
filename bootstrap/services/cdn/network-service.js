@@ -11,9 +11,9 @@ const {
   proxyModeAuto: PROXY_MODE_AUTO,
   proxyModeProxy: PROXY_MODE_PROXY,
   proxyModeDirect: PROXY_MODE_DIRECT,
-} = require("../constants/common.js");
+} = require("../../constants/common.js");
 const DEFAULT_PROVIDER_ALIASES = getDefaultProviderAliases(globalObject, isCommonJs);
-const NetworkServiceConfig = require("../configs/network-service.js");
+const NetworkServiceConfig = require("../../configs/network-service.js");
 
 function normalizeProviderBaseRawValue(provider) {
   if (!provider) return "";

@@ -1,5 +1,6 @@
-const LocalPathsConfig = require("../configs/local-paths.js");
-const { localModuleExtensions: LOCAL_MODULE_EXTENSIONS } = require("../constants/common.js");
+const LocalPathsConfig = require("../../configs/local-paths.js");
+const { localModuleExtensions: LOCAL_MODULE_EXTENSIONS } =
+  require("../../constants/common.js");
 const globalRoot =
   typeof globalThis !== "undefined"
     ? globalThis

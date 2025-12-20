@@ -1,4 +1,4 @@
-const DynamicModulesService = require("./dynamic-modules-service.js");
+const DynamicModulesService = require("../services/cdn/dynamic-modules-service.js");
 
 const dynamicModulesService = new DynamicModulesService();
 dynamicModulesService.initialize();

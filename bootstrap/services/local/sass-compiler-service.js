@@ -4,7 +4,7 @@ const globalRoot =
     : typeof global !== "undefined"
     ? global
     : this;
-const SassCompilerConfig = require("../configs/sass-compiler.js");
+const SassCompilerConfig = require("../../configs/sass-compiler.js");
 
 /**
  * Wraps Sass compilation/injection using the configured Sass implementation.

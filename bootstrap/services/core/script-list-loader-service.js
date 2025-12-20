@@ -5,9 +5,10 @@ const globalObj =
     : typeof global !== "undefined"
     ? global
     : {};
-const { scriptManifestUrl: SCRIPT_MANIFEST_URL } = require("./constants/common.js");
+const { scriptManifestUrl: SCRIPT_MANIFEST_URL } =
+  require("../../constants/common.js");
 
-const ScriptListLoaderConfig = require("./configs/script-list-loader.js");
+const ScriptListLoaderConfig = require("../../configs/script-list-loader.js");
 
 /**
  * Loads the script manifest and sequentially injects each referenced script tag.

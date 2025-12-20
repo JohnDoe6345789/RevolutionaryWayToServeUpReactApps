@@ -6,7 +6,7 @@
   const logging = isCommonJs ? require("./logging.js") : helpers.logging;
   const { logClient = () => {}, wait = () => Promise.resolve() } = logging || {};
 
-  const NetworkService = require("./network-service.js");
+  const NetworkService = require("../services/cdn/network-service.js");
   const NetworkServiceConfig = require("../configs/network-service.js");
 
   const networkService = new NetworkService(

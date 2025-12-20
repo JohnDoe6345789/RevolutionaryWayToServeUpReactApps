@@ -1,4 +1,4 @@
-const SassCompilerService = require("./sass-compiler-service.js");
+const SassCompilerService = require("../services/local/sass-compiler-service.js");
 
 const sassCompilerService = new SassCompilerService();
 sassCompilerService.initialize();

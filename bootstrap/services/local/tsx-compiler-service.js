@@ -4,7 +4,7 @@ const globalRoot =
     : typeof global !== "undefined"
     ? global
     : this;
-const TsxCompilerConfig = require("../configs/tsx-compiler.js");
+const TsxCompilerConfig = require("../../configs/tsx-compiler.js");
 
 /**
  * Transforms and executes TSX sources using Babel and inlined execution.
@@ -24,10 +24,10 @@ class TsxCompilerService {
     this.isCommonJs = typeof module !== "undefined" && module.exports;
     this.logging =
       dependencies.logging ??
-      (this.isCommonJs ? require("../cdn/logging.js") : this.helpers.logging);
+      (this.isCommonJs ? require("../../cdn/logging.js") : this.helpers.logging);
     this.sourceUtils =
       dependencies.sourceUtils ??
-      (this.isCommonJs ? require("../cdn/source-utils.js") : this.helpers.sourceUtils);
+      (this.isCommonJs ? require("../../cdn/source-utils.js") : this.helpers.sourceUtils);
     this.logClient = (this.logging && this.logging.logClient) || (() => {});
     this.preloadModulesFromSource = this.sourceUtils?.preloadModulesFromSource;
     this.moduleContextStack = [];
