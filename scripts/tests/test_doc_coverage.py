@@ -122,6 +122,18 @@ class TestDocCoverage(unittest.TestCase):
             self.assertEqual(missing[0][0], Path("api/bootstrap/entrypoints/README.md"))
             self.assertEqual(missing[0][1], ["module-loader.md"])
 
+    def test_load_docs_ignores_global_summary_file(self):
+        with TemporaryDirectory() as tmpdir:
+            doc_root = Path(tmpdir) / "docs"
+            api_root = doc_root / "api"
+            api_root.mkdir(parents=True)
+            global_file = api_root / "globals.md"
+            global_file.write_text("# Module: `fake/module.js`\n", encoding="utf-8")
+
+            text, entries = doc_coverage.DocumentationAnalyzer.load_docs(doc_root)
+            self.assertEqual(text, "")
+            self.assertEqual(entries, [])
+
     def test_render_module_template_includes_symbols(self):
         generator = doc_coverage.TemplateGenerator(Path("templates"))
         summary = doc_coverage.ModuleSummary("src/utils.js", globals=["CONST"], functions=["doThing"])

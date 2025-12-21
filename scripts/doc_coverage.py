@@ -58,6 +58,8 @@ STRINGS = {
     "template_related_item": "- Reference other relevant markdown files if they already mention this module.",
     "module_template_written": "Module templates written for {count} modules under {path}",
 }
+IGNORED_DOC_FILES = {Path("api/globals.md")}
+
 PATH_CONFIG = {
     "doc_base": Path("api"),
     "module_overrides": {
@@ -361,6 +363,12 @@ class DocumentationAnalyzer:
         for path in doc_root.rglob("*.md"):
             resolved = path.resolve()
             if ignore_paths and any(resolved.is_relative_to(ignore) for ignore in ignore_paths):
+                continue
+            try:
+                relative = resolved.relative_to(doc_root)
+            except ValueError:
+                relative = None
+            if relative and relative in IGNORED_DOC_FILES:
                 continue
             text = path.read_text(encoding="utf-8")
             collected.append(text)

@@ -11,6 +11,10 @@ This folder groups the documented entry points for the bootstrap runtime, UI she
 - **End-to-end suite** – [e2e/README.md](e2e/README.md) explains how the Playwright config, runner, and spec work together.
 - **Test tooling** – [test-tooling/tests/README.md](test-tooling/tests/README.md) outlines the Jest-based component/unit suites.
 
+## Reference
+
+- [`globals.md`](globals.md) – Exhaustive list of every global symbol and exported helper so docs explicitly mention each name measured by the coverage tool.
+
 Run `scripts/doc_coverage.py` after adding or updating docs to refresh the documented coverage summary.
 
 ## Documents

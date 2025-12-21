@@ -9,7 +9,7 @@
 - [`FeaturedGames.md`](FeaturedGames.md) — highlighted game carousel and CTA behaviors.
 - [`FooterStrip.md`](FooterStrip.md) — legal links and partner badges rendered at the page bottom.
 - [`HeroSection.md`](HeroSection.md) — hero banner with headline, description, and demo trigger.
-- [`components.md`](components.md) — higher-level catalog that links into these individual write-ups.
+- [`../components.md`](../components.md) — higher-level catalog that links into these individual write-ups.
 
 ## Related docs
 

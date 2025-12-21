@@ -4,7 +4,7 @@ This section documents the bootstrap runtime, CDN helpers, and the loader helper
 
 ## Core reference
 
-- [`bootstrap.md`](bootstrap.md) – Runtime orchestration, logging, module loading, and bundled TypeScript declarations for the bootstrap helpers.
+- [`../bootstrap.md`](../bootstrap.md) – Runtime orchestration, logging, module loading, and bundled TypeScript declarations for the bootstrap helpers.
 
 ## Module docs
 
