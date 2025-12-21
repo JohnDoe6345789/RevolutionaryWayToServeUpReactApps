@@ -1,3 +1,6 @@
-const EntrypointRegistry = require("./entrypoint-registry.js");
+const EntrypointRegistry = require('./entrypoint-registry.js');
 
-module.exports = new EntrypointRegistry();
+// Create a singleton instance of EntrypointRegistry
+const entrypointRegistryInstance = new EntrypointRegistry();
+
+module.exports = entrypointRegistryInstance;

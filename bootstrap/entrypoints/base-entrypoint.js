@@ -1,4 +1,4 @@
-const serviceRegistry = require("../services/service-registry-instance.js");
+const serviceRegistry = require("../registries/service-registry-instance.js");
 const entrypointRegistry = require("../registries/entrypoint-registry-instance.js");
 const GlobalRootHandler = require("../constants/global-root-handler.js");
 

@@ -1,3 +1,6 @@
-const ControllerRegistry = require("./controller-registry.js");
+const ControllerRegistry = require('./controller-registry.js');
 
-module.exports = new ControllerRegistry();
+// Create a singleton instance of ControllerRegistry
+const controllerRegistryInstance = new ControllerRegistry();
+
+module.exports = controllerRegistryInstance;

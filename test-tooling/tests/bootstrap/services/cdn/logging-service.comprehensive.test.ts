@@ -13,9 +13,9 @@ describe("LoggingService", () => {
     originalNavigator = global.navigator;
     originalFetch = global.fetch;
     
-    // Set up mocks
+    // Set up mock globals
     global.window = {
-      location: { search: "", hostname: "localhost", href: "http://test.com" },
+      location: { search: "?test-ci=true", hostname: "localhost", href: "http://test.com" },
       __RWTRA_CI_MODE__: undefined
     };
     
@@ -52,7 +52,7 @@ describe("LoggingService", () => {
   describe("constructor", () => {
     it("should extend BaseService", () => {
       const service = new LoggingService();
-      expect(service).toBeInstanceOf(Object); // Since we can't directly check BaseService
+      expect(service).toBeInstanceOf(Object); // Checking if it's an object since we can't directly check BaseService
     });
 
     it("should accept a config object", () => {
@@ -70,11 +70,13 @@ describe("LoggingService", () => {
   describe("initialize method", () => {
     let service;
     let config;
+    let mockServiceRegistry;
 
     beforeEach(() => {
+      mockServiceRegistry = { register: jest.fn() };
       config = {
         namespace: { helpers: {} },
-        serviceRegistry: { register: jest.fn() },
+        serviceRegistry: mockServiceRegistry,
         ciLogQueryParam: "test-ci",
         clientLogEndpoint: "http://test-endpoint"
       };
@@ -121,7 +123,7 @@ describe("LoggingService", () => {
     it("should register the service in the service registry", () => {
       service.initialize();
 
-      expect(config.serviceRegistry.register).toHaveBeenCalledWith(
+      expect(mockServiceRegistry.register).toHaveBeenCalledWith(
         "logging",
         service,
         {
@@ -370,6 +372,7 @@ describe("LoggingService", () => {
       };
       service = new LoggingService(config);
       service.initialize();
+      service.setCiLoggingEnabled(true); // Enable CI logging
     });
 
     afterEach(() => {
@@ -377,7 +380,6 @@ describe("LoggingService", () => {
     });
 
     it("should send log data via sendBeacon when CI logging is enabled", () => {
-      service.setCiLoggingEnabled(true);
       service.logClient("test:event", { data: "value" });
 
       expect(global.navigator.sendBeacon).toHaveBeenCalledWith(

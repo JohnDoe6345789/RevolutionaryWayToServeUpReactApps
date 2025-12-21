@@ -4,7 +4,7 @@ const ProviderResolver = require("./dynamic-modules/provider-resolver.js");
 const ProviderResolverConfig = require("./dynamic-modules/provider-resolver-config.js");
 const DynamicModuleFetcher = require("./dynamic-modules/module-fetcher.js");
 const DynamicModuleFetcherConfig = require("./dynamic-modules/module-fetcher-config.js");
-const helperRegistry = require("../../helpers/helper-registry-instance.js");
+const helperRegistry = require("../../registries/helper-registry-instance.js");
 
 /**
  * Resolves and loads icon-specific dynamic modules from configured providers.

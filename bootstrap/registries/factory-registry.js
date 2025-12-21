@@ -1,6 +1,5 @@
 /**
- * Registry for managing factory classes that create instances of objects.
- * Factories are stored by name and can be retrieved to create new instances.
+ * Tracks named factory constructors so they can create instances with dependency injection.
  */
 class FactoryRegistry {
   /**
@@ -11,67 +10,51 @@ class FactoryRegistry {
   }
 
   /**
-   * Registers a named factory with optional metadata.
+   * Registers a named factory constructor with metadata and required dependencies.
    */
-  register(name, factory, metadata) {
+  register(name, factory, metadata, requiredDependencies) {
     if (!name) {
       throw new Error("Factory name is required");
     }
-
-    if (typeof factory !== 'function' && !factory.create) {
-      throw new Error("Factory must be a function or have a create method");
+    
+    if (arguments.length !== 4) {
+      throw new Error("FactoryRegistry.register requires exactly 4 parameters: (name, factory, metadata, requiredDependencies)");
     }
-
+    
     if (this._factories.has(name)) {
       throw new Error("Factory already registered: " + name);
     }
-
-    this._factories.set(name, { 
-      factory, 
-      metadata: metadata || {},
-      createdInstances: [] // Track instances created by this factory
-    });
+    this._factories.set(name, { factory, metadata: metadata || {} });
   }
 
   /**
-   * Creates a new instance using the registered factory.
+   * Creates an instance using the registered factory with the provided dependencies.
    */
-  create(name, ...args) {
-    const factoryEntry = this._factories.get(name);
-    if (!factoryEntry) {
-      throw new Error(`Factory not registered: ${name}`);
+  create(name, dependencies = {}) {
+    const entry = this._factories.get(name);
+    if (!entry) {
+      throw new Error("Factory not found: " + name);
     }
-
-    const { factory } = factoryEntry;
-    let instance;
-
-    if (typeof factory === 'function') {
-      instance = factory(...args);
-    } else if (factory.create && typeof factory.create === 'function') {
-      instance = factory.create(...args);
-    } else {
-      throw new Error(`Invalid factory for ${name}: must be function or have create method`);
+    
+    // Check if required dependencies are provided
+    const factoryMetadata = entry.metadata;
+    const requiredDeps = factoryMetadata.required || [];
+    
+    for (const dep of requiredDeps) {
+      if (!(dep in dependencies)) {
+        throw new Error(`Required dependency missing for factory ${name}: ${dep}`);
+      }
     }
-
-    // Track the created instance
-    factoryEntry.createdInstances.push(instance);
-    return instance;
+    
+    return new entry.factory(dependencies);
   }
 
   /**
-   * Gets the factory function without creating an instance.
+   * Returns the factory constructor that was registered under the given name.
    */
   getFactory(name) {
-    const factoryEntry = this._factories.get(name);
-    return factoryEntry ? factoryEntry.factory : undefined;
-  }
-
-  /**
-   * Gets metadata for the specified factory.
-   */
-  getMetadata(name) {
-    const factoryEntry = this._factories.get(name);
-    return factoryEntry ? factoryEntry.metadata : undefined;
+    const entry = this._factories.get(name);
+    return entry ? entry.factory : undefined;
   }
 
   /**
@@ -82,28 +65,18 @@ class FactoryRegistry {
   }
 
   /**
+   * Returns metadata that was attached to the named factory entry.
+   */
+  getMetadata(name) {
+    const entry = this._factories.get(name);
+    return entry ? entry.metadata : undefined;
+  }
+
+  /**
    * Indicates whether a factory with the given name already exists in the registry.
    */
   isRegistered(name) {
     return this._factories.has(name);
-  }
-
-  /**
-   * Gets all instances created by a specific factory.
-   */
-  getCreatedInstances(name) {
-    const factoryEntry = this._factories.get(name);
-    return factoryEntry ? factoryEntry.createdInstances : [];
-  }
-
-  /**
-   * Resets the created instances list for a specific factory.
-   */
-  resetInstances(name) {
-    const factoryEntry = this._factories.get(name);
-    if (factoryEntry) {
-      factoryEntry.createdInstances = [];
-    }
   }
 
   /**

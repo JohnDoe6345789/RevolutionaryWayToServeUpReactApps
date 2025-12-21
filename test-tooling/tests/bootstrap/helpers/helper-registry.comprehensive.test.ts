@@ -19,7 +19,7 @@ describe("HelperRegistry", () => {
       const mockHelper = { name: "testHelper" };
       const metadata = { version: "1.0.0", author: "test" };
 
-      registry.register("testHelper", mockHelper, metadata);
+      registry.register("testHelper", mockHelper, metadata, []);
 
       expect(registry.isRegistered("testHelper")).toBe(true);
       expect(registry.getHelper("testHelper")).toBe(mockHelper);
@@ -29,7 +29,7 @@ describe("HelperRegistry", () => {
     it("should register a helper with name and no metadata", () => {
       const mockHelper = { name: "testHelper" };
 
-      registry.register("testHelper", mockHelper);
+      registry.register("testHelper", mockHelper, {}, []);
 
       expect(registry.isRegistered("testHelper")).toBe(true);
       expect(registry.getHelper("testHelper")).toBe(mockHelper);
@@ -56,27 +56,27 @@ describe("HelperRegistry", () => {
       const mockHelper1 = { name: "testHelper" };
       const mockHelper2 = { name: "testHelper" };
 
-      registry.register("testHelper", mockHelper1);
+      registry.register("testHelper", mockHelper1, {}, []);
 
       expect(() => {
-        registry.register("testHelper", mockHelper2);
+        registry.register("testHelper", mockHelper2, {}, []);
       }).toThrow("Helper already registered: testHelper");
     });
 
     it("should handle different name types", () => {
       // Test with string name
       const helper1 = { type: "string" };
-      registry.register("stringHelper", helper1);
+      registry.register("stringHelper", helper1, {}, []);
       expect(registry.getHelper("stringHelper")).toBe(helper1);
 
       // Test with number - in JavaScript Maps, keys keep their type
       const helper2 = { type: "number" };
-      registry.register(123, helper2);
+      registry.register(123, helper2, {}, []);
       expect(registry.getHelper(123)).toBe(helper2);  // Use same type for retrieval
 
       // Test with boolean - in JavaScript Maps, keys keep their type
       const helper3 = { type: "boolean" };
-      registry.register(true, helper3);
+      registry.register(true, helper3, {}, []);
       expect(registry.getHelper(true)).toBe(helper3);  // Use same type for retrieval
     });
   });
@@ -85,7 +85,7 @@ describe("HelperRegistry", () => {
     it("should return the registered helper", () => {
       const mockHelper = { name: "testHelper" };
 
-      registry.register("testHelper", mockHelper);
+      registry.register("testHelper", mockHelper, {}, []);
 
       expect(registry.getHelper("testHelper")).toBe(mockHelper);
     });
@@ -104,8 +104,8 @@ describe("HelperRegistry", () => {
       const helper1 = { name: "helper1" };
       const helper2 = { name: "helper2" };
 
-      registry.register("helper1", helper1);
-      registry.register("helper2", helper2);
+      registry.register("helper1", helper1, {}, []);
+      registry.register("helper2", helper2, {}, []);
 
       const helperList = registry.listHelpers();
       expect(helperList).toContain("helper1");
@@ -114,9 +114,9 @@ describe("HelperRegistry", () => {
     });
 
     it("should maintain registration order", () => {
-      registry.register("first", {});
-      registry.register("second", {});
-      registry.register("third", {});
+      registry.register("first", {}, {}, []);
+      registry.register("second", {}, {}, []);
+      registry.register("third", {}, {}, []);
 
       const helperList = registry.listHelpers();
       expect(helperList[0]).toBe("first");
@@ -128,13 +128,13 @@ describe("HelperRegistry", () => {
   describe("getMetadata method", () => {
     it("should return metadata for registered helper", () => {
       const metadata = { version: "1.0.0", author: "test" };
-      registry.register("testHelper", { name: "testHelper" }, metadata);
+      registry.register("testHelper", { name: "testHelper" }, metadata, []);
 
       expect(registry.getMetadata("testHelper")).toEqual(metadata);
     });
 
     it("should return empty object when no metadata was provided", () => {
-      registry.register("testHelper", { name: "testHelper" });
+      registry.register("testHelper", { name: "testHelper" }, {}, []);
 
       expect(registry.getMetadata("testHelper")).toEqual({});
     });
@@ -146,7 +146,7 @@ describe("HelperRegistry", () => {
 
   describe("isRegistered method", () => {
     it("should return true for registered helper", () => {
-      registry.register("testHelper", { name: "testHelper" });
+      registry.register("testHelper", { name: "testHelper" }, {}, []);
 
       expect(registry.isRegistered("testHelper")).toBe(true);
     });
@@ -164,8 +164,8 @@ describe("HelperRegistry", () => {
       const metadata1 = { type: "processor", version: "1.0" };
       const metadata2 = { type: "formatter", version: "2.0" };
 
-      registry.register("processor", helper1, metadata1);
-      registry.register("formatter", helper2, metadata2);
+      registry.register("processor", helper1, metadata1, []);
+      registry.register("formatter", helper2, metadata2, []);
 
       // Verify they are registered
       expect(registry.isRegistered("processor")).toBe(true);
@@ -192,11 +192,11 @@ describe("HelperRegistry", () => {
 
     it("should handle edge cases with various helper types", () => {
       // Register different types of helpers
-      registry.register("functionHelper", () => "result");
-      registry.register("objectHelper", { method: () => "result" });
-      registry.register("classHelper", class {});
-      registry.register("primitiveHelper", "stringHelper");
-      registry.register("nullHelper", null);
+      registry.register("functionHelper", () => "result", {}, []);
+      registry.register("objectHelper", { method: () => "result" }, {}, []);
+      registry.register("classHelper", class {}, {}, []);
+      registry.register("primitiveHelper", "stringHelper", {}, []);
+      registry.register("nullHelper", null, {}, []);
 
       // Verify all are registered
       expect(registry.isRegistered("functionHelper")).toBe(true);
@@ -227,7 +227,7 @@ describe("HelperRegistry", () => {
         }
       };
 
-      registry.register("complexHelper", { name: "complex" }, complexMetadata);
+      registry.register("complexHelper", { name: "complex" }, complexMetadata, []);
 
       expect(registry.getHelper("complexHelper").name).toBe("complex");
       expect(registry.getMetadata("complexHelper")).toEqual(complexMetadata);

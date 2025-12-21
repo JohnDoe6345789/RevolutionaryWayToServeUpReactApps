@@ -1,0 +1,15 @@
+const Bootstrapper = require('../controllers/bootstrapper.js');
+
+/**
+ * Factory for creating Bootstrapper instances.
+ */
+class BootstrapperFactory {
+  /**
+   * Creates a new Bootstrapper instance with the given config.
+   */
+  create(config = {}) {
+    return new Bootstrapper(config);
+  }
+}
+
+module.exports = BootstrapperFactory;

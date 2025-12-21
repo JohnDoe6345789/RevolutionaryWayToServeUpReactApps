@@ -1,5 +1,5 @@
 /**
- * Tracks named entrypoint instances so other helpers can obtain them without
+ * Track named entrypoint instances so other modules can obtain them without
  * re-importing deeply nested modules.
  */
 class EntrypointRegistry {
@@ -17,15 +17,30 @@ class EntrypointRegistry {
     if (!name) {
       throw new Error("Entrypoint name is required");
     }
-    
+
     if (arguments.length !== 4) {
       throw new Error("EntrypointRegistry.register requires exactly 4 parameters: (name, entrypoint, metadata, requiredServices)");
     }
-    
+
     if (this._entrypoints.has(name)) {
       throw new Error("Entrypoint already registered: " + name);
     }
+
     this._entrypoints.set(name, { entrypoint, metadata: metadata || {} });
+
+    // Validate that required services are registered
+    if (Array.isArray(requiredServices) && requiredServices.length > 0) {
+      const missingEntrypoints = [];
+      for (const entrypointName of requiredServices) {
+        if (!this._entrypoints.has(entrypointName)) {
+          missingEntrypoints.push(entrypointName);
+        }
+      }
+
+      if (missingEntrypoints.length > 0) {
+        throw new Error(`Required entrypoints are not registered: ${missingEntrypoints.join(', ')}`);
+      }
+    }
   }
 
   /**

@@ -17,7 +17,7 @@ class BootstrapApp extends BaseBootstrapApp {
       new LoggingManagerConfig({
         logClient: this.logging.logClient,
         serializeForLog: this.logging.serializeForLog,
-        serviceRegistry: require("./services/service-registry-instance.js"),
+        serviceRegistry: require("./registries/service-registry-instance.js"),
       })
     );
     this.bootstrapper = new Bootstrapper(

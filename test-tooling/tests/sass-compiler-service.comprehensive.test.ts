@@ -210,26 +210,38 @@ describe("SassCompilerService", () => {
     });
 
     it("should compile SCSS with string return from SassImpl", async () => {
+      // Mock fetch to return SCSS content
+      mockFetch.mockResolvedValue({
+        ok: true,
+        text: jest.fn().mockResolvedValue("$test: red; .test { color: $test; }")
+      });
+
       const mockSassObject = {
         compile: (scss) => {
           return "compiled css";
         }
       };
-      
+
       sassCompilerService.SassImpl = mockSassObject;
-      
+
       const result = await sassCompilerService.compileSCSS("test.scss");
-      
+
       expect(result).toBe("compiled css");
     });
 
     it("should handle unsupported Sass implementation", async () => {
+      // Mock fetch to return SCSS content
+      mockFetch.mockResolvedValue({
+        ok: true,
+        text: jest.fn().mockResolvedValue("$test: red; .test { color: $test; }")
+      });
+
       const mockSassObject = {
         // No compile method
       };
-      
+
       sassCompilerService.SassImpl = mockSassObject;
-      
+
       await expect(sassCompilerService.compileSCSS("test.scss")).rejects.toThrow(
         "Unsupported Sass implementation: neither constructor nor usable compile() found"
       );
@@ -310,16 +322,35 @@ describe("SassCompilerService", () => {
       expect(typeof exports.injectCSS).toBe('function');
     });
 
-    it("should bind methods to the service instance", () => {
+    it("should bind methods to the service instance", async () => {
+      // Mock fetch to avoid actual network calls during this test
+      mockFetch.mockResolvedValue({
+        ok: true,
+        text: jest.fn().mockResolvedValue("$test: red; .test { color: $test; }")
+      });
+
+      // Mock SassImpl to avoid actual compilation during this test
+      const mockSassObject = {
+        compile: (scss) => {
+          return "compiled css";
+        }
+      };
+      sassCompilerService.SassImpl = mockSassObject;
+
       const exports = sassCompilerService.exports;
-      const originalCompileSCSS = sassCompilerService.compileSCSS;
-      
+
       // Spy on the original method to verify it's called with the right context
-      const spy = jest.spyOn(sassCompilerService, 'compileSCSS');
-      
-      exports.compileSCSS("test.scss");
-      
+      const spy = jest.fn();
+      const originalCompileSCSS = sassCompilerService.compileSCSS;
+      sassCompilerService.compileSCSS = spy;
+
+      // Call the bound method - this will be asynchronous
+      await exports.compileSCSS("test.scss");
+
       expect(spy).toHaveBeenCalled();
+
+      // Restore original method
+      sassCompilerService.compileSCSS = originalCompileSCSS;
     });
   });
 
