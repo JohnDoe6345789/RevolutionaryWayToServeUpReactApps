@@ -1,0 +1,146 @@
+{
+  "name": "oop-principles",
+  "version": "1.0.0",
+  "description": "Configuration for OOP Principles Analysis Plugin",
+  "author": "RWTRA",
+  "category": "analysis",
+  
+  "rules": {
+    "constructorRules": {
+      "enabled": true,
+      "requireDataclass": true,
+      "maxConstructorParams": 1,
+      "requireConstructor": true
+    },
+    
+    "methodRules": {
+      "enabled": true,
+      "maxMethodLines": 20,
+      "maxParameters": 4,
+      "maxCyclomaticComplexity": 10,
+      "maxNestingDepth": 3,
+      "minMethodLength": 2
+    },
+    
+    "classRules": {
+      "enabled": true,
+      "maxClassLines": 100,
+      "requireInitialize": true,
+      "requireBaseClass": true
+    },
+    
+    "inheritanceRules": {
+      "enabled": true,
+      "maxInheritanceDepth": 3,
+      "preferBaseClasses": true
+    },
+    
+    "dependencyInjection": {
+      "enabled": true,
+      "detectDirectInstantiation": true,
+      "requireDIInConstructor": true
+    },
+    
+    "solidPrinciples": {
+      "enabled": true,
+      "maxMethodsForSRP": 10,
+      "checkOCPPatterns": true,
+      "checkLSPViolations": true,
+      "checkInterfaceSegregation": true,
+      "checkDependencyInversion": true
+    },
+    
+    "codeQuality": {
+      "enabled": true,
+      "detectDuplication": true,
+      "duplicationThreshold": 0.8,
+      "checkDRY": true,
+      "checkKISS": true,
+      "checkYAGNI": true,
+      "checkLawOfDemeter": true
+    }
+  },
+  
+  "output": {
+    "includeRecommendations": true,
+    "includeBestPractices": true,
+    "verboseOutput": false,
+    "saveResults": false,
+    "outputFormat": "json"
+  },
+  
+  "severity": {
+    "noConstructor": "critical",
+    "multipleConstructorParams": "critical",
+    "noInitializeMethod": "critical",
+    "noInheritance": "critical",
+    "violatesLSP": "critical",
+    "noDataclassPattern": "warning",
+    "classTooLarge": "warning",
+    "methodTooLarge": "warning",
+    "methodTooComplex": "warning",
+    "excessiveNesting": "warning",
+    "tooManyParameters": "warning",
+    "noDependencyInjection": "warning",
+    "violatesSRP": "info",
+    "violatesOCP": "info",
+    "deepInheritance": "warning",
+    "codeDuplication": "warning",
+    "potentialCodeSmell": "info"
+  },
+  
+  "exclusions": {
+    "files": [
+      "node_modules/**/*",
+      "**/*.test.js",
+      "**/*.spec.js",
+      "**/coverage/**/*"
+    ],
+    "classes": [
+      "Test*",
+      "*Test",
+      "Mock*",
+      "*Mock"
+    ],
+    "methods": [
+      "test*",
+      "*test",
+      "setup",
+      "teardown"
+    ]
+  },
+  
+  "customPatterns": {
+    "dataclassPatterns": [
+      "Object.assign\\(\\s*this\\s*,\\s*\\w+\\s*\\)",
+      "this\\.\\w+\\s*=\\s*(?:data\\.\\w+|\\w+\\.\\w+)",
+      "\\.\\.\\.\\w+"
+    ],
+    "dependencyInjectionPatterns": [
+      "this\\.\\w+\\s*=\\s*\\w+",
+      "@inject\\s*\\(",
+      "@Autowired\\s*\\("
+    ],
+    "extensionPointPatterns": [
+      "override\\s*\\(",
+      "abstract\\s+\\w+",
+      "extend\\s*\\(",
+      "implements\\s+\\w+"
+    ]
+  },
+  
+  "healthThresholds": {
+    "excellent": {
+      "criticalPercentage": 0,
+      "warningPercentage": 10
+    },
+    "good": {
+      "criticalPercentage": 5,
+      "warningPercentage": 25
+    },
+    "moderate": {
+      "criticalPercentage": 15,
+      "warningPercentage": 50
+    }
+  }
+}
