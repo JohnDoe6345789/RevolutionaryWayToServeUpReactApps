@@ -3,7 +3,7 @@ const path = require("path");
 module.exports = {
   testEnvironment: "jsdom",
   transform: {
-    "^.+\\.(ts|tsx)$": require.resolve("ts-jest")
+    "^.+\\.(ts|tsx)$": ["ts-jest", {}]
   },
   rootDir: path.resolve(__dirname, ".."),
   testMatch: ["<rootDir>/test-tooling/tests/**/*.test.ts?(x)"],
