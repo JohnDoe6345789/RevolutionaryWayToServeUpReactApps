@@ -1,9 +1,10 @@
+const BaseFactory = require('./base-factory.js');
 const Bootstrapper = require('../controllers/bootstrapper.js');
 
 /**
  * Factory for creating Bootstrapper instances.
  */
-class BootstrapperFactory {
+class BootstrapperFactory extends BaseFactory {
   /**
    * Creates a new Bootstrapper instance with the given config.
    */

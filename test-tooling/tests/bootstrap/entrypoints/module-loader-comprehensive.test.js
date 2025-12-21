@@ -1,9 +1,16 @@
 // Comprehensive test suite for module-loader.js entrypoint
-// This replaces the failing Jest-based tests with proper Bun tests
+// This replaces the generic stub tests with proper method-specific tests
 
 describe("module-loader.js entrypoint", () => {
+  test("loads without throwing errors", () => {
+    expect(() => {
+      // The module-loader.js executes code when required, so we just check it doesn't throw
+      require("../../../../bootstrap/entrypoints/module-loader.js");
+    }).not.toThrow();
+  });
+
   test("has proper integration with dependencies", () => {
-    // Verify that all required dependencies exist and can be loaded
+    // Verify that all required dependencies can be loaded
     expect(() => {
       require("../../../../bootstrap/services/core/module-loader-service.js");
       require("../../../../bootstrap/configs/core/module-loader.js");
@@ -12,26 +19,33 @@ describe("module-loader.js entrypoint", () => {
   });
 
   test("module structure is correct", () => {
-    // Test that the module has the expected structure without executing it
-    // (since executing it registers services that cause conflicts)
+    // Verify the module contains expected components
     const modulePath = require.resolve("../../../../bootstrap/entrypoints/module-loader.js");
     const moduleSource = require('fs').readFileSync(modulePath, 'utf8');
-
-    // Verify the module contains expected components
+    
     expect(moduleSource).toContain('ModuleLoaderAggregator');
     expect(moduleSource).toContain('ModuleLoaderConfig');
     expect(moduleSource).toContain('BaseEntryPoint');
     expect(moduleSource).toContain('configFactory');
     expect(moduleSource).toContain('environmentRoot: root');
+    expect(moduleSource).toContain('entrypoint.run()');
     expect(moduleSource).toContain('module.exports = moduleLoader.exports');
   });
 
-  test("exports the module loader helpers from the entrypoint", () => {
-    // This test is more complex because the module-loader.js executes code that
-    // instantiates services. Instead, we'll just verify that the module structure
-    // is correct by reading the source without executing it.
+  test("follows the BaseEntryPoint pattern correctly", () => {
+    // Verify the module follows the expected pattern of using BaseEntryPoint
+    const modulePath = require.resolve("../../../../bootstrap/entrypoints/module-loader.js");
+    const moduleSource = require('fs').readFileSync(modulePath, 'utf8');
 
-    // The module should be able to be parsed without syntax errors
+    // Check for the expected instantiation and execution pattern
+    expect(moduleSource).toMatch(/new\s+BaseEntryPoint\s*\(\s*{/);
+    expect(moduleSource).toContain('ServiceClass: ModuleLoaderAggregator');
+    expect(moduleSource).toContain('ConfigClass: ModuleLoaderConfig');
+    expect(moduleSource).toContain('entrypoint.run()');
+  });
+
+  test("exports the expected functionality", () => {
+    // Check that the module exports the service's exports property
     const modulePath = require.resolve("../../../../bootstrap/entrypoints/module-loader.js");
     const moduleSource = require('fs').readFileSync(modulePath, 'utf8');
 
@@ -39,12 +53,12 @@ describe("module-loader.js entrypoint", () => {
     expect(moduleSource).toContain('module.exports = moduleLoader.exports');
   });
 
-  test("configFactory maps root to environmentRoot", () => {
-    // Test the configFactory function indirectly by examining the module source
+  test("configFactory has correct structure", () => {
+    // Check that the configFactory function has the expected signature and properties
     const modulePath = require.resolve("../../../../bootstrap/entrypoints/module-loader.js");
     const moduleSource = require('fs').readFileSync(modulePath, 'utf8');
 
-    // Check that the configFactory maps root to environmentRoot as expected
+    // The configFactory should extract the expected properties
     expect(moduleSource).toContain('configFactory: ({ root }) => ({ environmentRoot: root })');
   });
 });

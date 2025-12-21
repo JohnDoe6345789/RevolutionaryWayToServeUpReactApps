@@ -1,4 +1,4 @@
-const HelperRegistry = require("../../../bootstrap/helpers/helper-registry.js");
+const HelperRegistry = require("../../../bootstrap/registries/helper-registry.js");
 
 describe("bootstrap/helpers/helper-registry.js", () => {
   describe("constructor", () => {

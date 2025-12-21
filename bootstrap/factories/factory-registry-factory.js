@@ -1,9 +1,10 @@
+const BaseFactory = require('./base-factory.js');
 const FactoryRegistry = require('../registries/factory-registry.js');
 
 /**
  * Factory for creating FactoryRegistry instances.
  */
-class FactoryRegistryFactory {
+class FactoryRegistryFactory extends BaseFactory {
   /**
    * Creates a new FactoryRegistry instance.
    */

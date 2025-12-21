@@ -66,7 +66,7 @@ describe("BaseController", () => {
       const mockRegistry = { register: jest.fn() };
       const config = { controllerRegistry: mockRegistry };
       const baseController = new BaseController(config);
-      
+
       expect(() => baseController.initialize()).toThrow(`${BaseController.name} must implement initialize()`);
     });
 
@@ -133,10 +133,12 @@ describe("BaseController", () => {
     });
 
     it("should throw an error when ControllerRegistry is missing from config", () => {
-      const config = {};
-      const controller = new TestController(config);
-      
-      expect(() => controller._requireControllerRegistry()).toThrow("ControllerRegistry required for TestController");
+      // Create a mock controller that doesn't call the constructor's initialization
+      // to test the _requireControllerRegistry method directly
+      const controller = Object.create(BaseController.prototype);
+      controller.config = {};
+
+      expect(() => controller._requireControllerRegistry()).toThrow("ControllerRegistry required for BaseController");
     });
 
     it("should throw with the correct controller class name", () => {
@@ -145,10 +147,12 @@ describe("BaseController", () => {
           this._markInitialized();
         }
       }
-      
-      const config = {};
-      const controller = new CustomController(config);
-      
+
+      // Create a mock controller that doesn't call the constructor's initialization
+      // to test the _requireControllerRegistry method directly
+      const controller = Object.create(CustomController.prototype);
+      controller.config = {};
+
       expect(() => controller._requireControllerRegistry()).toThrow("ControllerRegistry required for CustomController");
     });
   });

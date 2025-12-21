@@ -1,4 +1,4 @@
-import HelperRegistry = require("./helper-registry.js");
+import HelperRegistry = require("../registries/helper-registry.js");
 
 export = BaseHelper;
 

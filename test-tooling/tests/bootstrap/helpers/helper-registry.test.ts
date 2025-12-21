@@ -1,5 +1,5 @@
-describe("bootstrap/helpers/helper-registry.js", () => {
-  const modulePath = '../../../../bootstrap/helpers/helper-registry.js';
+describe("bootstrap/registries/helper-registry.js", () => {
+  const modulePath = '../../../../bootstrap/registries/helper-registry.js';
   const HelperRegistry = require(modulePath);
 
   it('registers a helper with metadata and exposes it by name', () => {

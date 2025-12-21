@@ -1,9 +1,10 @@
+const BaseFactory = require('./base-factory.js');
 const BootstrapApp = require('../bootstrap-app.js');
 
 /**
  * Factory for creating BootstrapApp instances.
  */
-class BootstrapAppFactory {
+class BootstrapAppFactory extends BaseFactory {
   /**
    * Creates a new BootstrapApp instance with the given options.
    */

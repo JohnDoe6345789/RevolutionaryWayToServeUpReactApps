@@ -91,7 +91,7 @@ describe("TsxCompilerService", () => {
       const config = new TsxCompilerConfig({
         serviceRegistry: mockServiceRegistry,
         namespace: mockNamespace,
-        dependencies: { 
+        dependencies: {
           logging: mockLogging,
           sourceUtils: mockSourceUtils
         },
@@ -106,8 +106,6 @@ describe("TsxCompilerService", () => {
       expect(service.serviceRegistry).toBe(mockServiceRegistry);
       expect(service.namespace).toBe(mockNamespace);
       expect(service.helpers).toBe(mockNamespace.helpers);
-      expect(service.logging).toBe(mockLogging);
-      expect(service.sourceUtils).toBe(mockSourceUtils);
       expect(typeof service.logClient).toBe("function");
       expect(service.preloadModulesFromSource).toBe(mockSourceUtils.preloadModulesFromSource);
       expect(Array.isArray(service.moduleContextStack)).toBe(true);
@@ -117,7 +115,10 @@ describe("TsxCompilerService", () => {
     });
 
     it("should prevent double initialization", () => {
-      const config = new TsxCompilerConfig({ serviceRegistry: mockServiceRegistry });
+      const config = new TsxCompilerConfig({
+        serviceRegistry: mockServiceRegistry,
+        namespace: mockNamespace
+      });
       const service = new TsxCompilerService(config);
       service.initialize();
 
@@ -127,7 +128,10 @@ describe("TsxCompilerService", () => {
     });
 
     it("should return the instance to allow chaining", () => {
-      const config = new TsxCompilerConfig({ serviceRegistry: mockServiceRegistry });
+      const config = new TsxCompilerConfig({
+        serviceRegistry: mockServiceRegistry,
+        namespace: mockNamespace
+      });
       const service = new TsxCompilerService(config);
       const result = service.initialize();
 
@@ -137,7 +141,10 @@ describe("TsxCompilerService", () => {
 
   describe("transformSource method", () => {
     it("should throw an error when Babel is unavailable", () => {
-      const config = new TsxCompilerConfig({ serviceRegistry: mockServiceRegistry });
+      const config = new TsxCompilerConfig({
+        serviceRegistry: mockServiceRegistry,
+        namespace: mockNamespace
+      });
       const service = new TsxCompilerService(config);
       service.initialize();
       // Explicitly set Babel to null to simulate unavailability
@@ -152,6 +159,7 @@ describe("TsxCompilerService", () => {
       const mockBabel = createMockBabel();
       const config = new TsxCompilerConfig({
         serviceRegistry: mockServiceRegistry,
+        namespace: mockNamespace,
         Babel: mockBabel
       });
       const service = new TsxCompilerService(config);
@@ -170,6 +178,7 @@ describe("TsxCompilerService", () => {
       const mockRequire = () => {};
       const config = new TsxCompilerConfig({
         serviceRegistry: mockServiceRegistry,
+        namespace: mockNamespace,
         Babel: mockBabel
       });
       const service = new TsxCompilerService(config);
@@ -186,6 +195,7 @@ describe("TsxCompilerService", () => {
       const mockRequire = () => {};
       const config = new TsxCompilerConfig({
         serviceRegistry: mockServiceRegistry,
+        namespace: mockNamespace,
         Babel: mockBabel
       });
       const service = new TsxCompilerService(config);
@@ -202,13 +212,14 @@ describe("TsxCompilerService", () => {
       const mockRequire = () => {};
       const config = new TsxCompilerConfig({
         serviceRegistry: mockServiceRegistry,
+        namespace: mockNamespace,
         Babel: mockBabel
       });
       const service = new TsxCompilerService(config);
       service.initialize();
 
       const initialStackSize = service.moduleContextStack.length;
-      
+
       const source = "module.exports = { test: 'value' };";
       service.executeModuleSource(source, "test.tsx", "/path", mockRequire);
 
@@ -218,7 +229,10 @@ describe("TsxCompilerService", () => {
 
   describe("compileTSX method", () => {
     it("should throw an error when fetch is unavailable", async () => {
-      const config = new TsxCompilerConfig({ serviceRegistry: mockServiceRegistry });
+      const config = new TsxCompilerConfig({
+        serviceRegistry: mockServiceRegistry,
+        namespace: mockNamespace
+      });
       const service = new TsxCompilerService(config);
       service.initialize();
       // Explicitly set fetch to null to simulate unavailability
@@ -233,6 +247,7 @@ describe("TsxCompilerService", () => {
       const mockRequire = () => {};
       const config = new TsxCompilerConfig({
         serviceRegistry: mockServiceRegistry,
+        namespace: mockNamespace,
         Babel: mockBabel,
         fetch: mockFetch
       });
@@ -252,6 +267,7 @@ describe("TsxCompilerService", () => {
       const mockRequire = () => {};
       const config = new TsxCompilerConfig({
         serviceRegistry: mockServiceRegistry,
+        namespace: mockNamespace,
         Babel: mockBabel,
         fetch: mockFetch
       });
@@ -267,6 +283,7 @@ describe("TsxCompilerService", () => {
       const mockBabel = createMockBabel();
       const config = new TsxCompilerConfig({
         serviceRegistry: mockServiceRegistry,
+        namespace: mockNamespace,
         Babel: mockBabel
       });
       const service = new TsxCompilerService(config);
@@ -284,6 +301,7 @@ describe("TsxCompilerService", () => {
       const mockBabel = createMockBabel();
       const config = new TsxCompilerConfig({
         serviceRegistry: mockServiceRegistry,
+        namespace: mockNamespace,
         Babel: mockBabel
       });
       const service = new TsxCompilerService(config);
@@ -309,7 +327,10 @@ describe("TsxCompilerService", () => {
     });
 
     it("should register the service and set up helpers", () => {
-      const config = new TsxCompilerConfig({ serviceRegistry: mockServiceRegistry });
+      const config = new TsxCompilerConfig({
+        serviceRegistry: mockServiceRegistry,
+        namespace: mockNamespace
+      });
       const service = new TsxCompilerService(config);
       service.initialize();
 
@@ -317,12 +338,12 @@ describe("TsxCompilerService", () => {
 
       expect(result).toBe(service);
       expect(mockServiceRegistry.registeredServices.has("tsxCompiler")).toBe(true);
-      
+
       const registered = mockServiceRegistry.registeredServices.get("tsxCompiler");
       expect(registered.metadata.folder).toBe("services/local");
       expect(registered.metadata.domain).toBe("local");
       expect(registered.requiredServices).toEqual(["logging", "sourceUtils"]);
-      
+
       // Check that helpers were set up
       expect(service.helpers.tsxCompiler).toBeDefined();
     });

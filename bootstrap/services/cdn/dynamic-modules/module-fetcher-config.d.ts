@@ -1,5 +1,5 @@
 import DynamicModulesService = require("../dynamic-modules-service.js");
-import HelperRegistry = require("../../../helpers/helper-registry.js");
+import HelperRegistry = require("../../../registries/helper-registry.js");
 
 export = DynamicModuleFetcherConfig;
 
