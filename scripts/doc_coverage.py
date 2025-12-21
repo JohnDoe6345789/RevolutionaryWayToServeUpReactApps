@@ -35,9 +35,11 @@ STRINGS = {
     "stub_template_phrase": "Module documentation template",
     "stub_penalty_note": "...convert or delete these matching templates so the penalty vanishes:",
     "missing_readme_title": "Missing README.md in these directories:",
+    "missing_readme_links_title": "README files missing links to local docs:",
     "bootstrap_unmatched_title": "Bootstrap docs without matching source files:",
     "extra_docs_title": "Documented modules without matching source files:",
     "misplaced_docs_title": "Documented modules not located at expected path:",
+    "broken_readme_links_title": "Broken README links pointing at missing files:",
     "module_template_title": "# Module template: `{module}`",
     "template_intro": "Use this document as a starting point. Replace the placeholder text with prose, examples, and links that describe the exported surface.",
     "template_overview_heading": "## Overview",
@@ -72,6 +74,7 @@ PATH_CONFIG = {
     ],
 }
 MODULE_HEADING_RE = re.compile(r"#\s*Module:\s*`([^`]+)`", re.IGNORECASE)
+LINK_TARGET_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 
 
 @dataclass
@@ -174,6 +177,16 @@ PENALTY_CONFIG = [
         "penalty_key": "bootstrap",
         "formatter": lambda count: f"{count} unmatched bootstrap {TextUtils.pluralize('doc', count)}",
     },
+    {
+        "items_key": "broken_readme_links",
+        "penalty_key": "readme_links",
+        "formatter": lambda count: f"{count} broken README {TextUtils.pluralize('link', count)}",
+    },
+    {
+        "items_key": "missing_readme_links",
+        "penalty_key": "missing_links",
+        "formatter": lambda count: f"{count} README {TextUtils.pluralize('missing link', count)}",
+    },
 ]
 
 SECTION_CONFIG = [
@@ -196,6 +209,16 @@ SECTION_CONFIG = [
         "title_key": "misplaced_docs_title",
         "items_key": "misplaced",
         "formatter": lambda pair, base: f"  - {pair[0]} (expected {pair[1]})",
+    },
+    {
+        "title_key": "broken_readme_links_title",
+        "items_key": "broken_readme_links",
+        "formatter": lambda pair, base: f"  - {pair[0]} references {pair[1]}",
+    },
+    {
+        "title_key": "missing_readme_links_title",
+        "items_key": "missing_readme_links",
+        "formatter": lambda pair, base: f"  - {pair[0]} missing links to {', '.join(pair[1])}",
     },
 ]
 
@@ -566,6 +589,9 @@ class TemplateGeneratorService:
         return "\n".join(lines).rstrip() + "\n"
 
 
+TemplateGenerator = TemplateGeneratorService
+
+
 class PathRules:
     """Utilities for interpreting module-to-doc paths."""
     @staticmethod
@@ -624,6 +650,89 @@ class MissingReadmeFinder:
                 continue
             directories.add(path.parent)
         return directories
+
+
+class ReadmeLinkChecker:
+    """Detects README links that point to files which no longer exist."""
+
+    def __init__(self, doc_root: Path) -> None:
+        self.doc_root = doc_root
+
+    def find(self) -> list[tuple[Path, str]]:
+        """Return (README path relative to doc root, missing target) pairs."""
+        broken: list[tuple[Path, str]] = []
+        for readme in self.doc_root.rglob("README.md"):
+            try:
+                text = readme.read_text(encoding="utf-8", errors="ignore")
+            except OSError:
+                continue
+            for match in LINK_TARGET_RE.finditer(text):
+                href = match.group(1).strip()
+                if not href or href.startswith(("http://", "https://", "mailto:")) or href.startswith("#"):
+                    continue
+                cleaned = href.split("?", 1)[0].split("#", 1)[0].strip()
+                if not cleaned:
+                    continue
+                suffix = Path(cleaned).suffix.lower()
+                if suffix and suffix not in {".md", ".mdx"}:
+                    continue
+                target = readme.parent / cleaned
+                if target.exists():
+                    continue
+                try:
+                    relative_readme = readme.relative_to(self.doc_root)
+                except ValueError:
+                    continue
+                broken.append((relative_readme, cleaned))
+        return broken
+
+
+class ReadmeLinkCoverageChecker:
+    """Ensures README links cover all sibling docs in the same directory."""
+
+    def __init__(self, doc_root: Path) -> None:
+        self.doc_root = doc_root
+
+    def find(self) -> list[tuple[Path, list[str]]]:
+        """Return (README path relative to doc root, missing files) tuples."""
+        missing: list[tuple[Path, list[str]]] = []
+        for readme in self.doc_root.rglob("README.md"):
+            files_in_dir = {
+                path.name
+                for path in readme.parent.iterdir()
+                if path.is_file() and path.suffix.lower() in {".md", ".mdx"} and path.name != "README.md"
+            }
+            if not files_in_dir:
+                continue
+            linked: set[str] = set()
+            parent_resolved = readme.parent.resolve()
+            try:
+                text = readme.read_text(encoding="utf-8", errors="ignore")
+            except OSError:
+                continue
+            for match in LINK_TARGET_RE.finditer(text):
+                href = match.group(1).strip()
+                if not href or href.startswith(("http://", "https://", "mailto:")) or href.startswith("#"):
+                    continue
+                cleaned = href.split("?", 1)[0].split("#", 1)[0].strip()
+                if not cleaned:
+                    continue
+                target = (readme.parent / cleaned).resolve()
+                try:
+                    target.relative_to(parent_resolved)
+                except ValueError:
+                    continue
+                if target.is_file() and target.name in files_in_dir:
+                    linked.add(target.name)
+            missing_files = sorted(files_in_dir - linked)
+            if not missing_files:
+                continue
+            try:
+                relative_readme = readme.relative_to(self.doc_root)
+            except ValueError:
+                continue
+            missing.append((relative_readme, missing_files))
+        return missing
 
 
 class ExtraDocFinder:
@@ -722,6 +831,8 @@ class PenaltyCalculatorService:
             "extra_docs": extra_finder.find(request.documented_module_roots),
             "bootstrap_extra": bootstrap_checker.find(request.entries),
             "misplaced": misplaced_checker.find(request.entries),
+            "broken_readme_links": self._broken_readme_links(),
+            "missing_readme_links": self._missing_readme_links(),
         }
         penalty_values = {name: self._penalty(items) for name, items in components.items()}
         total = min(sum(penalty_values.values()), 100.0)
@@ -733,6 +844,8 @@ class PenaltyCalculatorService:
                 "extra": penalty_values["extra_docs"],
                 "bootstrap": penalty_values["bootstrap_extra"],
                 "misplaced": penalty_values["misplaced"],
+                "readme_links": penalty_values["broken_readme_links"],
+                "missing_links": penalty_values["missing_readme_links"],
             },
             "total": total,
         }
@@ -772,6 +885,16 @@ class PenaltyCalculatorService:
         config = MissingReadmeConfig(self.config.doc_root, request.ignore_paths)
         finder = MissingReadmeFinder(config)
         return finder.find()
+
+    def _broken_readme_links(self) -> list[tuple[Path, str]]:
+        """Inspect README links for references to missing files."""
+        checker = ReadmeLinkChecker(self.config.doc_root)
+        return checker.find()
+
+    def _missing_readme_links(self) -> list[tuple[Path, list[str]]]:
+        """Check each README reports every sibling doc file via links."""
+        checker = ReadmeLinkCoverageChecker(self.config.doc_root)
+        return checker.find()
 
     @staticmethod
     def _penalty(items: Sequence) -> float:

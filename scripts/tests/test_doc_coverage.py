@@ -66,7 +66,7 @@ class TestDocCoverage(unittest.TestCase):
             (src_dir / "app.js").write_text("const exposed = 1\nfunction helper() {}\n", encoding="utf-8")
             api_src_dir = api_dir / "src"
             api_src_dir.mkdir(parents=True, exist_ok=True)
-            (api_src_dir / "README.md").write_text("# src module docs\n", encoding="utf-8")
+            (api_src_dir / "README.md").write_text("# src module docs\n- [app](app.md)\n", encoding="utf-8")
             (api_src_dir / "app.md").write_text("# Module: `src/app.js`\n", encoding="utf-8")
 
             output, result = self._run_cli(repo_root)
@@ -105,6 +105,22 @@ class TestDocCoverage(unittest.TestCase):
             )
             self.assertEqual(len(collected), 1)
             self.assertTrue(collected[0].name.endswith("script-list.html"))
+
+    def test_readme_link_coverage_detects_unlinked_docs(self):
+        with TemporaryDirectory() as tmpdir:
+            repo_root = Path(tmpdir) / "repo"
+            docs = repo_root / "docs"
+            folder = docs / "api" / "bootstrap" / "entrypoints"
+            folder.mkdir(parents=True)
+            (folder / "README.md").write_text("- [env](env.md)\n", encoding="utf-8")
+            (folder / "env.md").write_text("# Module: `bootstrap/entrypoints/env.md`\n", encoding="utf-8")
+            (folder / "module-loader.md").write_text("# Module: `bootstrap/entrypoints/module-loader.md`\n", encoding="utf-8")
+
+            checker = doc_coverage.ReadmeLinkCoverageChecker(docs)
+            missing = checker.find()
+            self.assertEqual(len(missing), 1)
+            self.assertEqual(missing[0][0], Path("api/bootstrap/entrypoints/README.md"))
+            self.assertEqual(missing[0][1], ["module-loader.md"])
 
     def test_render_module_template_includes_symbols(self):
         generator = doc_coverage.TemplateGenerator(Path("templates"))
@@ -188,7 +204,7 @@ class TestDocCoverage(unittest.TestCase):
             target_docs.mkdir(parents=True)
             (src / "bar.js").write_text("const bar = 1\n", encoding="utf-8")
             (target_docs / "bar.md").write_text("# Module: `src/bar.js`\n", encoding="utf-8")
-            (target_docs / "README.md").write_text("# src docs\n", encoding="utf-8")
+            (target_docs / "README.md").write_text("# src docs\n- [bar](bar.md)\n", encoding="utf-8")
             stub_path = doc_root / "api" / "stubs" / "bar.md"
             self._write_stub(stub_path, "src/bar.js")
 
@@ -255,13 +271,13 @@ class TestDocCoverage(unittest.TestCase):
             foo_dir = api_dir / "src"
             foo_dir.mkdir(parents=True)
             (foo_dir / "foo.md").write_text("# Module: `src/foo.js`\n", encoding="utf-8")
-            (foo_dir / "README.md").write_text("# src docs\n", encoding="utf-8")
+            (foo_dir / "README.md").write_text("# src docs\n- [foo](foo.md)\n", encoding="utf-8")
             missing_dir = api_dir / "missing"
             missing_dir.mkdir(parents=True)
             (missing_dir / "ghost.md").write_text(
                 "# Module: `missing/ghost.js`\n", encoding="utf-8"
             )
-            (missing_dir / "README.md").write_text("# missing docs\n", encoding="utf-8")
+            (missing_dir / "README.md").write_text("# missing docs\n- [ghost](ghost.md)\n", encoding="utf-8")
 
             output, _ = self._run_cli(repo_root)
             self.assertIn("Documented modules without matching source files:", output)
@@ -281,7 +297,10 @@ class TestDocCoverage(unittest.TestCase):
 
             (bootstrap_dir / "module.js").write_text("export const core = 1\n", encoding="utf-8")
             (api_dir / "README.md").write_text("# API\n", encoding="utf-8")
-            (bootstrap_doc / "README.md").write_text("# Bootstrap\n", encoding="utf-8")
+            (bootstrap_doc / "README.md").write_text(
+                "# Bootstrap\n- [module](module.md)\n- [orphan](orphan.md)\n",
+                encoding="utf-8",
+            )
 
             (bootstrap_doc / "module.md").write_text(
                 "# Module: `bootstrap/module.js`\n", encoding="utf-8"
@@ -313,7 +332,7 @@ class TestDocCoverage(unittest.TestCase):
             (mis_doc_dir / "loader.md").write_text(
                 "# Module: `bootstrap/loader.js`\n\n- `load`\n", encoding="utf-8"
             )
-            (mis_doc_dir / "README.md").write_text("# Local\n", encoding="utf-8")
+            (mis_doc_dir / "README.md").write_text("# Local\n- [loader](loader.md)\n", encoding="utf-8")
 
             output, result = self._run_cli(repo_root)
             self.assertIn("Documented modules not located at expected path:", output)
