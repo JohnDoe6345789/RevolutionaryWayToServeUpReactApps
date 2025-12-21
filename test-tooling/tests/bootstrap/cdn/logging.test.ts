@@ -18,15 +18,15 @@ describe("bootstrap/services/cdn/logging-service.js", () => {
     originalBlob = globalThis.Blob;
 
     globalThis.window = {
-      location: { search: "", hostname: "example.com", href: "https://example.com" },
-    };
-    globalThis.navigator = { sendBeacon: jest.fn() };
+      location: { search: "", hostname: "example.com", href: "https://example.com" } as Location,
+    } as Window & typeof globalThis;
+    globalThis.navigator = { sendBeacon: jest.fn() } as Navigator;
     globalThis.fetch = jest.fn(() =>
       Promise.resolve({
         ok: true,
         json: () => Promise.resolve({ ok: true }),
-      })
-    );
+      } as Response)
+    ) as any;
     globalThis.Blob = class DummyBlob {
       parts: any;
       opts: any;
@@ -54,9 +54,9 @@ describe("bootstrap/services/cdn/logging-service.js", () => {
     globalThis.navigator = originalNavigator;
     globalThis.fetch = originalFetch;
     globalThis.Blob = originalBlob;
-    consoleInfoMock.mockRestore();
-    consoleErrorMock.mockRestore();
-    consoleWarnMock.mockRestore();
+    (consoleInfoMock as jest.Mock).mockRestore();
+    (consoleErrorMock as jest.Mock).mockRestore();
+    (consoleWarnMock as jest.Mock).mockRestore();
   });
 
   it("exposes the logging helpers through set/is helpers", () => {
@@ -68,7 +68,7 @@ describe("bootstrap/services/cdn/logging-service.js", () => {
 
   it("detects CI logging from overrides and query params", () => {
     expect(service.detectCiLogging({}, { search: "?ci=true" })).toBe(true);
-    globalThis.window.__RWTRA_CI_MODE__ = true;
+    (globalThis.window as any).__RWTRA_CI_MODE__ = true;
     expect(service.detectCiLogging({}, null)).toBe(true);
     expect(service.detectCiLogging({ ciLogging: true })).toBe(true);
   });
