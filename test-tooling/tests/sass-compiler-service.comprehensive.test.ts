@@ -1,12 +1,12 @@
 import SassCompilerService from "../../bootstrap/services/local/sass-compiler-service.js";
 
 describe("SassCompilerService", () => {
-  let sassCompilerService;
-  let mockServiceRegistry;
-  let mockNamespace;
-  let mockDocument;
-  let mockFetch;
-  let mockSassImpl;
+  let sassCompilerService: any;
+  let mockServiceRegistry: any;
+  let mockNamespace: any;
+  let mockDocument: any;
+  let mockFetch: jest.Mock;
+  let mockSassImpl: any;
 
   beforeEach(() => {
     mockServiceRegistry = {
