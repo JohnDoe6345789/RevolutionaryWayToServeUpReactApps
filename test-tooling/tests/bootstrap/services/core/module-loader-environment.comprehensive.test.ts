@@ -1,4 +1,4 @@
-const ModuleLoaderEnvironment = require("../../../../bootstrap/services/core/module-loader-environment.js");
+const ModuleLoaderEnvironment = require("../../../../../bootstrap/services/core/module-loader-environment.js");
 
 describe("ModuleLoaderEnvironment", () => {
   describe("constructor", () => {

@@ -1,56 +1,44 @@
 import BaseHelper from "../../../../bootstrap/helpers/base-helper.js";
 
-// Mock helper registry for testing
-class MockHelperRegistry {
-  constructor() {
-    this.registeredHelpers = new Map();
-  }
-  
-  register(name, helper, metadata) {
-    this.registeredHelpers.set(name, { helper, metadata });
-  }
-  
-  isRegistered(name) {
-    return this.registeredHelpers.has(name);
-  }
-}
-
 describe("BaseHelper", () => {
   describe("constructor", () => {
-    it("should initialize with default empty config", () => {
+    it("should initialize with empty config when no config provided", () => {
       const helper = new BaseHelper();
-      
       expect(helper.config).toEqual({});
       expect(helper.initialized).toBe(false);
     });
 
-    it("should accept and store configuration", () => {
-      const config = { test: "value", other: "data" };
+    it("should initialize with provided config", () => {
+      const config = { test: "value", helperRegistry: {} };
       const helper = new BaseHelper(config);
-      
       expect(helper.config).toBe(config);
       expect(helper.initialized).toBe(false);
     });
 
-    it("should set initialized to false by default", () => {
-      const helper = new BaseHelper();
-      
+    it("should initialize with empty object when null config provided", () => {
+      const helper = new BaseHelper(null);
+      expect(helper.config).toEqual({});
+      expect(helper.initialized).toBe(false);
+    });
+
+    it("should initialize with empty object when undefined config provided", () => {
+      const helper = new BaseHelper(undefined);
+      expect(helper.config).toEqual({});
       expect(helper.initialized).toBe(false);
     });
   });
 
   describe("_resolveHelperRegistry method", () => {
-    it("should return the helper registry from config", () => {
-      const mockRegistry = new MockHelperRegistry();
-      const config = { helperRegistry: mockRegistry };
-      const helper = new BaseHelper(config);
+    it("should return the helper registry from config when available", () => {
+      const mockRegistry = { register: jest.fn() };
+      const helper = new BaseHelper({ helperRegistry: mockRegistry });
       
-      const registry = helper._resolveHelperRegistry();
+      const result = helper._resolveHelperRegistry();
       
-      expect(registry).toBe(mockRegistry);
+      expect(result).toBe(mockRegistry);
     });
 
-    it("should throw an error when no helper registry is provided", () => {
+    it("should throw error when no helper registry provided in config", () => {
       const helper = new BaseHelper({});
       
       expect(() => helper._resolveHelperRegistry()).toThrow(
@@ -58,18 +46,17 @@ describe("BaseHelper", () => {
       );
     });
 
-    it("should throw an error when helperRegistry is null", () => {
-      const config = { helperRegistry: null };
-      const helper = new BaseHelper(config);
+    it("should throw error with correct class name", () => {
+      class TestHelper extends BaseHelper {}
+      const helper = new TestHelper({});
       
       expect(() => helper._resolveHelperRegistry()).toThrow(
-        "HelperRegistry required for BaseHelper"
+        "HelperRegistry required for TestHelper"
       );
     });
 
-    it("should throw an error when helperRegistry is undefined", () => {
-      const config = { helperRegistry: undefined };
-      const helper = new BaseHelper(config);
+    it("should handle missing helperRegistry property in config", () => {
+      const helper = new BaseHelper({ otherProp: "value" });
       
       expect(() => helper._resolveHelperRegistry()).toThrow(
         "HelperRegistry required for BaseHelper"
@@ -78,54 +65,65 @@ describe("BaseHelper", () => {
   });
 
   describe("_registerHelper method", () => {
-    it("should register a helper when not already registered", () => {
-      const mockRegistry = new MockHelperRegistry();
-      const config = { helperRegistry: mockRegistry };
-      const helper = new BaseHelper(config);
+    let mockRegistry;
+
+    beforeEach(() => {
+      mockRegistry = {
+        isRegistered: jest.fn(),
+        register: jest.fn()
+      };
+    });
+
+    it("should register helper when not already registered", () => {
+      mockRegistry.isRegistered.mockReturnValue(false);
       
-      const testHelper = { test: "helper" };
-      const metadata = { type: "test" };
+      const helper = new BaseHelper({ helperRegistry: mockRegistry });
+      const testHelper = { method: () => {} };
+      const metadata = { scope: "global" };
       
       helper._registerHelper("testHelper", testHelper, metadata);
       
-      expect(mockRegistry.isRegistered("testHelper")).toBe(true);
-      const registered = mockRegistry.registeredHelpers.get("testHelper");
-      expect(registered.helper).toBe(testHelper);
-      expect(registered.metadata).toEqual(metadata);
+      expect(mockRegistry.isRegistered).toHaveBeenCalledWith("testHelper");
+      expect(mockRegistry.register).toHaveBeenCalledWith("testHelper", testHelper, metadata);
     });
 
-    it("should not register a helper when already registered", () => {
-      const mockRegistry = new MockHelperRegistry();
-      const config = { helperRegistry: mockRegistry };
-      const helper = new BaseHelper(config);
+    it("should register helper with default empty metadata", () => {
+      mockRegistry.isRegistered.mockReturnValue(false);
       
-      // Register once
-      const firstHelper = { first: "helper" };
-      helper._registerHelper("testHelper", firstHelper);
-      
-      // Register again with different helper
-      const secondHelper = { second: "helper" };
-      helper._registerHelper("testHelper", secondHelper);
-      
-      // Should still have the first helper
-      const registered = mockRegistry.registeredHelpers.get("testHelper");
-      expect(registered.helper).toBe(firstHelper);
-    });
-
-    it("should use empty metadata when not provided", () => {
-      const mockRegistry = new MockHelperRegistry();
-      const config = { helperRegistry: mockRegistry };
-      const helper = new BaseHelper(config);
-      
-      const testHelper = { test: "helper" };
+      const helper = new BaseHelper({ helperRegistry: mockRegistry });
+      const testHelper = { method: () => {} };
       
       helper._registerHelper("testHelper", testHelper);
       
-      const registered = mockRegistry.registeredHelpers.get("testHelper");
-      expect(registered.metadata).toEqual({});
+      expect(mockRegistry.register).toHaveBeenCalledWith("testHelper", testHelper, {});
     });
 
-    it("should throw when no helper registry is available", () => {
+    it("should skip registration when helper is already registered", () => {
+      mockRegistry.isRegistered.mockReturnValue(true);
+      
+      const helper = new BaseHelper({ helperRegistry: mockRegistry });
+      const testHelper = { method: () => {} };
+      
+      helper._registerHelper("existingHelper", testHelper);
+      
+      expect(mockRegistry.isRegistered).toHaveBeenCalledWith("existingHelper");
+      expect(mockRegistry.register).not.toHaveBeenCalled();
+    });
+
+    it("should call _resolveHelperRegistry internally", () => {
+      const resolveSpy = jest.spyOn(BaseHelper.prototype, '_resolveHelperRegistry')
+        .mockReturnValue(mockRegistry);
+      
+      mockRegistry.isRegistered.mockReturnValue(false);
+      
+      const helper = new BaseHelper({ helperRegistry: mockRegistry });
+      helper._registerHelper("test", {});
+      
+      expect(resolveSpy).toHaveBeenCalled();
+      resolveSpy.mockRestore();
+    });
+
+    it("should throw error if no registry available", () => {
       const helper = new BaseHelper({});
       
       expect(() => helper._registerHelper("test", {})).toThrow(
@@ -135,7 +133,7 @@ describe("BaseHelper", () => {
   });
 
   describe("initialize method", () => {
-    it("should throw an error when called directly", () => {
+    it("should throw error when called on base class directly", () => {
       const helper = new BaseHelper();
       
       expect(() => helper.initialize()).toThrow(
@@ -143,60 +141,155 @@ describe("BaseHelper", () => {
       );
     });
 
-    it("should be overridable by subclasses", () => {
-      class TestHelper extends BaseHelper {
+    it("should throw error with correct class name", () => {
+      class CustomHelper extends BaseHelper {}
+      const helper = new CustomHelper();
+      
+      expect(() => helper.initialize()).toThrow(
+        "CustomHelper must implement initialize()"
+      );
+    });
+
+    it("should not throw when implemented in subclass", () => {
+      class ImplementedHelper extends BaseHelper {
         initialize() {
           return "initialized";
         }
       }
+      const helper = new ImplementedHelper();
       
-      const helper = new TestHelper();
-      const result = helper.initialize();
-      
-      expect(result).toBe("initialized");
+      expect(() => helper.initialize()).not.toThrow();
+      expect(helper.initialize()).toBe("initialized");
     });
   });
 
   describe("integration tests", () => {
-    it("should work through full lifecycle with proper configuration", () => {
-      const mockRegistry = new MockHelperRegistry();
-      const config = { helperRegistry: mockRegistry, custom: "value" };
-      const helper = new BaseHelper(config);
+    it("should work through full lifecycle with implemented subclass", () => {
+      const mockRegistry = {
+        isRegistered: jest.fn().mockReturnValue(false),
+        register: jest.fn()
+      };
       
-      // Verify initial state
-      expect(helper.config).toBe(config);
-      expect(helper.initialized).toBe(false);
+      class TestHelper extends BaseHelper {
+        initialize() {
+          this._registerHelper("test", { value: "test" }, { type: "integration" });
+          return this;
+        }
+      }
       
-      // Register a helper
-      const testHelper = { functionality: "test" };
-      helper._registerHelper("testHelper", testHelper, { category: "test" });
+      const helper = new TestHelper({ helperRegistry: mockRegistry });
+      const result = helper.initialize();
       
-      // Verify registration worked
-      expect(mockRegistry.isRegistered("testHelper")).toBe(true);
-      const registered = mockRegistry.registeredHelpers.get("testHelper");
-      expect(registered.helper).toBe(testHelper);
-      expect(registered.metadata).toEqual({ category: "test" });
+      expect(result).toBe(helper);
+      expect(mockRegistry.register).toHaveBeenCalledWith(
+        "test", 
+        { value: "test" }, 
+        { type: "integration" }
+      );
     });
 
-    it("should handle multiple helper registrations", () => {
-      const mockRegistry = new MockHelperRegistry();
-      const config = { helperRegistry: mockRegistry };
-      const helper = new BaseHelper(config);
+    it("should handle registration with existing helper", () => {
+      const mockRegistry = {
+        isRegistered: jest.fn().mockReturnValue(true),
+        register: jest.fn()
+      };
       
-      // Register multiple helpers
-      helper._registerHelper("helper1", { name: "first" });
-      helper._registerHelper("helper2", { name: "second" });
-      helper._registerHelper("helper3", { name: "third" });
+      class TestHelper extends BaseHelper {
+        initialize() {
+          this._registerHelper("existing", { value: "test" });
+          return this;
+        }
+      }
       
-      // Verify all were registered
-      expect(mockRegistry.isRegistered("helper1")).toBe(true);
-      expect(mockRegistry.isRegistered("helper2")).toBe(true);
-      expect(mockRegistry.isRegistered("helper3")).toBe(true);
+      const helper = new TestHelper({ helperRegistry: mockRegistry });
+      const result = helper.initialize();
       
-      // Verify correct helpers were registered
-      expect(mockRegistry.registeredHelpers.get("helper1").helper.name).toBe("first");
-      expect(mockRegistry.registeredHelpers.get("helper2").helper.name).toBe("second");
-      expect(mockRegistry.registeredHelpers.get("helper3").helper.name).toBe("third");
+      expect(result).toBe(helper);
+      expect(mockRegistry.register).not.toHaveBeenCalled();
+    });
+
+    it("should maintain config throughout lifecycle", () => {
+      const config = { 
+        helperRegistry: { isRegistered: () => false, register: () => {} },
+        customOption: "value" 
+      };
+      
+      class TestHelper extends BaseHelper {
+        initialize() {
+          return this.config.customOption;
+        }
+      }
+      
+      const helper = new TestHelper(config);
+      const result = helper.initialize();
+      
+      expect(result).toBe("value");
+      expect(helper.config).toBe(config);
+    });
+  });
+
+  describe("edge cases", () => {
+    it("should handle registry with complex metadata", () => {
+      const mockRegistry = {
+        isRegistered: jest.fn().mockReturnValue(false),
+        register: jest.fn()
+      };
+      
+      const complexMetadata = {
+        version: "1.0.0",
+        dependencies: ["helper1", "helper2"],
+        config: { enabled: true, options: { debug: false } }
+      };
+      
+      const helper = new BaseHelper({ helperRegistry: mockRegistry });
+      helper._registerHelper("complexHelper", { complex: true }, complexMetadata);
+      
+      expect(mockRegistry.register).toHaveBeenCalledWith(
+        "complexHelper", 
+        { complex: true }, 
+        complexMetadata
+      );
+    });
+
+    it("should handle null or undefined helper values", () => {
+      const mockRegistry = {
+        isRegistered: jest.fn().mockReturnValue(false),
+        register: jest.fn()
+      };
+      
+      const helper = new BaseHelper({ helperRegistry: mockRegistry });
+      
+      helper._registerHelper("nullHelper", null);
+      helper._registerHelper("undefinedHelper", undefined);
+      
+      expect(mockRegistry.register).toHaveBeenNthCalledWith(1, "nullHelper", null, {});
+      expect(mockRegistry.register).toHaveBeenNthCalledWith(2, "undefinedHelper", undefined, {});
+    });
+
+    it("should handle registry that throws during isRegistered", () => {
+      const mockRegistry = {
+        isRegistered: jest.fn().mockImplementation(() => {
+          throw new Error("Registry error");
+        }),
+        register: jest.fn()
+      };
+      
+      const helper = new BaseHelper({ helperRegistry: mockRegistry });
+      
+      expect(() => helper._registerHelper("failingHelper", {})).toThrow("Registry error");
+    });
+
+    it("should handle registry that throws during register", () => {
+      const mockRegistry = {
+        isRegistered: jest.fn().mockReturnValue(false),
+        register: jest.fn().mockImplementation(() => {
+          throw new Error("Registration error");
+        })
+      };
+      
+      const helper = new BaseHelper({ helperRegistry: mockRegistry });
+      
+      expect(() => helper._registerHelper("failingHelper", {})).toThrow("Registration error");
     });
   });
 });
