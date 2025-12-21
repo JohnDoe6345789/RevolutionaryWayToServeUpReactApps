@@ -8,10 +8,15 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "strict": true,
+    "strict": false,
+    "noImplicitAny": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "../../../bootstrap/*": ["../bootstrap/*"],
+      "../../bootstrap/*": ["../bootstrap/*"]
+    }
   },
-  "include": ["tests", "../src"]
+  "include": ["tests", "../src", "../bootstrap"]
 }

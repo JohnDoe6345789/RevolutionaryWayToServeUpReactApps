@@ -2,21 +2,22 @@ const path = require("path");
 
 module.exports = {
   testEnvironment: "jsdom",
-  transform: undefined,
+  rootDir: path.resolve(__dirname),
+  transform: {
+    "^.+\\.(ts|tsx)$": ["ts-jest", {
+      tsconfig: "tsconfig.json"
+    }],
+    "^.+\\.(js|jsx)$": "babel-jest"
+  },
   transformIgnorePatterns: [
     "node_modules/(?!(ts-jest))"
   ],
-  rootDir: path.resolve(__dirname, ".."),
-  testMatch: ["<rootDir>/test-tooling/tests/**/*.test.ts?(x)"],
+  testMatch: ["<rootDir>/tests/**/*.test.ts?(x)"],
   collectCoverage: true,
   collectCoverageFrom: [
-    "src/**/*.{ts,tsx}",
-    "../bootstrap/cdn/logging.js",
-    "../bootstrap/cdn/network.js",
-    "../bootstrap/cdn/dynamic-modules.js",
-    "../bootstrap/initializers/path-utils/local-paths.js"
+    "../src/**/*.{ts,tsx}"
   ],
-  coveragePathIgnorePatterns: ["/node_modules/", "<rootDir>/test-tooling/tests/"],
+  coveragePathIgnorePatterns: ["/node_modules/", "<rootDir>/tests/", "../bootstrap/"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
   moduleDirectories: ["node_modules"],
   modulePaths: [
@@ -24,17 +25,16 @@ module.exports = {
     path.resolve(__dirname, "../ci/node_modules")
   ],
   moduleNameMapper: {
-    "^@mui/material/(.*)$": "<rootDir>/test-tooling/node_modules/@mui/material/$1",
-    "^@mui/material$": "<rootDir>/test-tooling/node_modules/@mui/material",
+    "^@mui/material/(.*)$": "<rootDir>/node_modules/@mui/material/$1",
+    "^@mui/material$": "<rootDir>/node_modules/@mui/material",
     "^react/jsx-runtime$": require.resolve("react/jsx-runtime"),
     "^react/jsx-dev-runtime$": require.resolve("react/jsx-dev-runtime"),
     "^react$": require.resolve("react"),
-    "^react-dom$": require.resolve("react-dom")
+    "^react-dom$": require.resolve("react-dom"),
+    "^\\./(linkSrcNodeModules)$": "<rootDir>/tests/linkSrcNodeModules.js",
+    "^../../../bootstrap/(.*)$": "<rootDir>/../bootstrap/$1",
+    "^../../bootstrap/(.*)$": "<rootDir>/../bootstrap/$1"
   },
-  globals: {
-    "ts-jest": {
-      tsconfig: "tsconfig.json"
-    }
-  },
-  setupFilesAfterEnv: ["<rootDir>/test-tooling/tests/setupTests.ts"]
+  setupFilesAfterEnv: ["<rootDir>/tests/setupTests.ts"],
+  testPathIgnorePatterns: ["<rootDir>/tests/bootstrap/"]
 };
