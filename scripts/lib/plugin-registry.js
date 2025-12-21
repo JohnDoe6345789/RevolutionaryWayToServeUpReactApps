@@ -32,7 +32,17 @@ class PluginRegistry {
       return;
     }
 
-    // Scan for plugin files
+    // Scan for regular plugin files
+    await this.discoverRegularPlugins();
+    
+    // Scan for language plugins
+    await this.discoverLanguagePlugins();
+  }
+
+  /**
+   * Discovers regular plugin files
+   */
+  async discoverRegularPlugins() {
     const files = fs.readdirSync(this.pluginsDirectory);
     
     for (const file of files) {
@@ -46,6 +56,52 @@ class PluginRegistry {
           console.warn(`Warning: Failed to load plugin from ${file}: ${error.message}`);
         }
       }
+    }
+  }
+
+  /**
+   * Discovers language plugins from language_plugins directory
+   */
+  async discoverLanguagePlugins() {
+    const languagePluginsDir = path.join(this.pluginsDirectory, 'language_plugins');
+    
+    if (!fs.existsSync(languagePluginsDir)) {
+      return;
+    }
+
+    const languageDirs = fs.readdirSync(languagePluginsDir);
+    
+    for (const langDir of languageDirs) {
+      const langPath = path.join(languagePluginsDir, langDir);
+      
+      if (fs.statSync(langPath).isDirectory()) {
+        await this.discoverLanguagePluginFiles(langDir, langPath);
+      }
+    }
+  }
+
+  /**
+   * Discovers plugin files in a specific language directory
+   * @param {string} languageName - Name of the language
+   * @param {string} languagePath - Path to the language directory
+   */
+  async discoverLanguagePluginFiles(languageName, languagePath) {
+    try {
+      const pluginFiles = fs.readdirSync(languagePath)
+        .filter(file => file.endsWith('.plugin.js') || file.endsWith('.language.js'));
+
+      for (const pluginFile of pluginFiles) {
+        const filePath = path.join(languagePath, pluginFile);
+        this.discoveredFiles.push(filePath);
+        
+        try {
+          await this.loadPluginFile(filePath);
+        } catch (error) {
+          console.warn(`Warning: Failed to load ${languageName} plugin from ${pluginFile}: ${error.message}`);
+        }
+      }
+    } catch (error) {
+      console.warn(`Warning: Failed to scan language directory ${languageName}: ${error.message}`);
     }
   }
 
@@ -299,6 +355,41 @@ class PluginRegistry {
     }
 
     return graph;
+  }
+
+  /**
+   * Loads language-specific plugins for a given language
+   * @param {string} languageName - Name of the language
+   * @param {Object} context - Execution context
+   */
+  async loadLanguagePlugins(languageName, context = {}) {
+    const languagePlugins = this.getPlugins().filter(plugin => 
+      plugin.language === languageName || plugin.category === 'language'
+    );
+
+    for (const plugin of languagePlugins) {
+      if (!plugin.loaded) {
+        try {
+          await this.loadPlugin(plugin, context);
+          console.log(`Loaded ${plugin.name} for ${languageName}`);
+        } catch (error) {
+          console.warn(`Warning: Failed to load ${plugin.name} for ${languageName}: ${error.message}`);
+        }
+      }
+    }
+
+    return languagePlugins.filter(p => p.loaded);
+  }
+
+  /**
+   * Gets plugins by language
+   * @param {string} languageName - Name of the language
+   * @returns {BasePlugin[]} - Array of plugins for the language
+   */
+  getPluginsByLanguage(languageName) {
+    return this.getPlugins().filter(plugin => 
+      plugin.language === languageName
+    );
   }
 
   /**

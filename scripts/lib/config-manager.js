@@ -11,6 +11,7 @@ class ConfigManager {
     this.configDir = path.join(__dirname, '..', 'config');
     this.globalConfigFile = path.join(this.configDir, 'global.json');
     this.pluginConfigDir = path.join(this.configDir, 'plugins');
+    this.languageConfigDir = path.join(this.configDir, 'languages');
     this.config = {};
     
     this.ensureConfigDirectories();
@@ -27,6 +28,10 @@ class ConfigManager {
     
     if (!fs.existsSync(this.pluginConfigDir)) {
       fs.mkdirSync(this.pluginConfigDir, { recursive: true });
+    }
+    
+    if (!fs.existsSync(this.languageConfigDir)) {
+      fs.mkdirSync(this.languageConfigDir, { recursive: true });
     }
   }
 
@@ -309,6 +314,152 @@ class ConfigManager {
   }
 
   /**
+   * Gets language-specific configuration
+   * @param {string} languageName - Language name
+   * @returns {Object} - Language configuration
+   */
+  getLanguageConfig(languageName) {
+    const configFile = path.join(this.languageConfigDir, `${languageName}.json`);
+    
+    try {
+      if (fs.existsSync(configFile)) {
+        const content = fs.readFileSync(configFile, 'utf8');
+        return JSON.parse(content);
+      } else {
+        const defaultConfig = this.getDefaultLanguageConfig(languageName);
+        this.saveLanguageConfig(languageName, defaultConfig);
+        return defaultConfig;
+      }
+    } catch (error) {
+      console.warn(`Warning: Failed to load language config for ${languageName}: ${error.message}`);
+      return this.getDefaultLanguageConfig(languageName);
+    }
+  }
+
+  /**
+   * Gets default language configuration
+   * @param {string} languageName - Language name
+   * @returns {Object} - Default language configuration
+   */
+  getDefaultLanguageConfig(languageName) {
+    return {
+      name: languageName,
+      version: '1.0.0',
+      created: new Date().toISOString(),
+      updated: new Date().toISOString(),
+      enabled: true,
+      priority: 50,
+      fileExtensions: [],
+      projectFiles: [],
+      buildSystems: [],
+      settings: {
+        autoDetect: true,
+        strictMode: false,
+        outputFormat: 'json'
+      },
+      tools: {
+        required: [],
+        optional: []
+      },
+      analysis: {
+        dependencyAnalysis: true,
+        structureAnalysis: true,
+        qualityAnalysis: true,
+        testIntegration: true
+      }
+    };
+  }
+
+  /**
+   * Saves language-specific configuration
+   * @param {string} languageName - Language name
+   * @param {Object} config - Language configuration
+   */
+  saveLanguageConfig(languageName, config) {
+    const configFile = path.join(this.languageConfigDir, `${languageName}.json`);
+    
+    try {
+      config.updated = new Date().toISOString();
+      fs.writeFileSync(configFile, JSON.stringify(config, null, 2), 'utf8');
+    } catch (error) {
+      throw new Error(`Failed to save language config for ${languageName}: ${error.message}`);
+    }
+  }
+
+  /**
+   * Sets language configuration value
+   * @param {string} languageName - Language name
+   * @param {string} key - Configuration key (supports dot notation)
+   * @param {*} value - Value to set
+   */
+  setLanguageConfig(languageName, key, value) {
+    const config = this.getLanguageConfig(languageName);
+    
+    const keys = key.split('.');
+    let current = config;
+
+    for (let i = 0; i < keys.length - 1; i++) {
+      const k = keys[i];
+      if (!current[k] || typeof current[k] !== 'object') {
+        current[k] = {};
+      }
+      current = current[k];
+    }
+
+    current[keys[keys.length - 1]] = value;
+    this.saveLanguageConfig(languageName, config);
+  }
+
+  /**
+   * Deletes language configuration
+   * @param {string} languageName - Language name
+   */
+  deleteLanguageConfig(languageName) {
+    const configFile = path.join(this.languageConfigDir, `${languageName}.json`);
+    
+    try {
+      if (fs.existsSync(configFile)) {
+        fs.unlinkSync(configFile);
+        return true;
+      }
+    } catch (error) {
+      console.warn(`Warning: Failed to delete language config for ${languageName}: ${error.message}`);
+    }
+    
+    return false;
+  }
+
+  /**
+   * Lists all language configurations
+   * @returns {string[]} - Array of language names
+   */
+  listLanguageConfigs() {
+    try {
+      const files = fs.readdirSync(this.languageConfigDir);
+      return files
+        .filter(file => file.endsWith('.json'))
+        .map(file => file.replace('.json', ''));
+    } catch (error) {
+      return [];
+    }
+  }
+
+  /**
+   * Gets supported languages with their configurations
+   * @returns {Object} - Map of language configurations
+   */
+  getSupportedLanguages() {
+    const languages = {};
+    const languageConfigs = this.listLanguageConfigs();
+    
+    for (const languageName of languageConfigs) {
+      languages[languageName] = this.getLanguageConfig(languageName);
+    }
+    
+    return languages;
+  }
+
+  /**
    * Merges configuration with command line options
    * @param {Object} options - Command line options
    * @returns {Object} - Merged configuration
@@ -339,6 +490,15 @@ class ConfigManager {
     
     if (options['reports-dir']) {
       merged.settings.reportsDirectory = options['reports-dir'];
+    }
+    
+    // Add language-specific options
+    if (options.language) {
+      merged.settings.defaultLanguage = options.language;
+    }
+    
+    if (options['language-priority']) {
+      merged.settings.languagePriority = options['language-priority'];
     }
     
     return merged;
