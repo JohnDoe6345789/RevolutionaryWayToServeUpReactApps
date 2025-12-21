@@ -170,25 +170,26 @@ describe("FrameworkRenderer", () => {
     it("should use custom rootId if provided", () => {
       const mockRootElement = { render: jest.fn() };
       mockDocument.getElementById.mockReturnValue(mockRootElement);
-      
+
       const mockCreateRoot = jest.fn().mockReturnValue(mockRootElement);
       const mockCreateElement = jest.fn().mockReturnValue("element");
-      
+
       const registryWithMocks = {
         dom: { createRoot: mockCreateRoot },
         react: { createElement: mockCreateElement }
       };
-      
-      const config = { 
-        render: { 
-          domModule: "dom", 
+
+      const config = {
+        render: {
+          domModule: "dom",
           reactModule: "react",
-          rootId: "custom-root"
-        } 
+          rootId: "custom-root",
+          createRoot: "createRoot"  // Need to specify this
+        }
       };
-      
+
       frameworkRenderer.render(config, registryWithMocks, mockApp);
-      
+
       expect(mockDocument.getElementById).toHaveBeenCalledWith("custom-root");
     });
 
