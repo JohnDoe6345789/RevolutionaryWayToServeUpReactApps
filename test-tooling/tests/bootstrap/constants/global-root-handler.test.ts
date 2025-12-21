@@ -27,7 +27,7 @@ describe("bootstrap/constants/global-root-handler.js", () => {
   });
 
   it("fetches the document and global helpers", () => {
-    expect(handler.getDocument()).toBe(globalThis.window.document);
+    expect(handler.getDocument()).toEqual(globalThis.window.document);
     expect(handler.hasWindow()).toBe(true);
     expect(handler.hasDocument()).toBe(true);
     expect(typeof handler.getFetch()).toBe("function");

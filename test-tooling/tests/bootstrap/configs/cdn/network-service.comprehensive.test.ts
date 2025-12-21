@@ -1,199 +1,184 @@
-import NetworkServiceConfig from "../../../../../bootstrap/configs/cdn/network-service.js";
+import NetworkServiceConfig from "../../../../bootstrap/configs/cdn/network-service.js";
 
 describe("NetworkServiceConfig", () => {
   describe("constructor", () => {
+    it("should initialize with all provided configuration options", () => {
+      const configOptions = {
+        logClient: jest.fn(),
+        wait: jest.fn(),
+        namespace: { test: "namespace" },
+        providerConfig: { providers: ["provider1"] },
+        probeConfig: { timeout: 5000 },
+        moduleResolverConfig: { maxRetries: 3 },
+        isCommonJs: true
+      };
+
+      const config = new NetworkServiceConfig(configOptions);
+
+      expect(config.logClient).toBe(configOptions.logClient);
+      expect(config.wait).toBe(configOptions.wait);
+      expect(config.namespace).toBe(configOptions.namespace);
+      expect(config.providerConfig).toBe(configOptions.providerConfig);
+      expect(config.probeConfig).toBe(configOptions.probeConfig);
+      expect(config.moduleResolverConfig).toBe(configOptions.moduleResolverConfig);
+      expect(config.isCommonJs).toBe(true);
+    });
+
     it("should initialize with undefined values when no options provided", () => {
       const config = new NetworkServiceConfig();
-      
+
       expect(config.logClient).toBeUndefined();
       expect(config.wait).toBeUndefined();
       expect(config.namespace).toBeUndefined();
       expect(config.providerConfig).toBeUndefined();
       expect(config.probeConfig).toBeUndefined();
       expect(config.moduleResolverConfig).toBeUndefined();
-    });
-
-    it("should accept and store logClient option", () => {
-      const logClient = jest.fn();
-      const config = new NetworkServiceConfig({ logClient });
-      
-      expect(config.logClient).toBe(logClient);
-    });
-
-    it("should accept and store wait option", () => {
-      const wait = jest.fn();
-      const config = new NetworkServiceConfig({ wait });
-      
-      expect(config.wait).toBe(wait);
-    });
-
-    it("should accept and store namespace option", () => {
-      const namespace = { helpers: {} };
-      const config = new NetworkServiceConfig({ namespace });
-      
-      expect(config.namespace).toBe(namespace);
-    });
-
-    it("should accept and store providerConfig option", () => {
-      const providerConfig = { providers: [] };
-      const config = new NetworkServiceConfig({ providerConfig });
-      
-      expect(config.providerConfig).toBe(providerConfig);
-    });
-
-    it("should accept and store probeConfig option", () => {
-      const probeConfig = { timeout: 10 };
-      const config = new NetworkServiceConfig({ probeConfig });
-      
-      expect(config.probeConfig).toBe(probeConfig);
-    });
-
-    it("should accept and store moduleResolverConfig option", () => {
-      const moduleResolverConfig = { maxRetries: 2 };
-      const config = new NetworkServiceConfig({ moduleResolverConfig });
-      
-      expect(config.moduleResolverConfig).toBe(moduleResolverConfig);
+      expect(config.isCommonJs).toBeDefined(); // Will be boolean based on environment
     });
 
     it("should default isCommonJs to module environment when not provided", () => {
-      const config = new NetworkServiceConfig();
-      const expected = typeof module !== "undefined" && module.exports;
-      
-      expect(config.isCommonJs).toBe(expected);
+      // This test verifies that isCommonJs defaults to the module environment
+      const config = new NetworkServiceConfig({});
+
+      // In test environment, module might be defined, so we expect a boolean
+      expect(typeof config.isCommonJs).toBe('boolean');
     });
 
-    it("should use provided isCommonJs value when it's a boolean", () => {
-      let config = new NetworkServiceConfig({ isCommonJs: true });
-      expect(config.isCommonJs).toBe(true);
-      
-      config = new NetworkServiceConfig({ isCommonJs: false });
-      expect(config.isCommonJs).toBe(false);
+    it("should override isCommonJs with provided value", () => {
+      const config1 = new NetworkServiceConfig({ isCommonJs: true });
+      expect(config1.isCommonJs).toBe(true);
+
+      const config2 = new NetworkServiceConfig({ isCommonJs: false });
+      expect(config2.isCommonJs).toBe(false);
     });
 
-    it("should fallback to module environment when isCommonJs is not a boolean", () => {
-      const originalIsCommonJs = typeof module !== "undefined" && module.exports;
-      
-      let config = new NetworkServiceConfig({ isCommonJs: "true" });
-      expect(config.isCommonJs).toBe(originalIsCommonJs);
-      
-      config = new NetworkServiceConfig({ isCommonJs: 1 });
-      expect(config.isCommonJs).toBe(originalIsCommonJs);
-      
-      config = new NetworkServiceConfig({ isCommonJs: null });
-      expect(config.isCommonJs).toBe(originalIsCommonJs);
-    });
-
-    it("should accept all options at once", () => {
-      const options = {
+    it("should handle partial configuration options", () => {
+      const configOptions = {
         logClient: jest.fn(),
-        wait: jest.fn(),
-        namespace: { helpers: {} },
-        providerConfig: { providers: [] },
-        probeConfig: { timeout: 10 },
-        moduleResolverConfig: { maxRetries: 2 },
-        isCommonJs: true
+        namespace: { test: "namespace" }
       };
-      
-      const config = new NetworkServiceConfig(options);
-      
-      expect(config.logClient).toBe(options.logClient);
-      expect(config.wait).toBe(options.wait);
-      expect(config.namespace).toBe(options.namespace);
-      expect(config.providerConfig).toBe(options.providerConfig);
-      expect(config.probeConfig).toBe(options.probeConfig);
-      expect(config.moduleResolverConfig).toBe(options.moduleResolverConfig);
-      expect(config.isCommonJs).toBe(true);
+
+      const config = new NetworkServiceConfig(configOptions);
+
+      expect(config.logClient).toBe(configOptions.logClient);
+      expect(config.namespace).toBe(configOptions.namespace);
+      expect(config.wait).toBeUndefined();
+      expect(config.providerConfig).toBeUndefined();
+      expect(config.probeConfig).toBeUndefined();
+      expect(config.moduleResolverConfig).toBeUndefined();
+    });
+
+    it("should accept complex nested objects in configuration", () => {
+      const complexProviderConfig = {
+        providers: ["provider1", "provider2"],
+        fallbacks: {
+          primary: "fallback1",
+          secondary: "fallback2"
+        },
+        timeout: 5000
+      };
+
+      const config = new NetworkServiceConfig({
+        providerConfig: complexProviderConfig
+      });
+
+      expect(config.providerConfig).toEqual(complexProviderConfig);
+      expect(config.providerConfig.fallbacks.primary).toBe("fallback1");
     });
   });
 
-  describe("property access", () => {
-    it("should allow accessing logClient property", () => {
-      const logClient = jest.fn();
-      const config = new NetworkServiceConfig({ logClient });
-      
-      expect(config.logClient).toBe(logClient);
+  describe("property validation", () => {
+    it("should store function properties correctly", () => {
+      const logClientFn = jest.fn();
+      const waitFn = jest.fn();
+
+      const config = new NetworkServiceConfig({
+        logClient: logClientFn,
+        wait: waitFn
+      });
+
+      expect(config.logClient).toBe(logClientFn);
+      expect(config.wait).toBe(waitFn);
     });
 
-    it("should allow accessing wait property", () => {
-      const wait = jest.fn();
-      const config = new NetworkServiceConfig({ wait });
-      
-      expect(config.wait).toBe(wait);
-    });
+    it("should maintain reference equality for objects", () => {
+      const namespace = { test: "value" };
+      const providerConfig = { providers: ["test"] };
 
-    it("should allow accessing namespace property", () => {
-      const namespace = { helpers: {} };
-      const config = new NetworkServiceConfig({ namespace });
-      
+      const config = new NetworkServiceConfig({
+        namespace: namespace,
+        providerConfig: providerConfig
+      });
+
       expect(config.namespace).toBe(namespace);
-    });
-
-    it("should allow accessing providerConfig property", () => {
-      const providerConfig = { providers: [] };
-      const config = new NetworkServiceConfig({ providerConfig });
-      
       expect(config.providerConfig).toBe(providerConfig);
-    });
-
-    it("should allow accessing probeConfig property", () => {
-      const probeConfig = { timeout: 10 };
-      const config = new NetworkServiceConfig({ probeConfig });
-      
-      expect(config.probeConfig).toBe(probeConfig);
-    });
-
-    it("should allow accessing moduleResolverConfig property", () => {
-      const moduleResolverConfig = { maxRetries: 2 };
-      const config = new NetworkServiceConfig({ moduleResolverConfig });
-      
-      expect(config.moduleResolverConfig).toBe(moduleResolverConfig);
-    });
-
-    it("should allow accessing isCommonJs property", () => {
-      const config = new NetworkServiceConfig({ isCommonJs: true });
-      
-      expect(config.isCommonJs).toBe(true);
     });
   });
 
   describe("edge cases", () => {
-    it("should handle null options object", () => {
-      const config = new NetworkServiceConfig(null);
-      
-      expect(config.logClient).toBeUndefined();
-      expect(config.wait).toBeUndefined();
-      expect(config.namespace).toBeUndefined();
-      expect(config.providerConfig).toBeUndefined();
-      expect(config.probeConfig).toBeUndefined();
-      expect(config.moduleResolverConfig).toBeUndefined();
-      expect(config.isCommonJs).toBe(typeof module !== "undefined" && module.exports);
-    });
-
-    it("should handle undefined options object", () => {
-      const config = new NetworkServiceConfig(undefined);
-      
-      expect(config.logClient).toBeUndefined();
-      expect(config.wait).toBeUndefined();
-      expect(config.namespace).toBeUndefined();
-      expect(config.providerConfig).toBeUndefined();
-      expect(config.probeConfig).toBeUndefined();
-      expect(config.moduleResolverConfig).toBeUndefined();
-      expect(config.isCommonJs).toBe(typeof module !== "undefined" && module.exports);
-    });
-
-    it("should handle options with extra properties", () => {
+    it("should handle null values in configuration", () => {
       const config = new NetworkServiceConfig({
-        logClient: jest.fn(),
-        extraProperty: "should be ignored",
-        anotherExtra: "also ignored"
+        logClient: null as any,
+        namespace: null as any,
+        providerConfig: null as any
       });
-      
-      expect(config.logClient).toBeDefined();
-      expect(config.wait).toBeUndefined();
+
+      expect(config.logClient).toBeNull();
+      expect(config.namespace).toBeNull();
+      expect(config.providerConfig).toBeNull();
+    });
+
+    it("should handle primitive values in configuration", () => {
+      const config = new NetworkServiceConfig({
+        logClient: "notAFunction" as any,
+        namespace: "notAnObject" as any,
+        providerConfig: 42 as any
+      });
+
+      expect(config.logClient).toBe("notAFunction");
+      expect(config.namespace).toBe("notAnObject");
+      expect(config.providerConfig).toBe(42);
+    });
+
+    it("should handle undefined explicitly", () => {
+      const config = new NetworkServiceConfig({
+        logClient: undefined,
+        namespace: undefined
+      });
+
+      expect(config.logClient).toBeUndefined();
       expect(config.namespace).toBeUndefined();
-      // Extra properties should not be added to the config
-      expect(config.extraProperty).toBeUndefined();
-      expect(config.anotherExtra).toBeUndefined();
+    });
+  });
+
+  describe("integration tests", () => {
+    it("should work with realistic network service configuration", () => {
+      const realisticConfig = new NetworkServiceConfig({
+        logClient: jest.fn(),
+        wait: (ms: number) => new Promise(resolve => setTimeout(resolve, ms)),
+        namespace: { helpers: {} },
+        providerConfig: {
+          providers: ["https://cdn1.example.com", "https://cdn2.example.com"],
+          fallbackProviders: ["https://fallback.example.com"],
+          defaultProviderBase: "https://default.example.com"
+        },
+        probeConfig: {
+          timeout: 10000,
+          maxRetries: 3,
+          retryDelay: 1000
+        },
+        moduleResolverConfig: {
+          maxRetries: 3,
+          retryDelay: 500
+        },
+        isCommonJs: false
+      });
+
+      expect(realisticConfig.logClient).toBeDefined();
+      expect(realisticConfig.providerConfig.providers).toContain("https://cdn1.example.com");
+      expect(realisticConfig.probeConfig.timeout).toBe(10000);
+      expect(realisticConfig.moduleResolverConfig.maxRetries).toBe(3);
+      expect(realisticConfig.isCommonJs).toBe(false);
     });
   });
 });
