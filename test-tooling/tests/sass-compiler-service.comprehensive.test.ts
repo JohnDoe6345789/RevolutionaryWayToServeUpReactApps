@@ -190,16 +190,22 @@ describe("SassCompilerService", () => {
     });
 
     it("should compile SCSS using sync object-based SassImpl", async () => {
+      // Mock fetch to return SCSS content
+      mockFetch.mockResolvedValue({
+        ok: true,
+        text: jest.fn().mockResolvedValue("$test: red; .test { color: $test; }")
+      });
+
       const mockSassObject = {
         compile: (scss) => {
           return { css: "compiled css" };
         }
       };
-      
+
       sassCompilerService.SassImpl = mockSassObject;
-      
+
       const result = await sassCompilerService.compileSCSS("test.scss");
-      
+
       expect(result).toBe("compiled css");
     });
 

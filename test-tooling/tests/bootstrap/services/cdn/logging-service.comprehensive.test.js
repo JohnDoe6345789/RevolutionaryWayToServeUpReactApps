@@ -330,17 +330,20 @@ describe("LoggingService", () => {
     });
 
     it("should detect CI logging from config override", () => {
+      // Change hostname to something other than localhost to avoid the hostname condition
+      global.window.location.hostname = "example.com";
+
       const mockServiceRegistry = {
         register: jest.fn()
       };
-      
+
       const config = new LoggingServiceConfig({
         namespace: { helpers: {} },
         serviceRegistry: mockServiceRegistry
       });
       const service = new LoggingService(config);
       service.initialize();
-      
+
       expect(service.detectCiLogging({ ciLogging: true })).toBe(true);
       expect(service.detectCiLogging({ ciLogging: false })).toBe(false);
     });
