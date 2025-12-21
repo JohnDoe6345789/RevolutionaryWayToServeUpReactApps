@@ -1,5 +1,5 @@
-const BaseFactory = require('./base-factory.js');
-const TsxCompilerService = require('../services/local/tsx-compiler-service.js');
+const BaseFactory = require('../base-factory.js');
+const TsxCompilerService = require('../../services/local/tsx-compiler-service.js');
 
 /**
  * Factory for creating TsxCompilerService instances.

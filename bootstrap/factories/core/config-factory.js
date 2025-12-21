@@ -1,19 +1,43 @@
-const BaseFactory = require('../base-factory.js');
+const BaseFactory = require('./base-factory.js');
 
 /**
- * Base factory for creating configuration instances.
+ * ConfigFactory - Factory for creating configuration instances
  */
 class ConfigFactory extends BaseFactory {
   /**
-   * Creates a new configuration instance with the given options.
-   * @param {Object} options - Configuration options to pass to the constructor
-   * @param {Function} ConfigClass - The configuration class to instantiate
+   * Creates a new ConfigFactory instance
+   * @param {Object} [config={}] Configuration for the factory
    */
-  create(options = {}, ConfigClass) {
-    if (!ConfigClass) {
-      throw new Error("ConfigClass is required for ConfigFactory");
-    }
-    return new ConfigClass(options);
+  constructor(config = {}) {
+    super(config);
+    this._registerDefaultConfigs();
+  }
+
+  /**
+   * Registers default configuration types with the factory
+   */
+  _registerDefaultConfigs() {
+    // Register common config types here
+  }
+
+  /**
+   * Creates a config instance based on the provided type and options
+   * @param {string} type The config type
+   * @param {Object} options The config options
+   * @returns {Object} The created config instance
+   */
+  createConfig(type, options = {}) {
+    return this.create(type, options);
+  }
+
+  /**
+   * Registers a config builder with the factory
+   * @param {string} type The config type
+   * @param {Function} builder The config builder function
+   * @returns {ConfigFactory} The factory instance for chaining
+   */
+  registerConfig(type, builder) {
+    return this.register(type, builder);
   }
 }
 

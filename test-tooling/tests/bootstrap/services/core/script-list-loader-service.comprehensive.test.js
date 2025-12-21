@@ -233,7 +233,7 @@ describe("ScriptListLoader", () => {
       
       await promise;
       
-      expect(mockDocument.documentElement.appendChild).toHaveBeenCalled();
+      expect(mockDocument.documentElement.appendChild.calls.length).toBeGreaterThan(0);
     });
   });
 
