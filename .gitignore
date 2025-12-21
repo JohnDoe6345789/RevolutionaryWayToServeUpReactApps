@@ -32,3 +32,5 @@ actions-runner/
 python/runner_setup.txt
 .bun-cache
 coverage/
+
+test-tooling/tests/.log/linkSrcNodeModules.log
