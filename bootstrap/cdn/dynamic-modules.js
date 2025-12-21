@@ -1,19 +1,18 @@
 /**
  * Entry point that registers the CDN dynamic modules helper into the bootstrap namespace.
  */
+/**
+ * Bootstraps the CDN dynamic module loader so other helpers can source icons.
+ */
 const DynamicModulesService = require("../services/cdn/dynamic-modules-service.js");
 const DynamicModulesConfig = require("../configs/dynamic-modules.js");
-const serviceRegistry = require("../services/service-registry-instance.js");
-const GlobalRootHandler = require("../constants/global-root-handler.js");
+const BaseEntryPoint = require("../entrypoints/base-entrypoint.js");
 
-const rootHandler = new GlobalRootHandler();
-const dynamicModulesService = new DynamicModulesService(
-  new DynamicModulesConfig({
-    serviceRegistry,
-    namespace: rootHandler.getNamespace(),
-  })
-);
-dynamicModulesService.initialize();
-dynamicModulesService.install();
+const entrypoint = new BaseEntryPoint({
+  ServiceClass: DynamicModulesService,
+  ConfigClass: DynamicModulesConfig,
+  configFactory: ({ namespace }) => ({ namespace }),
+});
+const dynamicModulesService = entrypoint.run();
 
 module.exports = dynamicModulesService.exports;

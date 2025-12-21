@@ -1,19 +1,12 @@
-/**
- * Entry point that wires the module loader into the shared bootstrap namespace.
- */
 const ModuleLoaderAggregator = require("./services/core/module-loader-service.js");
 const ModuleLoaderConfig = require("./configs/module-loader.js");
-const serviceRegistry = require("./services/service-registry-instance.js");
-const GlobalRootHandler = require("../constants/global-root-handler.js");
+const BaseEntryPoint = require("./base-entrypoint.js");
 
-const rootHandler = new GlobalRootHandler();
-const moduleLoader = new ModuleLoaderAggregator(
-  new ModuleLoaderConfig({
-    serviceRegistry,
-    environmentRoot: rootHandler.root,
-  })
-);
-moduleLoader.initialize();
-moduleLoader.install();
+const entrypoint = new BaseEntryPoint({
+  ServiceClass: ModuleLoaderAggregator,
+  ConfigClass: ModuleLoaderConfig,
+  configFactory: ({ root }) => ({ environmentRoot: root }),
+});
+const moduleLoader = entrypoint.run();
 
 module.exports = moduleLoader.exports;

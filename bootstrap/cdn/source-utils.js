@@ -3,15 +3,13 @@
  */
 const SourceUtilsService = require("../services/cdn/source-utils-service.js");
 const SourceUtilsConfig = require("../configs/source-utils.js");
-const serviceRegistry = require("../services/service-registry-instance.js");
-const GlobalRootHandler = require("../constants/global-root-handler.js");
+const BaseEntryPoint = require("../entrypoints/base-entrypoint.js");
 
-const rootHandler = new GlobalRootHandler();
-const namespace = rootHandler.getNamespace();
-const sourceUtilsService = new SourceUtilsService(
-  new SourceUtilsConfig({ serviceRegistry, namespace })
-);
-sourceUtilsService.initialize();
-sourceUtilsService.install();
+const entrypoint = new BaseEntryPoint({
+  ServiceClass: SourceUtilsService,
+  ConfigClass: SourceUtilsConfig,
+  configFactory: ({ namespace }) => ({ namespace }),
+});
+const sourceUtilsService = entrypoint.run();
 
 module.exports = sourceUtilsService.exports;

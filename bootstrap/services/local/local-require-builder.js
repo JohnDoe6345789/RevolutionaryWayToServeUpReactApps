@@ -1,10 +1,11 @@
+const BaseHelper = require("../../helpers/base-helper.js");
 const LocalRequireBuilderConfig = require("../../configs/local-require-builder.js");
 
 /**
  * Builds the customized require/_async helpers for local modules.
  */
-class LocalRequireBuilder {
-  constructor(config = new LocalRequireBuilderConfig()) { this.config = config; this.initialized = false; }
+class LocalRequireBuilder extends BaseHelper {
+  constructor(config = new LocalRequireBuilderConfig()) { super(config); }
 
   initialize({ loadDynamicModule, isLocalModule }) {
     if (this.initialized) {
@@ -13,8 +14,8 @@ class LocalRequireBuilder {
     this.loadDynamicModule = loadDynamicModule;
     this.isLocalModule = isLocalModule;
     const registry = this.config.helperRegistry;
-    if (registry && !registry.isRegistered("localRequireBuilderInstance")) {
-      registry.register("localRequireBuilderInstance", this, {
+    if (registry) {
+      this._registerHelper("localRequireBuilderInstance", this, {
         folder: "services/local/helpers",
         domain: "helpers",
       });
