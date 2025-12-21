@@ -8,6 +8,7 @@ This folder holds the helper scripts that talk to CDNs, log bootstrap events, an
 - [`import-map-init.md`](import-map-init.md) – Populates the runtime import map by fetching `config.json` and wiring up the CDN helpers with the resolved providers.
 - [`logging.md`](logging.md) – Tracks CI-friendly log delivery, serializes event data, and ships errors back to the server endpoint when requested.
 - [`network.md`](network.md) – Probes CDN endpoints, resolves module URLs, and manages provider fallbacks for both direct and proxied modes.
+- [`network-entrypoint.md`](network-entrypoint.md) – Examines how the CDN network entry point initializes the proxy, logging, and helper namespaces before other CDN scripts run.
 - [`source-utils.md`](source-utils.md) – Scans source files for imports, preloads dynamic dependencies, and exposes helpers for executing source strings inside the loader.
 - [`tools.md`](tools.md) – Loads external helper globals, converts them into namespaces, and wires them into the module registry that the bootstrap runtime depends on.
 

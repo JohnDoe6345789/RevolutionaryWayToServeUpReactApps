@@ -17,6 +17,21 @@ This document outlines the Jest-driven unit suite housed inside `test-tooling/te
 - `test-tooling/tests/setupBun.ts` – Prepares Bun-specific globals before the suite runs.
 - `test-tooling/tests/setupTests.ts` – Re-exports React Testing Library helpers so matchers like `toBeInTheDocument` are available.
 
+## Documents
+
+- [`App.test.md`](App.test.md) – Summarizes how `App.test.tsx` verifies the hero, featured, and footer components.
+- [`bootstrap.test.md`](bootstrap.test.md) – Records how `bootstrap.test.ts` exercises the core bootstrap helpers under mocked CDN responses.
+- [`bootstrap.cdn.test.md`](bootstrap.cdn.test.md) – Describes CDN expectations covered by `bootstrap.cdn.test.ts`.
+- [`bootstrap.require-default.test.md`](bootstrap.require-default.test.md) – Explains the default `_async` loader behavior validated in the suite.
+- [`components.test.md`](components.test.md) – Details the component harness used to ensure UI sections render with themes/data configurations.
+- [`data.test.md`](data.test.md) – Notes the data module expectations checked by the suite.
+- [`local-paths.test.md`](local-paths.test.md) – Outlines the path helper coverage provided by the tests.
+- [`proxy-mode.test.md`](proxy-mode.test.md) – Covers the CDN proxy heuristics verified by the proxy-mode tests.
+- [`global.d.md`](global.d.md) – Lists the global typings the Jest suite relies on.
+- [`linkSrcNodeModules.md`](linkSrcNodeModules.md) – Explains how the tests create a consistent module path environment.
+- [`setupBun.md`](setupBun.md) – Describes the Bun-specific setup steps that run before the suite.
+- [`setupTests.md`](setupTests.md) – Details the helpers exported for React Testing Library matchers.
+
 ## Navigation
 
 - [API reference overview](../../README.md)

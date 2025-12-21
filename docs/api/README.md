@@ -12,3 +12,8 @@ This folder groups the documented entry points for the bootstrap runtime, UI she
 - **Test tooling** – [test-tooling/tests/README.md](test-tooling/tests/README.md) outlines the Jest-based component/unit suites.
 
 Run `scripts/doc_coverage.py` after adding or updating docs to refresh the documented coverage summary.
+
+## Documents
+
+- [`bootstrap.md`](bootstrap.md) – Provides the API entry point for the bootstrap runtime, including the bundled helpers that run in the browser and Node.
+- [`index.html.md`](index.html.md) – Details how `index.html` wires in the script manifest, CDN helpers, and the bootstrap entry point before rendering the app.
