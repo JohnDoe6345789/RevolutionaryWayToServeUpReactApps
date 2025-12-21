@@ -1,4 +1,4 @@
-const EnvInitializer = require("../../../../bootstrap/services/core/env-service.js");
+const EnvInitializer = require("../../../../../bootstrap/services/core/env-service.js");
 
 describe("EnvInitializer", () => {
   let mockGlobal;
@@ -31,8 +31,9 @@ describe("EnvInitializer", () => {
     });
 
     it("should inherit from BaseService", () => {
+      const BaseService = require("../../../../../bootstrap/services/base-service.js");
       const envInitializer = new EnvInitializer(config);
-      expect(envInitializer instanceof require("../../../../bootstrap/services/base-service.js")).toBe(true);
+      expect(envInitializer instanceof BaseService).toBe(true);
     });
   });
 

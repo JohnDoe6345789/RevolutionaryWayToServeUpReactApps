@@ -1,5 +1,5 @@
 // Comprehensive test suite for SassCompilerService class
-const SassCompilerService = require("../../../../bootstrap/services/local/sass-compiler-service.js");
+const SassCompilerService = require("../../../../../bootstrap/services/local/sass-compiler-service.js");
 
 // Simple mock function implementation for Bun
 function createMockFunction() {
@@ -56,7 +56,8 @@ describe("SassCompilerService", () => {
       fetch: mockFetch,
       document: mockDocument,
       SassImpl: mockSassImpl,
-      serviceRegistry: mockServiceRegistry
+      serviceRegistry: mockServiceRegistry,
+      namespace: { helpers: {} }
     };
 
     service = new SassCompilerService(mockConfig);

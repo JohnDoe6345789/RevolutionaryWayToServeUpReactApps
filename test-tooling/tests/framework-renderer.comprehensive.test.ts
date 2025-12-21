@@ -218,21 +218,22 @@ describe("FrameworkRenderer", () => {
     it("should throw if createElement function is not found", () => {
       const mockRootElement = { render: jest.fn() };
       mockDocument.getElementById.mockReturnValue(mockRootElement);
-      
+
       const mockCreateRoot = jest.fn().mockReturnValue(mockRootElement);
-      
+
       const registryWithMissingCreateElement = {
         dom: { createRoot: mockCreateRoot },
         react: {} // Missing createElement
       };
-      
-      const config = { 
-        render: { 
-          domModule: "dom", 
-          reactModule: "react"
-        } 
+
+      const config = {
+        render: {
+          domModule: "dom",
+          reactModule: "react",
+          createRoot: "createRoot"  // Need to specify this to get past the earlier check
+        }
       };
-      
+
       expect(() => {
         frameworkRenderer.render(config, registryWithMissingCreateElement, mockApp);
       }).toThrow("createElement not found on React module");
@@ -241,23 +242,24 @@ describe("FrameworkRenderer", () => {
     it("should throw if render method is not found", () => {
       const mockRootElement = { }; // No render method
       mockDocument.getElementById.mockReturnValue(mockRootElement);
-      
+
       const mockCreateRoot = jest.fn().mockReturnValue(mockRootElement);
       const mockCreateElement = jest.fn().mockReturnValue("element");
-      
+
       const registryWithMocks = {
         dom: { createRoot: mockCreateRoot },
         react: { createElement: mockCreateElement }
       };
-      
-      const config = { 
-        render: { 
-          domModule: "dom", 
+
+      const config = {
+        render: {
+          domModule: "dom",
           reactModule: "react",
+          createRoot: "createRoot",  // Need to specify this to get past the earlier check
           renderMethod: "nonexistentMethod"
-        } 
+        }
       };
-      
+
       expect(() => {
         frameworkRenderer.render(config, registryWithMocks, mockApp);
       }).toThrow("Render method not found: nonexistentMethod");
@@ -319,27 +321,28 @@ describe("FrameworkRenderer", () => {
 
     it("should handle complete rendering flow", () => {
       frameworkRenderer.initialize();
-      
+
       const mockRootElement = { render: jest.fn() };
       mockDocument.getElementById.mockReturnValue(mockRootElement);
-      
+
       const mockCreateRoot = jest.fn().mockReturnValue(mockRootElement);
       const mockCreateElement = jest.fn().mockReturnValue("element");
-      
+
       const registry = {
         dom: { createRoot: mockCreateRoot },
         react: { createElement: mockCreateElement }
       };
-      
-      const config = { 
-        render: { 
-          domModule: "dom", 
-          reactModule: "react" 
-        } 
+
+      const config = {
+        render: {
+          domModule: "dom",
+          reactModule: "react",
+          createRoot: "createRoot"  // Need to specify this
+        }
       };
-      
+
       frameworkRenderer.render(config, registry, mockApp);
-      
+
       // Verify all steps happened
       expect(mockDocument.getElementById).toHaveBeenCalledWith("root");
       expect(mockCreateRoot).toHaveBeenCalledWith(mockRootElement);

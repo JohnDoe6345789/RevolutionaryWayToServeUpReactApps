@@ -156,7 +156,7 @@ describe("TsxCompilerService", () => {
       expect(typeof service.compileTSX).toBe('function');
     });
 
-    test("should throw error if fetch is unavailable", () => {
+    test("should throw error if fetch is unavailable", async () => {
       const mockServiceRegistry = {
         register: () => {}
       };
@@ -175,9 +175,7 @@ describe("TsxCompilerService", () => {
       // Set fetchImpl to null to trigger error
       service.fetchImpl = null;
 
-      expect(() => {
-        service.compileTSX("entry.tsx", () => {});
-      }).toThrow("Fetch is unavailable when compiling TSX");
+      await expect(service.compileTSX("entry.tsx", () => {})).rejects.toThrow("Fetch is unavailable when compiling TSX");
     });
   });
 

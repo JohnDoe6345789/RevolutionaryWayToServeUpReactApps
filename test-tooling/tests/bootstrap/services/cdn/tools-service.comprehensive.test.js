@@ -301,18 +301,17 @@ describe("ToolsLoaderService", () => {
 
   describe("loadModules method", () => {
     it("should load ESM modules", async () => {
-      // Since the test environment might not handle dynamic imports well,
-      // we'll test the logic by mocking the import call
-      const importSpy = jest.spyOn(global, 'import').mockResolvedValue({ default: "esmModule", namedExport: "value" });
-
+      // Test the logic by checking if the service correctly handles ESM format
+      // We'll use a spy to check the flow without triggering actual imports
       const mockServiceRegistry = {
         register: jest.fn()
       };
 
       const mockLogging = { logClient: jest.fn() };
+      // Mock resolveModuleUrl to return a fake URL that won't trigger actual loading
       const mockNetwork = {
         loadScript: jest.fn(() => Promise.resolve()),
-        resolveModuleUrl: jest.fn(() => Promise.resolve("https://example.com/module.js"))
+        resolveModuleUrl: jest.fn((mod) => Promise.resolve(`fake://${mod.name}.js`))
       };
 
       const config = new ToolsLoaderConfig({
@@ -324,20 +323,27 @@ describe("ToolsLoaderService", () => {
       const service = new ToolsLoaderService(config);
       service.initialize();
 
+      // Mock the import function for the duration of this test
+      const originalImport = global.import;
+      const importSpy = jest.fn(() => Promise.resolve({ default: "esmModule", namedExport: "value" }));
+      global.import = importSpy;
+
       const modules = [{ name: "testModule", global: "TestGlobal", format: "esm" }];
       const result = await service.loadModules(modules);
 
-      expect(importSpy).toHaveBeenCalledWith("https://example.com/module.js");
+      // Verify that import was called with the resolved URL
+      expect(importSpy).toHaveBeenCalledWith("fake://testModule.js");
       expect(result.testModule).toBeDefined();
       expect(result.testModule.__esModule).toBe(true);
       expect(mockLogging.logClient).toHaveBeenCalledWith("module:loaded", {
         name: "testModule",
-        url: "https://example.com/module.js",
+        url: "fake://testModule.js",
         global: "TestGlobal",
         format: "esm"
       });
 
-      importSpy.mockRestore();
+      // Restore the original import
+      global.import = originalImport;
     });
 
     it("should load global format modules", async () => {

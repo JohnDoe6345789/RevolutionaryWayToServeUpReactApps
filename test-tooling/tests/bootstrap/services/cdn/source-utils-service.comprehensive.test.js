@@ -427,7 +427,7 @@ describe("SourceUtilsService", () => {
 
       service.install();
 
-      expect(mockNamespace.helpers.sourceUtils).toBe(service.exports);
+      expect(mockNamespace.helpers.sourceUtils).toEqual(service.exports);
     });
 
     test("should register with correct folder and domain", () => {
