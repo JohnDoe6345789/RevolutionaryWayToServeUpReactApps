@@ -102,9 +102,11 @@ describe("EnvInitializer", () => {
       const mockGlobal = {};
       const config = new EnvInitializerConfig({ global: mockGlobal });
       const service = new EnvInitializer(config);
-      
+
+      // Need to set the global property manually for this test since initialize hasn't been called
+      service.global = mockGlobal;
       service.ensureProxyMode();
-      
+
       expect(mockGlobal.__RWTRA_PROXY_MODE__).toBe("auto");
     });
 
@@ -112,9 +114,11 @@ describe("EnvInitializer", () => {
       const mockGlobal = { __RWTRA_PROXY_MODE__: "proxy" };
       const config = new EnvInitializerConfig({ global: mockGlobal });
       const service = new EnvInitializer(config);
-      
+
+      // Need to set the global property manually for this test since initialize hasn't been called
+      service.global = mockGlobal;
       service.ensureProxyMode();
-      
+
       expect(mockGlobal.__RWTRA_PROXY_MODE__).toBe("proxy");
     });
 
@@ -122,9 +126,11 @@ describe("EnvInitializer", () => {
       const mockGlobal = { __RWTRA_PROXY_MODE__: null };
       const config = new EnvInitializerConfig({ global: mockGlobal });
       const service = new EnvInitializer(config);
-      
+
+      // Need to set the global property manually for this test since initialize hasn't been called
+      service.global = mockGlobal;
       service.ensureProxyMode();
-      
+
       expect(mockGlobal.__RWTRA_PROXY_MODE__).toBe(null);
     });
   });

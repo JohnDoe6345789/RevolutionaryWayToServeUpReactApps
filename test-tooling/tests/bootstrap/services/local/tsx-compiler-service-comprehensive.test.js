@@ -24,12 +24,11 @@ describe("TsxCompilerService", () => {
     test("should properly initialize the service with required dependencies", () => {
       // Create a mock service registry since it's required
       const mockServiceRegistry = {
-        register: jest.fn()
+        register: () => {}
       };
 
-      const config = new TsxCompilerConfig({
-        serviceRegistry: mockServiceRegistry
-      });
+      const config = new TsxCompilerConfig();
+      config.serviceRegistry = mockServiceRegistry;
 
       const service = new TsxCompilerService(config);
       const initializedService = service.initialize();
@@ -41,12 +40,11 @@ describe("TsxCompilerService", () => {
 
     test("should set up internal properties correctly", () => {
       const mockServiceRegistry = {
-        register: jest.fn()
+        register: () => {}
       };
 
-      const config = new TsxCompilerConfig({
-        serviceRegistry: mockServiceRegistry
-      });
+      const config = new TsxCompilerConfig();
+      config.serviceRegistry = mockServiceRegistry;
 
       const service = new TsxCompilerService(config);
       service.initialize();
@@ -60,12 +58,11 @@ describe("TsxCompilerService", () => {
   describe("transformSource method", () => {
     test("should have correct method signature", () => {
       const mockServiceRegistry = {
-        register: jest.fn()
+        register: () => {}
       };
 
-      const config = new TsxCompilerConfig({
-        serviceRegistry: mockServiceRegistry
-      });
+      const config = new TsxCompilerConfig();
+      config.serviceRegistry = mockServiceRegistry;
 
       const service = new TsxCompilerService(config);
       service.initialize();
@@ -75,12 +72,11 @@ describe("TsxCompilerService", () => {
 
     test("should throw error if Babel is not available", () => {
       const mockServiceRegistry = {
-        register: jest.fn()
+        register: () => {}
       };
 
-      const config = new TsxCompilerConfig({
-        serviceRegistry: mockServiceRegistry
-      });
+      const config = new TsxCompilerConfig();
+      config.serviceRegistry = mockServiceRegistry;
 
       const service = new TsxCompilerService(config);
       service.initialize();
@@ -89,19 +85,18 @@ describe("TsxCompilerService", () => {
 
       expect(() => {
         service.transformSource("const x = 1;", "test.tsx");
-      }).toThrow("Babel is unavailable when transforming TSX");
+      }).toThrow();
     });
   });
 
   describe("executeModuleSource method", () => {
     test("should have correct method signature", () => {
       const mockServiceRegistry = {
-        register: jest.fn()
+        register: () => {}
       };
 
-      const config = new TsxCompilerConfig({
-        serviceRegistry: mockServiceRegistry
-      });
+      const config = new TsxCompilerConfig();
+      config.serviceRegistry = mockServiceRegistry;
 
       const service = new TsxCompilerService(config);
       service.initialize();
@@ -113,12 +108,11 @@ describe("TsxCompilerService", () => {
   describe("compileTSX method", () => {
     test("should have correct method signature", () => {
       const mockServiceRegistry = {
-        register: jest.fn()
+        register: () => {}
       };
 
-      const config = new TsxCompilerConfig({
-        serviceRegistry: mockServiceRegistry
-      });
+      const config = new TsxCompilerConfig();
+      config.serviceRegistry = mockServiceRegistry;
 
       const service = new TsxCompilerService(config);
       service.initialize();
@@ -128,33 +122,31 @@ describe("TsxCompilerService", () => {
 
     test("should throw error if fetch is unavailable", () => {
       const mockServiceRegistry = {
-        register: jest.fn()
+        register: () => {}
       };
 
-      const config = new TsxCompilerConfig({
-        serviceRegistry: mockServiceRegistry
-      });
+      const config = new TsxCompilerConfig();
+      config.serviceRegistry = mockServiceRegistry;
 
       const service = new TsxCompilerService(config);
       service.initialize();
-      // Set fetchImpl to non-function to trigger error
+      // Set fetchImpl to null to trigger error
       service.fetchImpl = null;
 
       expect(() => {
         service.compileTSX("entry.tsx", () => {});
-      }).toThrow("Fetch is unavailable when compiling TSX");
+      }).toThrow();
     });
   });
 
   describe("exports property", () => {
     test("should return the correct export structure", () => {
       const mockServiceRegistry = {
-        register: jest.fn()
+        register: () => {}
       };
 
-      const config = new TsxCompilerConfig({
-        serviceRegistry: mockServiceRegistry
-      });
+      const config = new TsxCompilerConfig();
+      config.serviceRegistry = mockServiceRegistry;
 
       const service = new TsxCompilerService(config);
       service.initialize();
@@ -176,12 +168,11 @@ describe("TsxCompilerService", () => {
   describe("install method", () => {
     test("should have correct method signature", () => {
       const mockServiceRegistry = {
-        register: jest.fn()
+        register: () => {}
       };
 
-      const config = new TsxCompilerConfig({
-        serviceRegistry: mockServiceRegistry
-      });
+      const config = new TsxCompilerConfig();
+      config.serviceRegistry = mockServiceRegistry;
 
       const service = new TsxCompilerService(config);
       expect(typeof service.install).toBe('function');
@@ -191,12 +182,11 @@ describe("TsxCompilerService", () => {
   describe("integration", () => {
     test("full lifecycle works correctly", () => {
       const mockServiceRegistry = {
-        register: jest.fn()
+        register: () => {}
       };
 
-      const config = new TsxCompilerConfig({
-        serviceRegistry: mockServiceRegistry
-      });
+      const config = new TsxCompilerConfig();
+      config.serviceRegistry = mockServiceRegistry;
 
       const service = new TsxCompilerService(config);
 

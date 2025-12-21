@@ -69,15 +69,15 @@ describe("HelperRegistry", () => {
       registry.register("stringHelper", helper1);
       expect(registry.getHelper("stringHelper")).toBe(helper1);
 
-      // Test with number converted to string
+      // Test with number - it should be converted to string internally
       const helper2 = { type: "number" };
       registry.register(123, helper2);
-      expect(registry.getHelper("123")).toBe(helper2);
+      expect(registry.getHelper("123")).toBe(helper2);  // Keys are converted to strings in JavaScript Maps
 
-      // Test with other primitive converted to string
+      // Test with boolean - it should be converted to string internally
       const helper3 = { type: "boolean" };
       registry.register(true, helper3);
-      expect(registry.getHelper("true")).toBe(helper3);
+      expect(registry.getHelper("true")).toBe(helper3);  // Keys are converted to strings in JavaScript Maps
     });
   });
 
@@ -209,7 +209,7 @@ describe("HelperRegistry", () => {
       expect(typeof registry.getHelper("functionHelper")).toBe("function");
       expect(typeof registry.getHelper("objectHelper")).toBe("object");
       expect(typeof registry.getHelper("classHelper")).toBe("function"); // class is function in JS
-      expect(registry.getHelper("primitiveHelper")).toBe("string");
+      expect(registry.getHelper("primitiveHelper")).toBe("stringHelper"); // The actual value, not its name
       expect(registry.getHelper("nullHelper")).toBeNull();
     });
   });
