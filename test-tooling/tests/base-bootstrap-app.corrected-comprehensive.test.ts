@@ -143,11 +143,13 @@ describe('BaseBootstrapApp', () => {
     it('should resolve helpers via require when in CommonJS', () => {
       // Set up CommonJS environment
       global.module = { exports: {} };
-      
+
       // Mock the require function before creating the app
       const mockHelper = { test: 'helper' };
-      global.require = jest.fn().mockReturnValue(mockHelper);
-      
+      const mockRequire = jest.fn().mockReturnValue(mockHelper);
+      const originalRequire = global.require;
+      global.require = mockRequire;
+
       const mockRootHandler = new GlobalRootHandler();
       const app = new BaseBootstrapApp({ rootHandler: mockRootHandler });
 
@@ -155,8 +157,11 @@ describe('BaseBootstrapApp', () => {
       const result = app._resolveHelper('testHelper', './path/to/helper');
 
       // Verify that require was called with the correct path
-      expect(global.require).toHaveBeenCalledWith('./path/to/helper');
+      expect(mockRequire).toHaveBeenCalledWith('./path/to/helper');
       expect(result).toEqual(mockHelper);
+
+      // Restore original require
+      global.require = originalRequire;
     });
 
     it('should resolve helpers from namespace when not in CommonJS', () => {

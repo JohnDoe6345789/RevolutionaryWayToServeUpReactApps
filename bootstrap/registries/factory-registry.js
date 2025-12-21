@@ -7,6 +7,7 @@ class FactoryRegistry {
    */
   constructor() {
     this._factories = new Map();
+    this._factoryProviders = new Map(); // Map of factory providers for lazy loading
   }
 
   /**
@@ -16,11 +17,11 @@ class FactoryRegistry {
     if (!name) {
       throw new Error("Factory name is required");
     }
-    
+
     if (arguments.length !== 4) {
       throw new Error("FactoryRegistry.register requires exactly 4 parameters: (name, factory, metadata, requiredDependencies)");
     }
-    
+
     if (this._factories.has(name)) {
       throw new Error("Factory already registered: " + name);
     }
@@ -28,10 +29,40 @@ class FactoryRegistry {
   }
 
   /**
+   * Registers a factory provider function that will be called to create the factory when needed.
+   */
+  registerProvider(name, provider, metadata, requiredDependencies) {
+    if (!name) {
+      throw new Error("Factory name is required");
+    }
+
+    if (arguments.length !== 4) {
+      throw new Error("FactoryRegistry.registerProvider requires exactly 4 parameters: (name, provider, metadata, requiredDependencies)");
+    }
+
+    if (this._factoryProviders.has(name)) {
+      throw new Error("Factory provider already registered: " + name);
+    }
+    this._factoryProviders.set(name, { provider, metadata: metadata || {}, requiredDependencies: requiredDependencies || [] });
+  }
+
+  /**
    * Creates an instance using the registered factory with the provided dependencies.
+   * If the factory is not yet registered, attempts to load it from a provider.
    */
   create(name, dependencies = {}) {
-    const entry = this._factories.get(name);
+    // First, try to get the factory directly
+    let entry = this._factories.get(name);
+
+    // If not found, try to load it from a provider
+    if (!entry && this._factoryProviders.has(name)) {
+      const providerEntry = this._factoryProviders.get(name);
+      const factory = providerEntry.provider();
+      this._factories.set(name, { factory, metadata: providerEntry.metadata });
+      this._factoryProviders.delete(name); // Remove provider after loading
+      entry = this._factories.get(name);
+    }
+
     if (!entry) {
       throw new Error("Factory not found: " + name);
     }
@@ -46,15 +77,26 @@ class FactoryRegistry {
       }
     }
 
-    const factory = new entry.factory(dependencies);
-    return factory.create ? factory.create(dependencies) : factory;
+    const factoryInstance = new entry.factory();
+    return factoryInstance.create ? factoryInstance.create(dependencies) : new factoryInstance(dependencies);
   }
 
   /**
    * Returns the factory constructor that was registered under the given name.
+   * If the factory is not yet registered, attempts to load it from a provider.
    */
   getFactory(name) {
-    const entry = this._factories.get(name);
+    let entry = this._factories.get(name);
+
+    // If not found, try to load it from a provider
+    if (!entry && this._factoryProviders.has(name)) {
+      const providerEntry = this._factoryProviders.get(name);
+      const factory = providerEntry.provider();
+      this._factories.set(name, { factory, metadata: providerEntry.metadata });
+      this._factoryProviders.delete(name); // Remove provider after loading
+      entry = this._factories.get(name);
+    }
+
     return entry ? entry.factory : undefined;
   }
 
@@ -69,7 +111,17 @@ class FactoryRegistry {
    * Returns metadata that was attached to the named factory entry.
    */
   getMetadata(name) {
-    const entry = this._factories.get(name);
+    let entry = this._factories.get(name);
+
+    // If not found, try to load it from a provider
+    if (!entry && this._factoryProviders.has(name)) {
+      const providerEntry = this._factoryProviders.get(name);
+      const factory = providerEntry.provider();
+      this._factories.set(name, { factory, metadata: providerEntry.metadata });
+      this._factoryProviders.delete(name); // Remove provider after loading
+      entry = this._factories.get(name);
+    }
+
     return entry ? entry.metadata : undefined;
   }
 
@@ -77,7 +129,7 @@ class FactoryRegistry {
    * Indicates whether a factory with the given name already exists in the registry.
    */
   isRegistered(name) {
-    return this._factories.has(name);
+    return this._factories.has(name) || this._factoryProviders.has(name);
   }
 
   /**
@@ -85,6 +137,7 @@ class FactoryRegistry {
    */
   reset() {
     this._factories.clear();
+    this._factoryProviders.clear();
   }
 }
 
