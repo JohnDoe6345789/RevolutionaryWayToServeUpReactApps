@@ -137,7 +137,7 @@ describe("ModuleLoaderEnvironment", () => {
       const env = new ModuleLoaderEnvironment(mockRoot);
       
       expect(env.global).toBe(mockRoot);
-      expect(env.namespace).toEqual({});
+      expect(env.namespace).toEqual({ helpers: {} });
       expect(env.helpers).toEqual({});
       expect(typeof env.isCommonJs).toBe("boolean");
       
@@ -152,7 +152,7 @@ describe("ModuleLoaderEnvironment", () => {
       // The current implementation would overwrite it, which is expected behavior
       const env = new ModuleLoaderEnvironment(mockRoot);
       
-      expect(env.namespace).toEqual({});
+      expect(env.namespace).toEqual({ helpers: {} });
       expect(typeof mockRoot.__rwtraBootstrap).toBe("object");
       expect(mockRoot.__rwtraBootstrap).toBe(env.namespace);
     });

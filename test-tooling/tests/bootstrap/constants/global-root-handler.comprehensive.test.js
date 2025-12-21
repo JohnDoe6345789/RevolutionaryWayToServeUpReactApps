@@ -183,10 +183,15 @@ describe("GlobalRootHandler", () => {
       const mockRoot = { fetch: mockFetch };
       const handler = new GlobalRootHandler(mockRoot);
       const boundFetch = handler.getFetch();
-      
-      boundFetch();
-      expect(mockFetch).toHaveBeenCalledWith();
-      expect(mockFetch.mock.instances[0]).toBe(mockRoot);
+
+      // Call the bound fetch function
+      boundFetch("test");
+
+      // Verify that mockFetch was called with the correct 'this' context (the root)
+      // and with the argument passed to boundFetch
+      expect(mockFetch).toHaveBeenCalledWith("test");
+      // Check that the function was called with the correct 'this' context
+      expect(mockFetch.mock.contexts[0]).toBe(mockRoot);
     });
   });
 
