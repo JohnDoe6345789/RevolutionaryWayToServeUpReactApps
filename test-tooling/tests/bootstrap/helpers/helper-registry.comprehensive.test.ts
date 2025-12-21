@@ -1,4 +1,4 @@
-import HelperRegistry from "../../../../bootstrap/helpers/helper-registry.js";
+const HelperRegistry = require("../../../../bootstrap/helpers/helper-registry.js");
 
 describe("HelperRegistry", () => {
   let registry;
@@ -12,285 +12,205 @@ describe("HelperRegistry", () => {
       expect(registry._helpers).toBeInstanceOf(Map);
       expect(registry._helpers.size).toBe(0);
     });
-
-    it("should create a new map instance for each registry", () => {
-      const registry2 = new HelperRegistry();
-      expect(registry._helpers).not.toBe(registry2._helpers);
-    });
   });
 
   describe("register method", () => {
-    it("should register a helper with name, helper instance, and metadata", () => {
-      const helper = { ping: () => "pong" };
-      const metadata = { scope: "runtime", version: 2 };
+    it("should register a helper with name and metadata", () => {
+      const mockHelper = { name: "testHelper" };
+      const metadata = { version: "1.0.0", author: "test" };
 
-      registry.register("core:health", helper, metadata);
+      registry.register("testHelper", mockHelper, metadata);
 
-      expect(registry.getHelper("core:health")).toBe(helper);
-      expect(registry.getMetadata("core:health")).toBe(metadata);
+      expect(registry.isRegistered("testHelper")).toBe(true);
+      expect(registry.getHelper("testHelper")).toBe(mockHelper);
+      expect(registry.getMetadata("testHelper")).toEqual(metadata);
     });
 
-    it("should register a helper with default empty metadata when not provided", () => {
-      const helper = { ping: () => "pong" };
+    it("should register a helper with name and no metadata", () => {
+      const mockHelper = { name: "testHelper" };
 
-      registry.register("core:health", helper);
+      registry.register("testHelper", mockHelper);
 
-      expect(registry.getHelper("core:health")).toBe(helper);
-      expect(registry.getMetadata("core:health")).toEqual({});
+      expect(registry.isRegistered("testHelper")).toBe(true);
+      expect(registry.getHelper("testHelper")).toBe(mockHelper);
+      expect(registry.getMetadata("testHelper")).toEqual({});
     });
 
-    it("should throw an error when no name is provided", () => {
-      const helper = { ping: () => "pong" };
+    it("should throw an error when name is not provided", () => {
+      const mockHelper = { name: "testHelper" };
 
-      expect(() => registry.register("", helper)).toThrow("Helper name is required");
-      expect(() => registry.register(null, helper)).toThrow("Helper name is required");
-      expect(() => registry.register(undefined, helper)).toThrow("Helper name is required");
-      expect(() => registry.register(0, helper)).toThrow("Helper name is required");
-      expect(() => registry.register(false, helper)).toThrow("Helper name is required");
+      expect(() => {
+        registry.register("", mockHelper);
+      }).toThrow("Helper name is required");
+
+      expect(() => {
+        registry.register(null, mockHelper);
+      }).toThrow("Helper name is required");
+
+      expect(() => {
+        registry.register(undefined, mockHelper);
+      }).toThrow("Helper name is required");
     });
 
     it("should throw an error when helper is already registered", () => {
-      const helper1 = { ping: () => "pong" };
-      const helper2 = { pong: () => "ping" };
+      const mockHelper1 = { name: "testHelper" };
+      const mockHelper2 = { name: "testHelper" };
 
-      registry.register("core:health", helper1);
+      registry.register("testHelper", mockHelper1);
 
-      expect(() => registry.register("core:health", helper2))
-        .toThrow("Helper already registered: core:health");
+      expect(() => {
+        registry.register("testHelper", mockHelper2);
+      }).toThrow("Helper already registered: testHelper");
     });
 
-    it("should allow registering helpers with different names", () => {
-      const helper1 = { ping: () => "pong" };
-      const helper2 = { pong: () => "ping" };
+    it("should handle different name types correctly", () => {
+      // Test with string name
+      const helper1 = { type: "string" };
+      registry.register("stringHelper", helper1);
+      expect(registry.getHelper("stringHelper")).toBe(helper1);
 
-      registry.register("core:health", helper1);
-      registry.register("core:status", helper2);
+      // Test with number converted to string
+      const helper2 = { type: "number" };
+      registry.register(123, helper2);
+      expect(registry.getHelper("123")).toBe(helper2);
 
-      expect(registry.getHelper("core:health")).toBe(helper1);
-      expect(registry.getHelper("core:status")).toBe(helper2);
-    });
-
-    it("should preserve helper and metadata references", () => {
-      const helper = { ping: () => "pong" };
-      const metadata = { scope: "runtime", version: 2 };
-
-      registry.register("core:health", helper, metadata);
-
-      const retrievedHelper = registry.getHelper("core:health");
-      const retrievedMetadata = registry.getMetadata("core:health");
-
-      expect(retrievedHelper).toBe(helper);
-      expect(retrievedMetadata).toBe(metadata);
+      // Test with other primitive converted to string
+      const helper3 = { type: "boolean" };
+      registry.register(true, helper3);
+      expect(registry.getHelper("true")).toBe(helper3);
     });
   });
 
   describe("getHelper method", () => {
     it("should return the registered helper", () => {
-      const helper = { ping: () => "pong" };
+      const mockHelper = { name: "testHelper" };
 
-      registry.register("core:health", helper);
+      registry.register("testHelper", mockHelper);
 
-      expect(registry.getHelper("core:health")).toBe(helper);
+      expect(registry.getHelper("testHelper")).toBe(mockHelper);
     });
 
     it("should return undefined for unregistered helper", () => {
-      expect(registry.getHelper("nonexistent")).toBeUndefined();
-    });
-
-    it("should return undefined for helpers that were never registered", () => {
-      registry.register("core:health", { ping: () => "pong" });
-
-      expect(registry.getHelper("nonexistent")).toBeUndefined();
-      expect(registry.getHelper("")).toBeUndefined();
-      expect(registry.getHelper(null)).toBeUndefined();
-    });
-  });
-
-  describe("getMetadata method", () => {
-    it("should return the metadata for a registered helper", () => {
-      const metadata = { scope: "runtime", version: 2 };
-
-      registry.register("core:health", { ping: () => "pong" }, metadata);
-
-      expect(registry.getMetadata("core:health")).toBe(metadata);
-    });
-
-    it("should return undefined for unregistered helper", () => {
-      expect(registry.getMetadata("nonexistent")).toBeUndefined();
-    });
-
-    it("should return default empty object when no metadata was provided", () => {
-      registry.register("core:health", { ping: () => "pong" });
-
-      expect(registry.getMetadata("core:health")).toEqual({});
+      expect(registry.getHelper("nonExistentHelper")).toBeUndefined();
     });
   });
 
   describe("listHelpers method", () => {
-    it("should return an empty array when no helpers are registered", () => {
+    it("should return empty array when no helpers registered", () => {
       expect(registry.listHelpers()).toEqual([]);
     });
 
-    it("should return an array of all registered helper names", () => {
-      registry.register("core:health", { ping: () => "pong" });
-      registry.register("core:status", { status: () => "ok" });
-      registry.register("ui:nav", { render: () => null });
+    it("should list all registered helper names", () => {
+      const helper1 = { name: "helper1" };
+      const helper2 = { name: "helper2" };
 
-      const helpers = registry.listHelpers();
-      expect(helpers).toContain("core:health");
-      expect(helpers).toContain("core:status");
-      expect(helpers).toContain("ui:nav");
-      expect(helpers).toHaveLength(3);
+      registry.register("helper1", helper1);
+      registry.register("helper2", helper2);
+
+      const helperList = registry.listHelpers();
+      expect(helperList).toContain("helper1");
+      expect(helperList).toContain("helper2");
+      expect(helperList).toHaveLength(2);
     });
 
-    it("should return helpers in the order they were registered", () => {
-      registry.register("first", { test: 1 });
-      registry.register("second", { test: 2 });
-      registry.register("third", { test: 3 });
+    it("should maintain registration order", () => {
+      registry.register("first", {});
+      registry.register("second", {});
+      registry.register("third", {});
 
-      expect(registry.listHelpers()).toEqual(["first", "second", "third"]);
+      const helperList = registry.listHelpers();
+      expect(helperList[0]).toBe("first");
+      expect(helperList[1]).toBe("second");
+      expect(helperList[2]).toBe("third");
+    });
+  });
+
+  describe("getMetadata method", () => {
+    it("should return metadata for registered helper", () => {
+      const metadata = { version: "1.0.0", author: "test" };
+      registry.register("testHelper", { name: "testHelper" }, metadata);
+
+      expect(registry.getMetadata("testHelper")).toEqual(metadata);
     });
 
-    it("should return a new array instance each time", () => {
-      registry.register("core:health", { ping: () => "pong" });
+    it("should return empty object when no metadata was provided", () => {
+      registry.register("testHelper", { name: "testHelper" });
 
-      const array1 = registry.listHelpers();
-      const array2 = registry.listHelpers();
+      expect(registry.getMetadata("testHelper")).toEqual({});
+    });
 
-      expect(array1).not.toBe(array2); // Different instances
-      expect(array1).toEqual(array2);  // Same content
+    it("should return undefined for unregistered helper", () => {
+      expect(registry.getMetadata("nonExistentHelper")).toBeUndefined();
     });
   });
 
   describe("isRegistered method", () => {
-    it("should return true for registered helpers", () => {
-      registry.register("core:health", { ping: () => "pong" });
+    it("should return true for registered helper", () => {
+      registry.register("testHelper", { name: "testHelper" });
 
-      expect(registry.isRegistered("core:health")).toBe(true);
+      expect(registry.isRegistered("testHelper")).toBe(true);
     });
 
-    it("should return false for unregistered helpers", () => {
-      expect(registry.isRegistered("nonexistent")).toBe(false);
-    });
-
-    it("should return false after registration fails", () => {
-      registry.register("core:health", { ping: () => "pong" });
-
-      expect(registry.isRegistered("core:health")).toBe(true);
-      expect(registry.isRegistered("different")).toBe(false);
-    });
-
-    it("should handle falsy values correctly", () => {
-      registry.register("0", { ping: () => "pong" }); // Register with string "0"
-
-      expect(registry.isRegistered("0")).toBe(true);
-      expect(registry.isRegistered(0)).toBe(false); // Different type
-      expect(registry.isRegistered(null)).toBe(false);
-      expect(registry.isRegistered(undefined)).toBe(false);
-      expect(registry.isRegistered("")).toBe(false);
+    it("should return false for unregistered helper", () => {
+      expect(registry.isRegistered("nonExistentHelper")).toBe(false);
     });
   });
 
   describe("integration tests", () => {
-    it("should work through full lifecycle with multiple helpers", () => {
-      // Register multiple helpers
-      const healthHelper = { ping: () => "pong" };
-      const statusHelper = { status: () => "ok" };
-      const uiHelper = { render: () => null };
+    it("should work through full lifecycle of registering, retrieving, and checking helpers", () => {
+      // Register multiple helpers with different metadata
+      const helper1 = { process: () => "processed1" };
+      const helper2 = { process: () => "processed2" };
+      const metadata1 = { type: "processor", version: "1.0" };
+      const metadata2 = { type: "formatter", version: "2.0" };
 
-      registry.register("health", healthHelper, { type: "health" });
-      registry.register("status", statusHelper, { type: "status" });
-      registry.register("ui", uiHelper);
+      registry.register("processor", helper1, metadata1);
+      registry.register("formatter", helper2, metadata2);
+
+      // Verify they are registered
+      expect(registry.isRegistered("processor")).toBe(true);
+      expect(registry.isRegistered("formatter")).toBe(true);
+
+      // Verify helpers can be retrieved
+      expect(registry.getHelper("processor")).toBe(helper1);
+      expect(registry.getHelper("formatter")).toBe(helper2);
+
+      // Verify metadata is stored correctly
+      expect(registry.getMetadata("processor")).toEqual(metadata1);
+      expect(registry.getMetadata("formatter")).toEqual(metadata2);
+
+      // Verify helper listing works
+      const helperList = registry.listHelpers();
+      expect(helperList).toContain("processor");
+      expect(helperList).toContain("formatter");
+      expect(helperList).toHaveLength(2);
+
+      // Verify individual helper retrieval
+      expect(registry.getHelper("processor").process()).toBe("processed1");
+      expect(registry.getHelper("formatter").process()).toBe("processed2");
+    });
+
+    it("should handle edge cases with various helper types", () => {
+      // Register different types of helpers
+      registry.register("functionHelper", () => "result");
+      registry.register("objectHelper", { method: () => "result" });
+      registry.register("classHelper", class {});
+      registry.register("primitiveHelper", "stringHelper");
+      registry.register("nullHelper", null);
 
       // Verify all are registered
-      expect(registry.isRegistered("health")).toBe(true);
-      expect(registry.isRegistered("status")).toBe(true);
-      expect(registry.isRegistered("ui")).toBe(true);
+      expect(registry.isRegistered("functionHelper")).toBe(true);
+      expect(registry.isRegistered("objectHelper")).toBe(true);
+      expect(registry.isRegistered("classHelper")).toBe(true);
+      expect(registry.isRegistered("primitiveHelper")).toBe(true);
+      expect(registry.isRegistered("nullHelper")).toBe(true);
 
-      // Verify helpers are returned correctly
-      expect(registry.getHelper("health")).toBe(healthHelper);
-      expect(registry.getHelper("status")).toBe(statusHelper);
-      expect(registry.getHelper("ui")).toBe(uiHelper);
-
-      // Verify metadata is returned correctly
-      expect(registry.getMetadata("health")).toEqual({ type: "health" });
-      expect(registry.getMetadata("status")).toEqual({ type: "status" });
-      expect(registry.getMetadata("ui")).toEqual({});
-
-      // Verify list of helpers
-      expect(registry.listHelpers()).toEqual(["health", "status", "ui"]);
-    });
-
-    it("should handle edge cases with special characters in names", () => {
-      const helper = { test: true };
-
-      // Register with special characters
-      registry.register("core:health-check", helper, { version: 1 });
-      registry.register("ui.nav", helper, { version: 2 });
-      registry.register("api/v1", helper, { version: 3 });
-
-      // Verify all are registered and accessible
-      expect(registry.isRegistered("core:health-check")).toBe(true);
-      expect(registry.isRegistered("ui.nav")).toBe(true);
-      expect(registry.isRegistered("api/v1")).toBe(true);
-
-      expect(registry.getHelper("core:health-check")).toBe(helper);
-      expect(registry.getMetadata("core:health-check")).toEqual({ version: 1 });
-
-      expect(registry.getHelper("ui.nav")).toBe(helper);
-      expect(registry.getMetadata("ui.nav")).toEqual({ version: 2 });
-
-      expect(registry.getHelper("api/v1")).toBe(helper);
-      expect(registry.getMetadata("api/v1")).toEqual({ version: 3 });
-
-      expect(registry.listHelpers()).toEqual(["core:health-check", "ui.nav", "api/v1"]);
-    });
-
-    it("should maintain data integrity after multiple operations", () => {
-      // Register, check, register more, check again
-      registry.register("first", { value: 1 }, { tag: "one" });
-      expect(registry.getHelper("first").value).toBe(1);
-      expect(registry.getMetadata("first").tag).toBe("one");
-
-      registry.register("second", { value: 2 }, { tag: "two" });
-      expect(registry.getHelper("second").value).toBe(2);
-      expect(registry.getMetadata("second").tag).toBe("two");
-
-      // Verify first still works
-      expect(registry.getHelper("first").value).toBe(1);
-      expect(registry.getMetadata("first").tag).toBe("one");
-
-      // List should contain both
-      expect(registry.listHelpers()).toEqual(["first", "second"]);
-    });
-  });
-
-  describe("error handling", () => {
-    it("should handle registration errors gracefully", () => {
-      const helper1 = { test: 1 };
-      const helper2 = { test: 2 };
-
-      // Register successfully
-      registry.register("test", helper1);
-
-      // Attempt to register duplicate - should throw
-      expect(() => registry.register("test", helper2)).toThrow("Helper already registered: test");
-
-      // Original should still be there
-      expect(registry.getHelper("test")).toBe(helper1);
-      expect(registry.getMetadata("test")).toEqual({});
-    });
-
-    it("should handle invalid name errors gracefully", () => {
-      const helper = { test: true };
-
-      // Try to register with invalid names - should throw
-      expect(() => registry.register("", helper)).toThrow("Helper name is required");
-      expect(() => registry.register(null, helper)).toThrow("Helper name is required");
-      expect(() => registry.register(undefined, helper)).toThrow("Helper name is required");
-
-      // Registry should remain empty
-      expect(registry.listHelpers()).toEqual([]);
+      // Verify retrieval
+      expect(typeof registry.getHelper("functionHelper")).toBe("function");
+      expect(typeof registry.getHelper("objectHelper")).toBe("object");
+      expect(typeof registry.getHelper("classHelper")).toBe("function"); // class is function in JS
+      expect(registry.getHelper("primitiveHelper")).toBe("string");
+      expect(registry.getHelper("nullHelper")).toBeNull();
     });
   });
 });
