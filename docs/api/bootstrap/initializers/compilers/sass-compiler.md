@@ -23,7 +23,7 @@ injectCSS(css);
 
 ## Related docs
 
-- `docs/api/bootstrap/local-loader.md` and `docs/api/bootstrap/core.md` describe where these helpers fit into the bootstrap pipeline.
+- `docs/api/bootstrap/initializers/loaders/local-loader.md` and `docs/api/bootstrap.md` describe where these helpers fit into the bootstrap pipeline.
 
 ## Navigation
 

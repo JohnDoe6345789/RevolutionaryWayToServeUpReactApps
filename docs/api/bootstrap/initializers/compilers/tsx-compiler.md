@@ -24,7 +24,7 @@ frameworkRender(config, registry, App);
 
 ## Related docs
 
-- `docs/api/bootstrap/local-loader.md` explains how the loader wires this compiler into the bootstrap `require`/render flow.
+- `docs/api/bootstrap/initializers/loaders/local-loader.md` explains how the loader wires this compiler into the bootstrap `require`/render flow.
 
 ## Navigation
 

@@ -27,7 +27,7 @@ frameworkRender(bootstrapConfig, registry, App);
 
 ## Related docs
 
-- `docs/api/bootstrap/core.md` explains how the bootstrap pipeline wires these helpers together.
+- `docs/api/bootstrap.md` explains how the bootstrap pipeline wires these helpers together.
 
 ## Navigation
 

@@ -12,7 +12,7 @@
 
 ## Related docs
 
-- `docs/api/local/local-paths.md`
+- `docs/api/bootstrap/initializers/path-utils/local-paths.md`
 
 ## Navigation
 

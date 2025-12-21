@@ -4,10 +4,9 @@ This section documents the bootstrap runtime, CDN helpers, and the loader helper
 
 ## Core reference
 
-- [`core.md`](core.md) – Runtime orchestration, logging, module loading, and the bootstrap entry point.
-- [`declarations.md`](declarations.md) – TypeScript signatures for every exposed helper.
-- [`env.md`](env.md) – Proxy mode default injected before other bootstrap helpers run.
-- [`module-loader.md`](module-loader.md) – Aggregation layer that re-exports CDN, tool, and local helpers.
+- [`bootstrap.md`](bootstrap.md) – Runtime orchestration, logging, module loading, and bundled TypeScript declarations for the bootstrap helpers.
+- [`entrypoints/env.md`](entrypoints/env.md) – Proxy mode default injected before other bootstrap helpers run.
+- [`entrypoints/module-loader.md`](entrypoints/module-loader.md) – Aggregation layer that re-exports CDN, tool, and local helpers.
 
 ## CDN helpers
 
@@ -19,6 +18,7 @@ This section documents the bootstrap runtime, CDN helpers, and the loader helper
 
 ## Script helpers
 
-- [`script-list-loader.md`](script-list-loader.md) – Loads `bootstrap/entrypoints/script-list.html` so helper scripts can execute in order before `bootstrap.js`.
+- [`entrypoints/script-list-loader.md`](entrypoints/script-list-loader.md) – Loads `bootstrap/entrypoints/script-list.html` so helper scripts can execute in order before `bootstrap.js`.
+- [`entrypoints/script-list.md`](entrypoints/script-list.md) – Explains how `script-list.html` organizes helper scripts and the bootstrap entry point.
 
 Use the links above to drill into the specific helpers you are working with.

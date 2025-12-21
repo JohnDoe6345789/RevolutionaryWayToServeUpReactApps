@@ -22,7 +22,7 @@ const { probeUrl, loadScript, frameworkRender } = require("./bootstrap/entrypoin
 
 ## Related docs
 
-- `docs/api/bootstrap/core.md` outlines how the loader references these helpers when bootstrapping the app.
+- `docs/api/bootstrap.md` outlines how the loader references these helpers when bootstrapping the app.
 
 ## Navigation
 

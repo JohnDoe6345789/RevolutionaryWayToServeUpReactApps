@@ -30,7 +30,7 @@ iconNamespace.default();
 ## Related docs
 
 - `docs/api/bootstrap/cdn/network.md` explains how the CDN helpers resolve provider fallbacks and probe URLs when `loadDynamicModule` retries across mirrors.
-- `docs/api/bootstrap/local/local-module-loader.md` shows how the local loader wires the dynamic module helper into `createRequire`.
+- `docs/api/bootstrap/initializers/loaders/local-module-loader.md` shows how the local loader wires the dynamic module helper into `createRequire`.
 
 ## Navigation
 
