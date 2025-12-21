@@ -1,4 +1,15 @@
 describe("bootstrap/entrypoints/script-list-loader.js", () => {
+  beforeEach(() => {
+    jest.resetModules();
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    jest.resetModules();
+    jest.clearAllMocks();
+    jest.unmock("../../../../bootstrap/services/core/script-list-loader-service.js");
+  });
+
   it("initializes and loads the script list loader", () => {
     const initializeSpy = jest.fn();
     const loadSpy = jest.fn();
@@ -10,8 +21,9 @@ describe("bootstrap/entrypoints/script-list-loader.js", () => {
       }));
     });
 
-    jest.resetModules();
-    require("../../../../bootstrap/entrypoints/script-list-loader.js");
+    jest.isolateModules(() => {
+      require("../../../../bootstrap/entrypoints/script-list-loader.js");
+    });
 
     expect(initializeSpy).toHaveBeenCalled();
     expect(loadSpy).toHaveBeenCalled();
@@ -28,8 +40,10 @@ describe("bootstrap/entrypoints/script-list-loader.js", () => {
       }));
     });
 
-    jest.resetModules();
-    const result = require("../../../../bootstrap/entrypoints/script-list-loader.js");
+    let result;
+    jest.isolateModules(() => {
+      result = require("../../../../bootstrap/entrypoints/script-list-loader.js");
+    });
 
     expect(result).toEqual({});
     expect(initializeSpy).toHaveBeenCalled();

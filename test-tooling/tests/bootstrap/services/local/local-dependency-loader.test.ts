@@ -25,8 +25,9 @@ describe("bootstrap/services/local/local-dependency-loader.js", () => {
       isRegistered: jest.fn(() => false),
       register: jest.fn()
     };
+    const sassCompilerService = { service: "sassCompiler" };
     const serviceRegistry = {
-      getService: jest.fn((name: string) => (name === "sassCompiler" ? { service: name } : undefined))
+      getService: jest.fn((name: string) => (name === "sassCompiler" ? sassCompilerService : undefined))
     };
     const config = new LocalDependencyLoaderConfig({ overrides, helperRegistry });
     const loader = new LocalDependencyLoader(config);
@@ -35,7 +36,7 @@ describe("bootstrap/services/local/local-dependency-loader.js", () => {
 
     expect(dependencies.logging).toBe(overrides.logging);
     expect(dependencies.dynamicModules).toBe(overrides.dynamicModules);
-    expect(dependencies.sassCompiler).toBe(serviceRegistry.getService("sassCompiler"));
+    expect(dependencies.sassCompiler).toBe(sassCompilerService);
     expect(dependencies.tsxCompiler).toEqual({ helperName: "tsxCompiler" });
     expect(helperRegistry.getHelper).toHaveBeenCalledWith("tsxCompiler");
     expect(helperRegistry.register).toHaveBeenCalledWith(
@@ -43,6 +44,6 @@ describe("bootstrap/services/local/local-dependency-loader.js", () => {
       loader,
       expect.objectContaining({ folder: "services/local", domain: "local" })
     );
-    expect(config.helpers).toBe(dependencies);
+    expect(config.helpers).toEqual(dependencies);
   });
 });

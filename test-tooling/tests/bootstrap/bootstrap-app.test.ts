@@ -1,82 +1,104 @@
 const modulePath = "../../../bootstrap/bootstrap-app.js";
 
-let latestLoggingManagerInstance = null;
-const loggingManagerMock = jest.fn().mockImplementation(() => {
-  latestLoggingManagerInstance = {
-    initialize: jest.fn(),
-    install: jest.fn(),
-  };
-  return latestLoggingManagerInstance;
-});
-jest.mock("../../../bootstrap/services/core/logging-manager.js", () => loggingManagerMock);
-
-const loggingManagerConfigMock = jest.fn().mockImplementation((options) => options);
-jest.mock("../../../bootstrap/configs/core/logging-manager.js", () => loggingManagerConfigMock);
-
-const bootstrapperConfigMock = jest.fn().mockImplementation((options) => options);
-jest.mock("../../../bootstrap/configs/core/bootstrapper.js", () => bootstrapperConfigMock);
-
-const serviceRegistryInstance = {
-  register: jest.fn(),
-  get: jest.fn(),
-};
-jest.mock("../../../bootstrap/services/service-registry-instance.js", () => serviceRegistryInstance);
-
-const loggingHelper = {
-  setCiLoggingEnabled: jest.fn(),
-  detectCiLogging: jest.fn(),
-  logClient: { send: jest.fn() },
-  serializeForLog: jest.fn(),
-  isCiLoggingEnabled: jest.fn(),
-};
-jest.mock("../../../bootstrap/cdn/logging.js", () => loggingHelper);
-
-const networkHelper = {
-  normalizeProviderBase: jest.fn(),
-  probeUrl: jest.fn(),
-  resolveModuleUrl: jest.fn(),
-};
-jest.mock("../../../bootstrap/cdn/network.js", () => networkHelper);
-
-const moduleLoaderHelper = {
-  loadTools: jest.fn(),
-  makeNamespace: jest.fn(),
-  loadModules: jest.fn(),
-  loadDynamicModule: jest.fn(),
-  createRequire: jest.fn(),
-  compileSCSS: jest.fn(),
-  injectCSS: jest.fn(),
-  collectDynamicModuleImports: jest.fn(),
-  preloadDynamicModulesFromSource: jest.fn(),
-  collectModuleSpecifiers: jest.fn(),
-  preloadModulesFromSource: jest.fn(),
-  compileTSX: jest.fn(),
-  frameworkRender: jest.fn(),
-  loadScript: jest.fn(),
-};
-jest.mock("../../../bootstrap/entrypoints/module-loader.js", () => moduleLoaderHelper);
-
-let latestBootstrapperInstance = null;
-const bootstrapperMock = jest.fn().mockImplementation(() => {
-  latestBootstrapperInstance = {
-    initialize: jest.fn(),
-    bootstrap: jest.fn(),
-    loadConfig: jest.fn(),
-  };
-  return latestBootstrapperInstance;
-});
-jest.mock("../../../bootstrap/controllers/bootstrapper.js", () => bootstrapperMock);
-
 describe("bootstrap/bootstrap-app.js", () => {
   let BootstrapApp;
   let instance;
+  let latestLoggingManagerInstance;
+  let latestBootstrapperInstance;
+  let moduleLoaderHelper;
+  let networkHelper;
+  let loggingHelper;
 
   beforeEach(() => {
+    jest.resetModules();
     jest.clearAllMocks();
+
     latestLoggingManagerInstance = null;
     latestBootstrapperInstance = null;
+
+    jest.doMock("../../../bootstrap/services/core/logging-manager.js", () => {
+      return jest.fn().mockImplementation(() => {
+        latestLoggingManagerInstance = {
+          initialize: jest.fn(),
+          install: jest.fn(),
+        };
+        return latestLoggingManagerInstance;
+      });
+    });
+
+    jest.doMock("../../../bootstrap/configs/core/logging-manager.js", () => {
+      return jest.fn().mockImplementation((options) => options);
+    });
+
+    jest.doMock("../../../bootstrap/configs/core/bootstrapper.js", () => {
+      return jest.fn().mockImplementation((options) => options);
+    });
+
+    jest.doMock("../../../bootstrap/services/service-registry-instance.js", () => {
+      return {
+        register: jest.fn(),
+        get: jest.fn(),
+      };
+    });
+
+    loggingHelper = {
+      setCiLoggingEnabled: jest.fn(),
+      detectCiLogging: jest.fn(),
+      logClient: { send: jest.fn() },
+      serializeForLog: jest.fn(),
+      isCiLoggingEnabled: jest.fn(),
+    };
+    jest.doMock("../../../bootstrap/cdn/logging.js", () => loggingHelper);
+
+    networkHelper = {
+      normalizeProviderBase: jest.fn(),
+      probeUrl: jest.fn(),
+      resolveModuleUrl: jest.fn(),
+    };
+    jest.doMock("../../../bootstrap/cdn/network.js", () => networkHelper);
+
+    moduleLoaderHelper = {
+      loadTools: jest.fn(),
+      makeNamespace: jest.fn(),
+      loadModules: jest.fn(),
+      loadDynamicModule: jest.fn(),
+      createRequire: jest.fn(),
+      compileSCSS: jest.fn(),
+      injectCSS: jest.fn(),
+      collectDynamicModuleImports: jest.fn(),
+      preloadDynamicModulesFromSource: jest.fn(),
+      collectModuleSpecifiers: jest.fn(),
+      preloadModulesFromSource: jest.fn(),
+      compileTSX: jest.fn(),
+      frameworkRender: jest.fn(),
+      loadScript: jest.fn(),
+    };
+    jest.doMock("../../../bootstrap/entrypoints/module-loader.js", () => moduleLoaderHelper);
+
+    jest.doMock("../../../bootstrap/controllers/bootstrapper.js", () => {
+      return jest.fn().mockImplementation(() => {
+        latestBootstrapperInstance = {
+          initialize: jest.fn(),
+          bootstrap: jest.fn(),
+          loadConfig: jest.fn(),
+        };
+        return latestBootstrapperInstance;
+      });
+    });
+
     BootstrapApp = require(modulePath);
     instance = new BootstrapApp();
+  });
+
+  afterEach(() => {
+    jest.dontMock("../../../bootstrap/services/core/logging-manager.js");
+    jest.dontMock("../../../bootstrap/configs/core/logging-manager.js");
+    jest.dontMock("../../../bootstrap/configs/core/bootstrapper.js");
+    jest.dontMock("../../../bootstrap/services/service-registry-instance.js");
+    jest.dontMock("../../../bootstrap/cdn/logging.js");
+    jest.dontMock("../../../bootstrap/cdn/network.js");
+    jest.dontMock("../../../bootstrap/entrypoints/module-loader.js");
+    jest.dontMock("../../../bootstrap/controllers/bootstrapper.js");
   });
 
   it("initializes the logging manager and bootstrapper and returns itself", () => {

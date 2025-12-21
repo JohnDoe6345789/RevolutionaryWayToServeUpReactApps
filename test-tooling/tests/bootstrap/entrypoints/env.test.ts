@@ -2,6 +2,17 @@ const EnvInitializer = require("../../../../bootstrap/services/core/env-service.
 const EnvInitializerConfig = require("../../../../bootstrap/configs/core/env.js");
 
 describe("bootstrap/entrypoints/env.js", () => {
+  beforeEach(() => {
+    jest.resetModules();
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    jest.resetModules();
+    jest.clearAllMocks();
+    jest.unmock("../../../../bootstrap/entrypoints/base-entrypoint.js");
+  });
+
   it("constructs the base entrypoint with the EnvInitializer wiring", () => {
     let capturedArgs = null;
     const runSpy = jest.fn();
@@ -13,8 +24,9 @@ describe("bootstrap/entrypoints/env.js", () => {
       });
     });
 
-    jest.resetModules();
-    require("../../../../bootstrap/entrypoints/env.js");
+    jest.isolateModules(() => {
+      require("../../../../bootstrap/entrypoints/env.js");
+    });
 
     expect(capturedArgs.ServiceClass).toBe(EnvInitializer);
     expect(capturedArgs.ConfigClass).toBe(EnvInitializerConfig);
@@ -32,8 +44,9 @@ describe("bootstrap/entrypoints/env.js", () => {
       });
     });
 
-    jest.resetModules();
-    require("../../../../bootstrap/entrypoints/env.js");
+    jest.isolateModules(() => {
+      require("../../../../bootstrap/entrypoints/env.js");
+    });
 
     const config = capturedArgs.configFactory({ root: { env: true } });
     expect(config).toEqual({ global: { env: true } });

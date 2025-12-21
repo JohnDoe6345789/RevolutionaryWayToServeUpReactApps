@@ -2,6 +2,17 @@ const ModuleLoaderAggregator = require("../../../../bootstrap/services/core/modu
 const ModuleLoaderConfig = require("../../../../bootstrap/configs/core/module-loader.js");
 
 describe("bootstrap/entrypoints/module-loader.js", () => {
+  beforeEach(() => {
+    jest.resetModules();
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    jest.resetModules();
+    jest.clearAllMocks();
+    jest.unmock("../../../../bootstrap/entrypoints/base-entrypoint.js");
+  });
+
   it("exports the module loader helpers from the entrypoint", () => {
     const exportsPayload = { loadTools: jest.fn() };
     const runSpy = jest.fn(() => ({ exports: exportsPayload }));
@@ -14,8 +25,10 @@ describe("bootstrap/entrypoints/module-loader.js", () => {
       });
     });
 
-    jest.resetModules();
-    const moduleLoaderExports = require("../../../../bootstrap/entrypoints/module-loader.js");
+    let moduleLoaderExports;
+    jest.isolateModules(() => {
+      moduleLoaderExports = require("../../../../bootstrap/entrypoints/module-loader.js");
+    });
 
     expect(capturedArgs.ServiceClass).toBe(ModuleLoaderAggregator);
     expect(capturedArgs.ConfigClass).toBe(ModuleLoaderConfig);
@@ -33,8 +46,9 @@ describe("bootstrap/entrypoints/module-loader.js", () => {
       });
     });
 
-    jest.resetModules();
-    require("../../../../bootstrap/entrypoints/module-loader.js");
+    jest.isolateModules(() => {
+      require("../../../../bootstrap/entrypoints/module-loader.js");
+    });
 
     const config = capturedArgs.configFactory({ root: { env: "root" } });
     expect(config).toEqual({ environmentRoot: { env: "root" } });

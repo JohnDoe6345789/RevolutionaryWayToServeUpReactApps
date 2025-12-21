@@ -1,0 +1,3 @@
+[test]
+preload = ["./test-tooling/tests/setupBun.ts"]
+root = "./test-tooling/tests"

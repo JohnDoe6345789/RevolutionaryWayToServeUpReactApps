@@ -42,7 +42,13 @@ describe("bootstrap createRequire default interop", () => {
       reg[name] = dynamicModule;
       return dynamicModule;
     });
-    const requireFn = createRequire(registry, {}, "", undefined, dynamicLoader);
+    const requireFn = createRequire(
+      registry,
+      { dynamicModules: [{ prefix: "icons/" }] },
+      "",
+      undefined,
+      dynamicLoader
+    );
 
     await expect(requireFn._async!("icons/test")).resolves.toBe(dynamicModule);
     await expect(requireFn._async!("icons/test")).resolves.toBe(dynamicModule);

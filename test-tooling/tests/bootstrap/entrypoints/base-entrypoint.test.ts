@@ -1,19 +1,35 @@
-const serviceRegistry = { register: jest.fn() };
-const rootHandler = {
-  root: { name: "root" },
-  getNamespace: () => ({ helpers: {} }),
-  getDocument: () => ({ documentElement: true }),
-};
-
-jest.mock("../../../../bootstrap/services/service-registry-instance.js", () => serviceRegistry);
-jest.mock("../../../../bootstrap/constants/global-root-handler.js", () => {
-  return jest.fn().mockImplementation(() => rootHandler);
-});
-
-const BaseEntryPoint = require("../../../../bootstrap/entrypoints/base-entrypoint.js");
-
 describe("bootstrap/entrypoints/base-entrypoint.js", () => {
+  const loadBaseEntryPoint = () => {
+    const serviceRegistry = { register: jest.fn() };
+    const rootHandler = {
+      root: { name: "root" },
+      getNamespace: () => ({ helpers: {} }),
+      getDocument: () => ({ documentElement: true }),
+    };
+
+    jest.doMock("../../../../bootstrap/services/service-registry-instance.js", () => serviceRegistry);
+    jest.doMock("../../../../bootstrap/constants/global-root-handler.js", () => {
+      return jest.fn().mockImplementation(() => rootHandler);
+    });
+
+    const BaseEntryPoint = require("../../../../bootstrap/entrypoints/base-entrypoint.js");
+    return { BaseEntryPoint, serviceRegistry, rootHandler };
+  };
+
+  beforeEach(() => {
+    jest.resetModules();
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    jest.resetModules();
+    jest.clearAllMocks();
+    jest.unmock("../../../../bootstrap/services/service-registry-instance.js");
+    jest.unmock("../../../../bootstrap/constants/global-root-handler.js");
+  });
+
   it("creates the config using the root handler and registry", () => {
+    const { BaseEntryPoint, serviceRegistry, rootHandler } = loadBaseEntryPoint();
     const configFactory = jest.fn(({ serviceRegistry, root, namespace, document }) => ({
       serviceRegistry,
       root,
@@ -81,6 +97,7 @@ describe("bootstrap/entrypoints/base-entrypoint.js", () => {
   });
 
   it("invokes install when the service implements it", () => {
+    const { BaseEntryPoint } = loadBaseEntryPoint();
     const installSpy = jest.fn();
 
     class ConfigClass {
