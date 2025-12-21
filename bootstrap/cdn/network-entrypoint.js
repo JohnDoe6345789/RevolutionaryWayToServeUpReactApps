@@ -5,6 +5,9 @@ const BaseEntryPoint = require("../entrypoints/base-entrypoint.js");
 const NetworkService = require("../services/cdn/network-service.js");
 const NetworkServiceConfig = require("../configs/network-service.js");
 
+/**
+ * Entry point for the CDN-network helpers that wires services into the bootstrap namespace.
+ */
 class NetworkEntryPoint extends BaseEntryPoint {
   /**
    * Initializes a new Network Entry Point instance with the provided configuration.

@@ -4,6 +4,9 @@
 const BaseService = require("../base-service.js");
 const LocalDependencyLoaderConfig = require("../../configs/local-dependency-loader.js");
 
+/**
+ * Resolves helper dependencies using overrides, helper registry entries, or CommonJS fallbacks.
+ */
 class LocalDependencyLoader extends BaseService {
   constructor(config = new LocalDependencyLoaderConfig()) {
     super(config);

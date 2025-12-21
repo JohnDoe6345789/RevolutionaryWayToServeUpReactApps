@@ -7,6 +7,9 @@ class GlobalRootHandler {
     this._namespace = null;
   }
 
+  /**
+   * Lazily caches and returns the detected global root reference.
+   */
   _ensureRoot() {
     if (!this._root) {
       this._root = this._detectGlobal();
@@ -14,6 +17,9 @@ class GlobalRootHandler {
     return this._root;
   }
 
+  /**
+   * Identifies the current global scope using the widest available reference.
+   */
   _detectGlobal() {
     if (typeof globalThis !== "undefined") return globalThis;
     if (typeof global !== "undefined") return global;

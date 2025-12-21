@@ -1,6 +1,12 @@
 const GlobalRootHandler = require("./constants/global-root-handler.js");
 
+/**
+ * Provides the shared bootstrap scaffolding that other entrypoints rely upon.
+ */
 class BaseBootstrapApp {
+  /**
+   * @param {{rootHandler?: GlobalRootHandler}} options
+   */
   constructor({ rootHandler = new GlobalRootHandler() } = {}) {
     this.rootHandler = rootHandler;
     this.globalRoot = this.rootHandler.root;
@@ -9,6 +15,9 @@ class BaseBootstrapApp {
     this.isCommonJs = typeof module !== "undefined" && module.exports;
   }
 
+  /**
+   * Detects whether the evaluated runtime exposes a `window.document`.
+   */
   static isBrowser(windowObj) {
     const win =
       windowObj ??
@@ -20,6 +29,9 @@ class BaseBootstrapApp {
     return !!(win && typeof win.document !== "undefined");
   }
 
+  /**
+   * Resolves helpers either through `require` (CommonJS) or via the shared helper registry.
+   */
   _resolveHelper(name, path) {
     return this.isCommonJs ? require(path) : this.helpersNamespace[name] || {};
   }

@@ -3,6 +3,9 @@ const LocalLoaderConfig = require("../../configs/local-loader.js");
 
 const LocalDependencyLoaderConfig = require("../../configs/local-dependency-loader.js");
 
+/**
+ * Coordinates the initialization steps that stitch the local loader helpers together.
+ */
 class LocalLoaderInitializer {
   /**
    * Initializes a new Local Loader Initializer instance with the provided configuration.

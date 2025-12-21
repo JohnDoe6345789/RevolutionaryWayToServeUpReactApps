@@ -12,6 +12,9 @@ class FrameworkRendererConfig {
   }
 }
 
+/**
+ * Handles DOM rendering by coordinating the configured React and DOM render helpers.
+ */
 class FrameworkRenderer extends BaseService {
   constructor(config = new FrameworkRendererConfig()) {
     super(config);

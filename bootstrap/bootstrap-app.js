@@ -29,12 +29,18 @@ class BootstrapApp extends BaseBootstrapApp {
     );
   }
 
+  /**
+   * Boots up the logging manager followed by the bootstrapper.
+   */
   initialize() {
     this.loggingManager.initialize();
     this.bootstrapper.initialize();
     return this;
   }
 
+  /**
+   * Gathers the set of helper exports that should be exposed to consumers.
+   */
   getExports() {
     const {
       loadTools,
@@ -78,6 +84,9 @@ class BootstrapApp extends BaseBootstrapApp {
     };
   }
 
+  /**
+   * Attaches the logging hooks to browsers that support `window`.
+   */
   installLogging(windowObj) {
     if (!BootstrapApp.isBrowser(windowObj)) {
       return;
@@ -85,6 +94,9 @@ class BootstrapApp extends BaseBootstrapApp {
     this.loggingManager.install(windowObj);
   }
 
+  /**
+   * Triggers the bootstrapper in browser contexts when not running tests.
+   */
   runBootstrapper(windowObj) {
     if (!BootstrapApp.isBrowser(windowObj)) {
       return;
@@ -95,6 +107,9 @@ class BootstrapApp extends BaseBootstrapApp {
     this.bootstrapper.bootstrap();
   }
 
+  /**
+   * Provides the logging manager with the helper bindings it consumes.
+   */
   _loggingBindings() {
     const { setCiLoggingEnabled, detectCiLogging, logClient, serializeForLog, isCiLoggingEnabled } =
       this.logging;
