@@ -1,18 +1,24 @@
-// Register factory loaders for lazy loading
-require("./bootstrap/registries/register-factory-loaders.js").registerFactoryLoaders();
+// Main bootstrap entry point for the Revolutionary Way To Serve Up React Apps
+// Exports both the BootstrapApp class and individual helper functions
 
-const BootstrapApp = require("./bootstrap/bootstrap-app.js");
+const BootstrapApp = require('./bootstrap/bootstrap-app.js');
 
-const app = new BootstrapApp();
-app.initialize();
+// Also export individual helpers for testing
+const network = require('./bootstrap/cdn/network-entrypoint.js');
+const dynamicModules = require('./bootstrap/cdn/dynamic-modules.js');
+const moduleLoader = require('./bootstrap/entrypoints/module-loader.js');
 
-const bootstrapExports = app.getExports();
-app.helpersNamespace.exports = bootstrapExports;
-if (app.isCommonJs) {
-  module.exports = bootstrapExports;
-}
+// Get the exports from each module
+const { exports: networkExports } = new network();
+const { exports: dynamicModulesExports } = new dynamicModules();
+const { exports: moduleLoaderExports } = new moduleLoader();
 
-if (BootstrapApp.isBrowser()) {
-  app.installLogging(window);
-  app.runBootstrapper(window);
-}
+// Combine all exports
+const allExports = {
+  ...networkExports,
+  ...dynamicModulesExports,
+  ...moduleLoaderExports,
+  BootstrapApp
+};
+
+module.exports = allExports;

@@ -1,8 +1,8 @@
-import ServiceRegistry from "../bootstrap/registries/service-registry.js";
-import HelperRegistry from "../bootstrap/registries/helper-registry.js";
-import GlobalRootHandler from "../bootstrap/constants/global-root-handler.js";
-import BaseBootstrapApp from "../bootstrap/interfaces/base-bootstrap-app.js";
-import BaseHelper from "../bootstrap/helpers/base-helper.js";
+import ServiceRegistry from "../../../bootstrap/registries/service-registry.js";
+import HelperRegistry from "../../../bootstrap/registries/helper-registry.js";
+import GlobalRootHandler from "../../../bootstrap/constants/global-root-handler.js";
+import BaseBootstrapApp from "../../../bootstrap/interfaces/base-bootstrap-app.js";
+import BaseHelper from "../../../bootstrap/helpers/base-helper.js";
 
 describe("Comprehensive Unit Tests for Critical Classes", () => {
   describe("ServiceRegistry", () => {
@@ -67,7 +67,7 @@ describe("Comprehensive Unit Tests for Critical Classes", () => {
 
       expect(serviceRegistry.listServices()).toEqual([]);
       expect(serviceRegistry.isRegistered("service1")).toBe(false);
-      expect(serviceRegistry.getService("service1")).toBeUndefined());
+      expect(serviceRegistry.getService("service1")).toBeUndefined();
     });
   });
 

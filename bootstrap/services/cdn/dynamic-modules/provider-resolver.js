@@ -78,7 +78,7 @@ class ProviderResolver extends BaseHelper {
   }
 
   /**
-   * Performs the internal add candidate step for Provider Resolver.
+   * Performs internal add candidate step for Provider Resolver.
    */
   _addCandidate(candidate, candidates, seen) {
     if (!candidate || seen.has(candidate)) return;

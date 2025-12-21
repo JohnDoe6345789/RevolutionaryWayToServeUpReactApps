@@ -19,10 +19,11 @@ module.exports = {
   ],
   coveragePathIgnorePatterns: ["/node_modules/", "<rootDir>/tests/", "../bootstrap/"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
-  moduleDirectories: ["node_modules"],
+  moduleDirectories: ["node_modules", "../bootstrap"],
   modulePaths: [
     path.resolve(__dirname, "node_modules"),
-    path.resolve(__dirname, "../ci/node_modules")
+    path.resolve(__dirname, "../ci/node_modules"),
+    path.resolve(__dirname, "../bootstrap")
   ],
   moduleNameMapper: {
     "^@mui/material/(.*)$": "<rootDir>/node_modules/@mui/material/$1",
@@ -33,7 +34,9 @@ module.exports = {
     "^react-dom$": require.resolve("react-dom"),
     "^\\./(linkSrcNodeModules)$": "<rootDir>/tests/linkSrcNodeModules.js",
     "^../../../bootstrap/(.*)$": "<rootDir>/../bootstrap/$1",
-    "^../../bootstrap/(.*)$": "<rootDir>/../bootstrap/$1"
+    "^../../bootstrap/(.*)$": "<rootDir>/../bootstrap/$1",
+    "^../bootstrap/(.*)$": "<rootDir>/../bootstrap/$1",
+    "^bootstrap/(.*)$": "<rootDir>/../bootstrap/$1"
   },
   setupFilesAfterEnv: ["<rootDir>/tests/setupTests.ts"],
   testPathIgnorePatterns: ["<rootDir>/tests/bootstrap/"]
