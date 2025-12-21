@@ -238,7 +238,7 @@ describe("GlobalRootHandler", () => {
 
   describe("getFetch method", () => {
     it("should return bound fetch function if available", () => {
-      const mockFetch = jest.fn();
+      const mockFetch = () => {};
       const mockRoot = { fetch: mockFetch };
       const handler = new GlobalRootHandler(mockRoot);
 

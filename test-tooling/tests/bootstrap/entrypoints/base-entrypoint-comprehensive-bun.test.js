@@ -3,7 +3,7 @@
 
 const BaseEntryPoint = require("../../../../bootstrap/entrypoints/base-entrypoint.js");
 
-// Mock service and config classes for testing
+// Define mock classes for testing
 class MockService {
   constructor(config) {
     this.config = config;
@@ -28,7 +28,6 @@ class MockConfig {
   }
 }
 
-// Mock service without install method
 class MockServiceWithoutInstall {
   constructor(config) {
     this.config = config;
@@ -41,7 +40,6 @@ class MockServiceWithoutInstall {
   }
 }
 
-// Mock service with throwing initialize
 class MockServiceWithThrowingInit {
   constructor(config) {
     this.config = config;
