@@ -1,5 +1,5 @@
 // @ts-expect-error - CDN helpers are plain JS without type declarations
-import { resolveProvider } from "../../bootstrap/cdn/network.js";
+import { resolveProvider } from "../bootstrap/cdn/network.js";
 
 describe("proxy mode overrides", () => {
   const originalEnv = process.env.RWTRA_PROXY_MODE;

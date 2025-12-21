@@ -10,10 +10,10 @@ module.exports = {
   collectCoverage: true,
   collectCoverageFrom: [
     "src/**/*.{ts,tsx}",
-    "bootstrap/cdn/logging.js",
-    "bootstrap/cdn/network.js",
-    "bootstrap/cdn/dynamic-modules.js",
-    "bootstrap/initializers/path-utils/local-paths.js"
+    "../bootstrap/cdn/logging.js",
+    "../bootstrap/cdn/network.js",
+    "../bootstrap/cdn/dynamic-modules.js",
+    "../bootstrap/initializers/path-utils/local-paths.js"
   ],
   coveragePathIgnorePatterns: ["/node_modules/", "<rootDir>/test-tooling/tests/"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
