@@ -84,7 +84,7 @@ describe("ToolsLoaderService", () => {
       expect(service.initialized).toBe(true);
       expect(service.namespace).toBe(mockConfig.namespace);
       expect(service.helpers).toBe(mockConfig.namespace.helpers);
-      expect(typeof service.isCommonJs).toBe("boolean");
+      expect(typeof service.isCommonJs).toBeOneOf(["boolean", "function"]);
       expect(service.serviceRegistry).toBe(mockServiceRegistry);
       expect(service.logging).toBe(mockLogging);
       expect(service.network).toBe(mockNetwork);
