@@ -310,8 +310,9 @@ describe("ScriptListLoader", () => {
 
       scriptListLoader.fetchImpl = mockFetch;
 
-      // Should not throw, just return early
-      await expect(scriptListLoader.loadFromManifest()).resolves.not.toThrow();
+      // Should return undefined when document is not available
+      const result = await scriptListLoader.loadFromManifest();
+      expect(result).toBeUndefined();
     });
   });
 
@@ -324,8 +325,8 @@ describe("ScriptListLoader", () => {
     it("should return early if document is not available", async () => {
       scriptListLoader.document = null;
 
-      // Should not throw
-      await expect(scriptListLoader.load()).resolves.not.toThrow();
+      // Should complete without errors
+      await expect(scriptListLoader.load()).resolves.toBeUndefined();
     });
 
     it("should call loadFromManifest when document is available", async () => {

@@ -53,15 +53,37 @@ describe("LoggingService comprehensive test", () => {
   });
 
   it("should create and initialize the service", () => {
-    const service = new LoggingService();
+    const mockServiceRegistry = {
+      register: jest.fn()
+    };
+
+    const config = new LoggingServiceConfig({
+      namespace: { helpers: {} },
+      serviceRegistry: mockServiceRegistry
+    });
+
+    const service = new LoggingService(config);
     const initializedService = service.initialize();
 
     expect(initializedService).toBe(service);
     expect(initializedService.initialized).toBe(true);
+    expect(mockServiceRegistry.register).toHaveBeenCalledWith("logging", service, {
+      folder: "services/cdn",
+      domain: "cdn",
+    });
   });
 
   it("should toggle CI logging", () => {
-    const service = new LoggingService();
+    const mockServiceRegistry = {
+      register: jest.fn()
+    };
+
+    const config = new LoggingServiceConfig({
+      namespace: { helpers: {} },
+      serviceRegistry: mockServiceRegistry
+    });
+
+    const service = new LoggingService(config);
     service.initialize();
 
     service.setCiLoggingEnabled(true);
