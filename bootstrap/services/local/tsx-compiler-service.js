@@ -1,5 +1,5 @@
 const BaseService = require("../base-service.js");
-const TsxCompilerConfig = require("../../configs/tsx-compiler.js");
+const TsxCompilerConfig = require("../../configs/local/tsx-compiler.js");
 
 /**
  * Transforms and executes TSX sources using Babel and inlined execution.

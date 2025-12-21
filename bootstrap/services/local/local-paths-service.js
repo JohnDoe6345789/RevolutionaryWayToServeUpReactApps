@@ -1,5 +1,5 @@
 const BaseService = require("../base-service.js");
-const LocalPathsConfig = require("../../configs/local-paths.js");
+const LocalPathsConfig = require("../../configs/local/local-paths.js");
 const { localModuleExtensions: LOCAL_MODULE_EXTENSIONS } =
   require("../../constants/common.js");
 

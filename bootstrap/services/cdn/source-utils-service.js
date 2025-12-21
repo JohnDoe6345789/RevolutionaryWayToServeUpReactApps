@@ -1,5 +1,5 @@
 const BaseService = require("../base-service.js");
-const SourceUtilsConfig = require("../../configs/source-utils.js");
+const SourceUtilsConfig = require("../../configs/cdn/source-utils.js");
 
 /**
  * Parses source files for module specifiers and preloads dynamic dependencies.

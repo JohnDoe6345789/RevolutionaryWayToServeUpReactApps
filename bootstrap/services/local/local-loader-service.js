@@ -1,6 +1,6 @@
 const BaseService = require("../base-service.js");
-const LocalLoaderConfig = require("../../configs/local-loader.js");
-const LocalDependencyLoaderConfig = require("../../configs/local-dependency-loader.js");
+const LocalLoaderConfig = require("../../configs/local/local-loader.js");
+const LocalDependencyLoaderConfig = require("../../configs/local/local-dependency-loader.js");
 const helperRegistry = require("../../helpers/helper-registry-instance.js");
 const LocalHelpers = require("../../helpers/local-helpers.js");
 

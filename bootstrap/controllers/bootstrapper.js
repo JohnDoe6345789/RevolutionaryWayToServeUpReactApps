@@ -1,6 +1,6 @@
 const GlobalRootHandler = require("../constants/global-root-handler.js");
 const BaseController = require("./base-controller.js");
-const BootstrapperConfig = require("../configs/bootstrapper.js");
+const BootstrapperConfig = require("../configs/core/bootstrapper.js");
 
 const rootHandler = new GlobalRootHandler();
 const hasDocument = rootHandler.hasDocument();

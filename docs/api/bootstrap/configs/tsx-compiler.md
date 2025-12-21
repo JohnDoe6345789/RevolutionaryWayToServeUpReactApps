@@ -1,4 +1,4 @@
-# Module: `bootstrap/configs/tsx-compiler.js`
+# Module: `bootstrap/configs/local/tsx-compiler.js`
 
 ## Overview
 

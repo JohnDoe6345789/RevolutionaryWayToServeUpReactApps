@@ -2,7 +2,7 @@
  * Resolves the LocalLoaderService dependencies via overrides, helpers, or CommonJS fallbacks.
  */
 const BaseService = require("../base-service.js");
-const LocalDependencyLoaderConfig = require("../../configs/local-dependency-loader.js");
+const LocalDependencyLoaderConfig = require("../../configs/local/local-dependency-loader.js");
 
 /**
  * Resolves helper dependencies using overrides, helper registry entries, or CommonJS fallbacks.

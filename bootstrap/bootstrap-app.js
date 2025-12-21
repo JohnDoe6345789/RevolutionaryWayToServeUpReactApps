@@ -1,8 +1,8 @@
 const BaseBootstrapApp = require("./base-bootstrap-app.js");
 const LoggingManager = require("./services/core/logging-manager.js");
-const LoggingManagerConfig = require("./configs/logging-manager.js");
+const LoggingManagerConfig = require("./configs/core/logging-manager.js");
 const Bootstrapper = require("./controllers/bootstrapper.js");
-const BootstrapperConfig = require("./configs/bootstrapper.js");
+const BootstrapperConfig = require("./configs/core/bootstrapper.js");
 
 /**
  * Encapsulates the bootstrap entrypoint wiring needed for both CommonJS and browser runtimes.

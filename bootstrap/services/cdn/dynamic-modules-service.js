@@ -1,5 +1,5 @@
 const BaseService = require("../base-service.js");
-const DynamicModulesConfig = require("../../configs/dynamic-modules.js");
+const DynamicModulesConfig = require("../../configs/cdn/dynamic-modules.js");
 const ProviderResolver = require("./dynamic-modules/provider-resolver.js");
 const ProviderResolverConfig = require("./dynamic-modules/provider-resolver-config.js");
 const DynamicModuleFetcher = require("./dynamic-modules/module-fetcher.js");

@@ -1,5 +1,5 @@
 const BaseHelper = require("../../helpers/base-helper.js");
-const LocalRequireBuilderConfig = require("../../configs/local-require-builder.js");
+const LocalRequireBuilderConfig = require("../../configs/local/local-require-builder.js");
 
 /**
  * Builds the customized require/_async helpers for local modules.

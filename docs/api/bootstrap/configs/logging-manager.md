@@ -1,4 +1,4 @@
-# Module: `bootstrap/configs/logging-manager.js`
+# Module: `bootstrap/configs/core/logging-manager.js`
 
 ## Overview
 

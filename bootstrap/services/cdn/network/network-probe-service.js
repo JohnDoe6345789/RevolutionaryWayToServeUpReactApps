@@ -1,5 +1,5 @@
 const BaseService = require("../../base-service.js");
-const NetworkProbeServiceConfig = require("../../../configs/network-probe-service.js");
+const NetworkProbeServiceConfig = require("../../../configs/cdn/network-probe-service.js");
 
 class NetworkProbeService extends BaseService {
   constructor(config = new NetworkProbeServiceConfig()) {

@@ -1,5 +1,5 @@
 import BaseController = require("./base-controller.js");
-import BootstrapperConfig = require("../configs/bootstrapper.js");
+import BootstrapperConfig = require("../configs/core/bootstrapper.js");
 
 export = Bootstrapper;
 

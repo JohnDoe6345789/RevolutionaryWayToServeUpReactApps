@@ -1,4 +1,4 @@
-# Module: `bootstrap/configs/script-list-loader.js`
+# Module: `bootstrap/configs/core/script-list-loader.js`
 
 ## Overview
 

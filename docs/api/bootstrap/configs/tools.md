@@ -1,4 +1,4 @@
-# Module: `bootstrap/configs/tools.js`
+# Module: `bootstrap/configs/cdn/tools.js`
 
 ## Overview
 

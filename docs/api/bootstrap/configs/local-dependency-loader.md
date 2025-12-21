@@ -1,4 +1,4 @@
-# Module: `bootstrap/configs/local-dependency-loader.js`
+# Module: `bootstrap/configs/local/local-dependency-loader.js`
 
 ## Overview
 

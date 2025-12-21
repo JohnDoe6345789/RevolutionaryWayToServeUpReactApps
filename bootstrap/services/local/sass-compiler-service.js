@@ -1,5 +1,5 @@
 const BaseService = require("../base-service.js");
-const SassCompilerConfig = require("../../configs/sass-compiler.js");
+const SassCompilerConfig = require("../../configs/local/sass-compiler.js");
 
 /**
  * Wraps Sass compilation/injection using the configured Sass implementation.

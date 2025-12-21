@@ -5,7 +5,7 @@
  * Bootstraps the CDN dynamic module loader so other helpers can source icons.
  */
 const DynamicModulesService = require("../services/cdn/dynamic-modules-service.js");
-const DynamicModulesConfig = require("../configs/dynamic-modules.js");
+const DynamicModulesConfig = require("../configs/cdn/dynamic-modules.js");
 const BaseEntryPoint = require("../entrypoints/base-entrypoint.js");
 
 const entrypoint = new BaseEntryPoint({

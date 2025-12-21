@@ -104,43 +104,43 @@ This document lists every detected global symbol and exported helper so the docs
 ### Functions
 - `bootstrap/cdn/tools.js:configFactory`
 
-## bootstrap/configs/bootstrapper.js
+## bootstrap/configs/core/bootstrapper.js
 
-## bootstrap/configs/dynamic-modules.js
+## bootstrap/configs/cdn/dynamic-modules.js
 
-## bootstrap/configs/env.js
+## bootstrap/configs/core/env.js
 
-## bootstrap/configs/import-map-init.js
+## bootstrap/configs/cdn/import-map-init.js
 
-## bootstrap/configs/local-dependency-loader.js
+## bootstrap/configs/local/local-dependency-loader.js
 
-## bootstrap/configs/local-loader.js
+## bootstrap/configs/local/local-loader.js
 
-## bootstrap/configs/local-module-loader.js
+## bootstrap/configs/local/local-module-loader.js
 
-## bootstrap/configs/local-paths.js
+## bootstrap/configs/local/local-paths.js
 
-## bootstrap/configs/local-require-builder.js
+## bootstrap/configs/local/local-require-builder.js
 
-## bootstrap/configs/logging-manager.js
+## bootstrap/configs/core/logging-manager.js
 
-## bootstrap/configs/logging-service.js
+## bootstrap/configs/cdn/logging-service.js
 
-## bootstrap/configs/module-loader.js
+## bootstrap/configs/core/module-loader.js
 
-## bootstrap/configs/network-service.js
+## bootstrap/configs/cdn/network-service.js
 
-## bootstrap/configs/sass-compiler.js
+## bootstrap/configs/local/sass-compiler.js
 
-## bootstrap/configs/script-list-loader.js
+## bootstrap/configs/core/script-list-loader.js
 ### Globals
-- `bootstrap/configs/script-list-loader.js:GlobalRootHandler`
+- `bootstrap/configs/core/script-list-loader.js:GlobalRootHandler`
 
-## bootstrap/configs/source-utils.js
+## bootstrap/configs/cdn/source-utils.js
 
-## bootstrap/configs/tools.js
+## bootstrap/configs/cdn/tools.js
 
-## bootstrap/configs/tsx-compiler.js
+## bootstrap/configs/local/tsx-compiler.js
 
 ## bootstrap/constants/ci-log-query-param.js
 

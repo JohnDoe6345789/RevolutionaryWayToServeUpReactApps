@@ -1,4 +1,4 @@
-# Module: `bootstrap/configs/source-utils.js`
+# Module: `bootstrap/configs/cdn/source-utils.js`
 
 ## Overview
 

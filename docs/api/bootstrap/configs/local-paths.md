@@ -1,4 +1,4 @@
-# Module: `bootstrap/configs/local-paths.js`
+# Module: `bootstrap/configs/local/local-paths.js`
 
 ## Overview
 

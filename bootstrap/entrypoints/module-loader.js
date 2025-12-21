@@ -1,5 +1,5 @@
 const ModuleLoaderAggregator = require("../services/core/module-loader-service.js");
-const ModuleLoaderConfig = require("../configs/module-loader.js");
+const ModuleLoaderConfig = require("../configs/core/module-loader.js");
 const BaseEntryPoint = require("./base-entrypoint.js");
 
 const entrypoint = new BaseEntryPoint({

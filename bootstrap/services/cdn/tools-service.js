@@ -1,5 +1,5 @@
 const BaseService = require("../base-service.js");
-const ToolsLoaderConfig = require("../../configs/tools.js");
+const ToolsLoaderConfig = require("../../configs/cdn/tools.js");
 
 /**
  * Handles fetching globals/modules and normalizing them into namespace helpers.

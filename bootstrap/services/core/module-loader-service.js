@@ -1,5 +1,5 @@
 const BaseService = require("../base-service.js");
-const ModuleLoaderConfig = require("../../configs/module-loader.js");
+const ModuleLoaderConfig = require("../../configs/core/module-loader.js");
 const ModuleLoaderEnvironment = require("./module-loader-environment.js");
 
 /**

@@ -1,5 +1,5 @@
 const BaseService = require("../../base-service.js");
-const NetworkProviderServiceConfig = require("../../../configs/network-provider-service.js");
+const NetworkProviderServiceConfig = require("../../../configs/cdn/network-provider-service.js");
 const {
   normalizeProviderBaseRawValue,
   createAliasMap,

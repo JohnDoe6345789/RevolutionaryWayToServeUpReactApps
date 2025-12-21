@@ -1,5 +1,5 @@
 const BaseService = require("../base-service.js");
-const ScriptListLoaderConfig = require("../../configs/script-list-loader.js");
+const ScriptListLoaderConfig = require("../../configs/core/script-list-loader.js");
 const GlobalRootHandler = require("../../constants/global-root-handler.js");
 
 /**

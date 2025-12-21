@@ -1,4 +1,4 @@
-# Module: `bootstrap/configs/env.js`
+# Module: `bootstrap/configs/core/env.js`
 
 ## Overview
 

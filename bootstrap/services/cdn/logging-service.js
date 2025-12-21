@@ -1,5 +1,5 @@
 const BaseService = require("../base-service.js");
-const LoggingServiceConfig = require("../../configs/logging-service.js");
+const LoggingServiceConfig = require("../../configs/cdn/logging-service.js");
 
 /**
  * Centralizes CI logging defaults, serialization helpers, and UI error forwarding.

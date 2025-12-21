@@ -1,4 +1,4 @@
-# Module: `bootstrap/configs/logging-service.js`
+# Module: `bootstrap/configs/cdn/logging-service.js`
 
 ## Overview
 

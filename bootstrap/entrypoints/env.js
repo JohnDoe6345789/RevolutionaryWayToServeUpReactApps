@@ -3,7 +3,7 @@
  */
 const BaseEntryPoint = require("./base-entrypoint.js");
 const EnvInitializer = require("../services/core/env-service.js");
-const EnvInitializerConfig = require("../configs/env.js");
+const EnvInitializerConfig = require("../configs/core/env.js");
 
 const entrypoint = new BaseEntryPoint({
   ServiceClass: EnvInitializer,

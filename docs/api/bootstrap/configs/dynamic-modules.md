@@ -1,4 +1,4 @@
-# Module: `bootstrap/configs/dynamic-modules.js`
+# Module: `bootstrap/configs/cdn/dynamic-modules.js`
 
 ## Overview
 

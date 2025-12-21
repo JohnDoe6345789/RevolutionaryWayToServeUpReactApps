@@ -1,5 +1,5 @@
 const BaseService = require("../base-service.js");
-const ImportMapInitConfig = require("../../configs/import-map-init.js");
+const ImportMapInitConfig = require("../../configs/cdn/import-map-init.js");
 
 /**
  * Populates the import map element by resolving each configured module URL.

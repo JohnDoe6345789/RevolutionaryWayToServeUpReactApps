@@ -1,4 +1,4 @@
-# Module: `bootstrap/configs/network-service.js`
+# Module: `bootstrap/configs/cdn/network-service.js`
 
 ## Overview
 

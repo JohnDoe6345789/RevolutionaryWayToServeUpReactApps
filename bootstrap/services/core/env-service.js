@@ -1,5 +1,5 @@
 const BaseService = require("../base-service.js");
-const EnvInitializerConfig = require("../../configs/env.js");
+const EnvInitializerConfig = require("../../configs/core/env.js");
 
 /**
  * Ensures the runtime proxy-mode flag is always defined.

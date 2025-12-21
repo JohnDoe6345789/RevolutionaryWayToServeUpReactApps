@@ -1,4 +1,4 @@
-# Module: `bootstrap/configs/sass-compiler.js`
+# Module: `bootstrap/configs/local/sass-compiler.js`
 
 ## Overview
 

@@ -2,7 +2,7 @@
  * Initializes the local module loader helper with document and fetch bindings for in-browser modules.
  */
 const LocalModuleLoaderService = require("../../services/local/local-module-loader-service.js");
-const LocalModuleLoaderConfig = require("../../configs/local-module-loader.js");
+const LocalModuleLoaderConfig = require("../../configs/local/local-module-loader.js");
 const BaseEntryPoint = require("../../entrypoints/base-entrypoint.js");
 
 const entrypoint = new BaseEntryPoint({

@@ -2,7 +2,7 @@
  * Boots the local loader surface, wiring helper dependencies via BaseEntryPoint.
  */
 const LocalLoaderService = require("../../services/local/local-loader-service.js");
-const LocalLoaderConfig = require("../../configs/local-loader.js");
+const LocalLoaderConfig = require("../../configs/local/local-loader.js");
 const BaseEntryPoint = require("../../entrypoints/base-entrypoint.js");
 
 const entrypoint = new BaseEntryPoint({

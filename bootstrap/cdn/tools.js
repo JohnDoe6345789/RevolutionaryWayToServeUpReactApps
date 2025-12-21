@@ -2,7 +2,7 @@
  * Bootstraps the CDN tools helpers and exposes them through the namespace.
  */
 const ToolsLoaderService = require("../services/cdn/tools-service.js");
-const ToolsLoaderConfig = require("../configs/tools.js");
+const ToolsLoaderConfig = require("../configs/cdn/tools.js");
 const BaseEntryPoint = require("../entrypoints/base-entrypoint.js");
 
 const entrypoint = new BaseEntryPoint({

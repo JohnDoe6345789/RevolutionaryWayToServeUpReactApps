@@ -1,6 +1,6 @@
 const BaseService = require("../base-service.js");
 const hasWindow = typeof window !== "undefined";
-const LoggingManagerConfig = require("../../configs/logging-manager.js");
+const LoggingManagerConfig = require("../../configs/core/logging-manager.js");
 
 /**
  * Wraps telemetry wiring for window-level error/unhandled rejection logging.

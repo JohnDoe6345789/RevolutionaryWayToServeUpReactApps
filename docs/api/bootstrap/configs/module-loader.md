@@ -1,4 +1,4 @@
-# Module: `bootstrap/configs/module-loader.js`
+# Module: `bootstrap/configs/core/module-loader.js`
 
 ## Overview
 

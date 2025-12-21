@@ -1,5 +1,5 @@
 const BaseService = require("../base-service.js");
-const LocalModuleLoaderConfig = require("../../configs/local-module-loader.js");
+const LocalModuleLoaderConfig = require("../../configs/local/local-module-loader.js");
 
 /**
  * Provides asynchronous loading for local modules and caches their exports.

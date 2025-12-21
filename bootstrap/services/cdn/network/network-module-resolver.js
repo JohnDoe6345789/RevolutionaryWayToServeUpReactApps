@@ -1,5 +1,5 @@
 const BaseService = require("../../base-service.js");
-const NetworkModuleResolverConfig = require("../../../configs/network-module-resolver.js");
+const NetworkModuleResolverConfig = require("../../../configs/cdn/network-module-resolver.js");
 
 class NetworkModuleResolver extends BaseService {
   constructor(config = new NetworkModuleResolverConfig()) {

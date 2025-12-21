@@ -1,4 +1,4 @@
-# Module: `bootstrap/configs/import-map-init.js`
+# Module: `bootstrap/configs/cdn/import-map-init.js`
 
 ## Overview
 

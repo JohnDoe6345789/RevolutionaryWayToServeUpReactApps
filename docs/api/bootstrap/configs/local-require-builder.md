@@ -1,4 +1,4 @@
-# Module: `bootstrap/configs/local-require-builder.js`
+# Module: `bootstrap/configs/local/local-require-builder.js`
 
 ## Overview
 
