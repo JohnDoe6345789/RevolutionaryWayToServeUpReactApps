@@ -146,19 +146,19 @@ describe("BootstrapApp", () => {
         document: {}
       } as any;
 
-      const result = BaseBootstrapApp.isBrowser(mockWindow);
+      const result = (BootstrapApp as any).__proto__.constructor.isBrowser(mockWindow);
       expect(result).toBe(true);
     });
 
     it("should return false when window is not provided", () => {
-      const result = BaseBootstrapApp.isBrowser(undefined);
+      const result = (BootstrapApp as any).__proto__.constructor.isBrowser(undefined);
       expect(result).toBe(false);
     });
 
     it("should return false when window has no document", () => {
       const mockWindow = {} as any;
 
-      const result = BaseBootstrapApp.isBrowser(mockWindow);
+      const result = (BootstrapApp as any).__proto__.constructor.isBrowser(mockWindow);
       expect(result).toBe(false);
     });
   });
