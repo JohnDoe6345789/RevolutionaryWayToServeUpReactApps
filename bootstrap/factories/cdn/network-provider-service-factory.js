@@ -1,5 +1,5 @@
 const BaseFactory = require('../../interfaces/base-factory.js');
-const NetworkProviderService = require("../../services/cdn/network-provider-service.js");
+const NetworkProviderService = require("../../services/cdn/network/network-provider-service.js");
 const NetworkProviderServiceConfig = require("../../configs/cdn/network-provider-service.js");
 
 /**

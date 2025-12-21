@@ -1,5 +1,5 @@
 const BaseFactory = require('../../interfaces/base-factory.js');
-const NetworkProbeService = require("../../services/cdn/network-probe-service.js");
+const NetworkProbeService = require("../../services/cdn/network/network-probe-service.js");
 const NetworkProbeServiceConfig = require("../../configs/cdn/network-probe-service.js");
 
 /**

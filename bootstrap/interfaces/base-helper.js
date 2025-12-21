@@ -37,6 +37,31 @@ class BaseHelper {
   initialize() {
     throw new Error(`${this.constructor.name} must implement initialize()`);
   }
+
+  /**
+   * Throws if initialization already ran for this helper.
+   */
+  _ensureNotInitialized() {
+    if (this.initialized) {
+      throw new Error(`${this.constructor.name} already initialized`);
+    }
+  }
+
+  /**
+   * Marks the helper as initialized.
+   */
+  _markInitialized() {
+    this.initialized = true;
+  }
+
+  /**
+   * Throws when the helper is used before initialize() completed.
+   */
+  _ensureInitialized() {
+    if (!this.initialized) {
+      throw new Error(`${this.constructor.name} not initialized`);
+    }
+  }
 }
 
 module.exports = BaseHelper;

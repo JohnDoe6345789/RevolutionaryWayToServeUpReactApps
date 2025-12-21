@@ -6,11 +6,21 @@ const GlobalRootHandler = require("../constants/global-root-handler.js");
  * Consolidates the repetitive entrypoint wiring for bootstrap services/helpers.
  */
 class BaseEntryPoint {
-  constructor({ ServiceClass, ConfigClass, configFactory = () => ({}) }) {
+  constructor(config = {}) {
+    const { ServiceClass, ConfigClass, configFactory = () => ({}) } = config;
+    this.config = config;
     this.ServiceClass = ServiceClass;
     this.ConfigClass = ConfigClass;
     this.configFactory = configFactory;
     this.rootHandler = new GlobalRootHandler();
+    this.initialized = false;
+  }
+
+  /**
+   * Initializes the entrypoint.
+   */
+  initialize() {
+    throw new Error(`${this.constructor.name} must implement initialize()`);
   }
 
   /**
@@ -41,6 +51,31 @@ class BaseEntryPoint {
       service.install();
     }
     return service;
+  }
+
+  /**
+   * Throws if initialization already ran for this entrypoint.
+   */
+  _ensureNotInitialized() {
+    if (this.initialized) {
+      throw new Error(`${this.constructor.name} already initialized`);
+    }
+  }
+
+  /**
+   * Marks the entrypoint as initialized.
+   */
+  _markInitialized() {
+    this.initialized = true;
+  }
+
+  /**
+   * Throws when the entrypoint is used before initialize() completed.
+   */
+  _ensureInitialized() {
+    if (!this.initialized) {
+      throw new Error(`${this.constructor.name} not initialized`);
+    }
   }
 }
 

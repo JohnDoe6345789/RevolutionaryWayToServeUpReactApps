@@ -10,8 +10,9 @@ const entrypoint = new BaseEntryPoint({
   ConfigClass: LoggingServiceConfig,
   configFactory: ({ serviceRegistry, namespace }) => ({ serviceRegistry, namespace }),
 });
-const loggingService = entrypoint.run();
 
+// Create service instance and initialize for backward compatibility
+const loggingService = entrypoint.run();
 loggingService.helpers.logging = loggingService;
 /* istanbul ignore next */
 if (loggingService.isCommonJs) {

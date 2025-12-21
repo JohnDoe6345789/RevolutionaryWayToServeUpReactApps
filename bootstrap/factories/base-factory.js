@@ -9,14 +9,17 @@ class BaseFactory {
   constructor(config = {}) {
     this.config = config;
     this.registry = new Map();
-    this._initialize();
+    this.initialized = false;
   }
 
   /**
    * Initializes the factory with default settings
    */
-  _initialize() {
+  async initialize() {
+    this._ensureNotInitialized();
     // Default initialization - can be overridden by subclasses
+    this._markInitialized();
+    return this;
   }
 
   /**
@@ -80,6 +83,31 @@ class BaseFactory {
   clear() {
     this.registry.clear();
     return this;
+  }
+
+  /**
+   * Throws if initialization already ran for this factory.
+   */
+  _ensureNotInitialized() {
+    if (this.initialized) {
+      throw new Error(`${this.constructor.name} already initialized`);
+    }
+  }
+
+  /**
+   * Marks the factory as initialized.
+   */
+  _markInitialized() {
+    this.initialized = true;
+  }
+
+  /**
+   * Throws when the factory is used before initialize() completed.
+   */
+  _ensureInitialized() {
+    if (!this.initialized) {
+      throw new Error(`${this.constructor.name} not initialized`);
+    }
   }
 }
 

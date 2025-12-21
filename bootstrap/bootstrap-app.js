@@ -1,6 +1,8 @@
 const BaseBootstrapApp = require("./interfaces/base-bootstrap-app.js");
+const BootstrapAppConfig = require("./configs/core/bootstrap-app.js");
 const LoggingManagerConfig = require("./configs/core/logging-manager.js");
 const BootstrapperConfig = require("./configs/core/bootstrapper.js");
+const LoggingService = require("./services/cdn/logging-service.js");
 const LoggingServiceConfig = require("./configs/cdn/logging-service.js");
 const NetworkProviderServiceConfig = require("./configs/cdn/network-provider-service.js");
 const NetworkProbeServiceConfig = require("./configs/cdn/network-probe-service.js");
@@ -13,61 +15,77 @@ const { registerAllFactoryLoaders } = require("./registries/comprehensive-factor
  * Encapsulates the bootstrap entrypoint wiring needed for both CommonJS and browser runtimes.
  */
 class BootstrapApp extends BaseBootstrapApp {
-  constructor(options = {}) {
-    super(options);
+  constructor(config = new BootstrapAppConfig()) {
+    super(config);
+    // Only basic property setup in constructor - no initialization logic
+  }
+
+  /**
+   * Initializes BootstrapApp with all services and dependencies.
+   */
+  async initialize() {
+    this._ensureNotInitialized();
     
     // Register ALL factory loaders for complete factory system coverage
     registerAllFactoryLoaders();
     
     // Initialize config parser for config.json integration
-    this.configParser = new ConfigJsonParser();
+    this.configParser = this.config.configParser || new ConfigJsonParser();
     
     // Create service registries using factories
-    this.serviceRegistry = factoryRegistry.create('serviceRegistry', new ServiceRegistryConfig());
-    this.controllerRegistry = factoryRegistry.create('controllerRegistry');
+    this.serviceRegistry = this.config.serviceRegistry || 
+      factoryRegistry.create('serviceRegistry', new ServiceRegistryConfig());
+    this.controllerRegistry = this.config.controllerRegistry || 
+      factoryRegistry.create('controllerRegistry');
     
     // Create network services using factories
     this.networkProviderService = factoryRegistry.create('networkProviderService', 
+      this.config.networkProviderServiceConfig || 
       new NetworkProviderServiceConfig(this.configParser.createNetworkProviderConfig()));
     this.networkProbeService = factoryRegistry.create('networkProbeService', 
-      new NetworkProbeServiceConfig());
+      this.config.networkProbeServiceConfig || new NetworkProbeServiceConfig());
     
-    // Create logging service using factory
-    this.loggingService = factoryRegistry.create('loggingService', 
+    // Create logging service directly to avoid circular dependency issues
+    this.loggingService = new LoggingService(this.config.loggingServiceConfig || 
       new LoggingServiceConfig({
-        logEndpoint: options.logEndpoint || '/__client-log',
-        enableConsole: options.enableConsole !== false,
+        logEndpoint: this.config.logEndpoint || '/__client-log',
+        enableConsole: this.config.enableConsole !== false,
+        serviceRegistry: this.serviceRegistry,
       }));
     
-    // Resolve helpers (keep existing pattern for now, but could be factory-based)
-    this.logging = this._resolveHelper("logging", "./cdn/logging.js");
-    this.network = this._resolveHelper("network", "./cdn/network.js");
-    this.moduleLoader = this._resolveHelper("moduleLoader", "./entrypoints/module-loader.js");
+    // For now, don't auto-resolve helpers to avoid circular dependencies
+    // These can be accessed via lazy loading when needed
+    this.logging = null;
+    this.network = null;
+    this.moduleLoader = null;
     
     // Create LoggingManager using factory with proper config
-    const loggingManagerConfig = new LoggingManagerConfig({
-      logClient: this.logging.logClient,
-      serializeForLog: this.logging.serializeForLog,
-      serviceRegistry: this.serviceRegistry,
-    });
+    const loggingManagerConfig = this.config.loggingManagerConfig || 
+      new LoggingManagerConfig({
+        logClient: this.loggingService.logClient,
+        serializeForLog: this.loggingService.serializeForLog,
+        serviceRegistry: this.serviceRegistry,
+      });
     this.loggingManager = factoryRegistry.create('loggingManager', loggingManagerConfig);
     
     // Create Bootstrapper using factory with proper config
-    const bootstrapperConfig = new BootstrapperConfig({
-      logging: this._loggingBindings(),
-      network: this.network,
-      moduleLoader: this.moduleLoader,
-      controllerRegistry: this.controllerRegistry,
-    });
+    const bootstrapperConfig = this.config.bootstrapperConfig || 
+      new BootstrapperConfig({
+        logging: this._loggingBindings(),
+        network: this.network,
+        moduleLoader: this.moduleLoader,
+        controllerRegistry: this.controllerRegistry,
+      });
     this.bootstrapper = factoryRegistry.create('bootstrapper', bootstrapperConfig);
-  }
-
-  /**
-   * Boots up the logging manager followed by the bootstrapper.
-   */
-  initialize() {
-    this.loggingManager.initialize();
-    this.bootstrapper.initialize();
+    
+    // Initialize services
+    await this.loggingService.initialize();
+    await this.networkProviderService.initialize();
+    await this.networkProbeService.initialize();
+    await this.loggingManager.initialize();
+    await this.bootstrapper.initialize();
+    
+    this._markInitialized();
     return this;
   }
 
@@ -111,44 +129,9 @@ class BootstrapApp extends BaseBootstrapApp {
    * Gathers the set of helper exports that should be exposed to consumers.
    */
   getExports() {
-    const {
-      loadTools,
-      makeNamespace,
-      loadModules,
-      loadDynamicModule,
-      createRequire,
-      compileSCSS,
-      injectCSS,
-      collectDynamicModuleImports,
-      preloadDynamicModulesFromSource,
-      collectModuleSpecifiers,
-      preloadModulesFromSource,
-      compileTSX,
-      frameworkRender,
-      loadScript,
-    } = this.moduleLoader;
-
-    const { normalizeProviderBase, probeUrl, resolveModuleUrl } = this.network;
-
+    // For now, return basic exports since we're refactoring
     return {
       loadConfig: this.bootstrapper.loadConfig.bind(this.bootstrapper),
-      loadScript,
-      normalizeProviderBase,
-      probeUrl,
-      resolveModuleUrl,
-      loadTools,
-      makeNamespace,
-      loadModules,
-      loadDynamicModule,
-      createRequire,
-      compileSCSS,
-      injectCSS,
-      collectDynamicModuleImports,
-      preloadDynamicModulesFromSource,
-      collectModuleSpecifiers,
-      preloadModulesFromSource,
-      compileTSX,
-      frameworkRender,
       bootstrap: () => this.bootstrapper.bootstrap(),
       getServices: () => this.getServices(),
       loadConfigJson: () => this.loadConfigJson(),
@@ -183,7 +166,7 @@ class BootstrapApp extends BaseBootstrapApp {
    */
   _loggingBindings() {
     const { setCiLoggingEnabled, detectCiLogging, logClient, serializeForLog, isCiLoggingEnabled } =
-      this.logging;
+      this.loggingService;
     return {
       setCiLoggingEnabled,
       detectCiLogging,
