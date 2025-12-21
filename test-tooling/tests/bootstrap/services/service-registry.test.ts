@@ -1,5 +1,5 @@
-describe("bootstrap/services/service-registry.js", () => {
-  const modulePath = '../../../../bootstrap/services/service-registry.js';
+describe("bootstrap/registries/service-registry.js", () => {
+  const modulePath = '../../../../bootstrap/registries/service-registry.js';
   const ServiceRegistry = require(modulePath);
 
   it('stores service instances and metadata by name', () => {

@@ -1,6 +1,3 @@
-// Initialize the FactoryRegistry with all available factories
-require("./bootstrap/registries/factory-registry-initializer.js").initializeFactoryRegistry();
-
 const BootstrapApp = require("./bootstrap/bootstrap-app.js");
 
 const app = new BootstrapApp();
