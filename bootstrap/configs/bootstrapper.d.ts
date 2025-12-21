@@ -2,12 +2,14 @@ export = BootstrapperConfig;
 
 declare class BootstrapperConfig {
   constructor(options: {
-    configLoader: any;
+    configUrl?: string;
+    fetch?: typeof fetch;
     logging: Record<string, any>;
     network: Record<string, any>;
     moduleLoader: Record<string, any>;
   });
-  configLoader: any;
+  configUrl: string;
+  fetch?: typeof fetch;
   logging: Record<string, any>;
   network: Record<string, any>;
   moduleLoader: Record<string, any>;

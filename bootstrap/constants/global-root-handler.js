@@ -39,6 +39,20 @@ class GlobalRootHandler {
   getDocument() {
     return this.root.document;
   }
+
+  /**
+   * Returns whether the current runtime exposes a global window object.
+   */
+  hasWindow() {
+    return typeof this.root.window !== "undefined";
+  }
+
+  /**
+   * Returns whether the current runtime exposes a global document object.
+   */
+  hasDocument() {
+    return typeof this.root.document !== "undefined";
+  }
 }
 
 module.exports = GlobalRootHandler;

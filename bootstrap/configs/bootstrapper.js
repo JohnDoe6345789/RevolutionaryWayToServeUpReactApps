@@ -5,8 +5,15 @@ class BootstrapperConfig {
   /**
    * Initializes a new Bootstrapper Config instance with the provided configuration.
    */
-  constructor({ configLoader, logging, network, moduleLoader }) {
-    this.configLoader = configLoader;
+  constructor({
+    configUrl = "config.json",
+    fetch: configFetch,
+    logging,
+    network,
+    moduleLoader,
+  } = {}) {
+    this.configUrl = configUrl;
+    this.fetch = configFetch;
     this.logging = logging;
     this.network = network;
     this.moduleLoader = moduleLoader;

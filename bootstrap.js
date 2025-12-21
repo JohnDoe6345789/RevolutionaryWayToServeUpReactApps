@@ -27,21 +27,17 @@ const {
   isCiLoggingEnabled,
 } = logging;
 
-const BootstrapConfigLoader = require("./bootstrap/controllers/config-loader.js");
-const BootstrapConfigLoaderConfig = require("./bootstrap/configs/bootstrap-config-loader.js");
 const LoggingManager = require("./bootstrap/services/core/logging-manager.js");
 const LoggingManagerConfig = require("./bootstrap/configs/logging-manager.js");
 const serviceRegistry = require("./bootstrap/services/service-registry-instance.js");
 const Bootstrapper = require("./bootstrap/controllers/bootstrapper.js");
 const BootstrapperConfig = require("./bootstrap/configs/bootstrapper.js");
 
-const configLoader = new BootstrapConfigLoader(new BootstrapConfigLoaderConfig());
 const loggingManager = new LoggingManager(
   new LoggingManagerConfig({ logClient, serializeForLog, serviceRegistry })
 );
 const bootstrapper = new Bootstrapper(
   new BootstrapperConfig({
-    configLoader,
     logging: {
       setCiLoggingEnabled,
       detectCiLogging,
@@ -54,7 +50,6 @@ const bootstrapper = new Bootstrapper(
   })
 );
 
-configLoader.initialize();
 loggingManager.initialize();
 bootstrapper.initialize();
 
@@ -77,7 +72,7 @@ const {
 const { normalizeProviderBase, probeUrl, resolveModuleUrl } = network;
 
 const bootstrapExports = {
-  loadConfig: configLoader.loadConfig.bind(configLoader),
+  loadConfig: bootstrapper.loadConfig.bind(bootstrapper),
   loadScript,
   normalizeProviderBase,
   probeUrl,

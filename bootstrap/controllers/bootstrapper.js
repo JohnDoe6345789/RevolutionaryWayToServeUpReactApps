@@ -1,6 +1,10 @@
-const hasDocument = typeof document !== "undefined";
-const hasWindow = typeof window !== "undefined";
+const GlobalRootHandler = require("../constants/global-root-handler.js");
 const BaseController = require("./base-controller.js");
+const BootstrapperConfig = require("../configs/bootstrapper.js");
+
+const rootHandler = new GlobalRootHandler();
+const hasDocument = rootHandler.hasDocument();
+const hasWindow = rootHandler.hasWindow();
 
 /**
  * Drives the overall bootstrap workflow (config, module loading, rendering, logging).
@@ -9,8 +13,15 @@ class Bootstrapper extends BaseController {
   /**
    * Initializes a new Bootstrapper instance with the provided configuration.
    */
-  constructor(config) {
-    super(config);
+  constructor(config = {}) {
+    const normalized =
+      config instanceof BootstrapperConfig ? config : new BootstrapperConfig(config);
+    super(normalized);
+    this.cachedConfigPromise = null;
+    this.fetchImpl =
+      this.config.fetch ?? (typeof rootHandler.root.fetch === "function"
+        ? rootHandler.root.fetch.bind(rootHandler.root)
+        : undefined);
   }
 
   /**
@@ -19,8 +30,7 @@ class Bootstrapper extends BaseController {
   initialize() {
     this._ensureNotInitialized();
     this._markInitialized();
-    const { configLoader, logging, network, moduleLoader } = this.config;
-    this.configLoader = configLoader;
+    const { logging, network, moduleLoader } = this.config;
     this.logging = logging;
     this.network = network;
     this.moduleLoader = moduleLoader;
@@ -46,7 +56,7 @@ class Bootstrapper extends BaseController {
    */
   async _bootstrap() {
     this._ensureInitialized();
-    const config = await this.configLoader.loadConfig();
+    const config = await this.loadConfig();
     this._configureProviders(config);
     const entryFile = config.entry || "main.tsx";
     const scssFile = config.styles || "styles.scss";
@@ -80,6 +90,47 @@ class Bootstrapper extends BaseController {
     this.network.setDefaultProviderBase(config.providers && config.providers.default);
     this.network.setProviderAliases(config.providers && config.providers.aliases);
     this._enableCiLogging(config);
+  }
+
+  /**
+   * Loads the runtime configuration for Bootstrapper.
+   */
+  async loadConfig() {
+    if (hasWindow) {
+      if (window.__rwtraConfig) {
+        return window.__rwtraConfig;
+      }
+      if (window.__rwtraConfigPromise) {
+        return window.__rwtraConfigPromise;
+      }
+    }
+    this._ensureInitialized();
+    if (!this.cachedConfigPromise) {
+      this.cachedConfigPromise = this._fetchConfig();
+      if (hasWindow) {
+        window.__rwtraConfigPromise = this.cachedConfigPromise;
+      }
+    }
+    const config = await this.cachedConfigPromise;
+    if (hasWindow) {
+      window.__rwtraConfig = config;
+    }
+    return config;
+  }
+
+  /**
+   * Fetches config.json via the configured fetch implementation.
+   */
+  async _fetchConfig() {
+    if (!this.fetchImpl) {
+      throw new Error("Fetch is unavailable when loading config.json");
+    }
+    const url = this.config.configUrl ?? "config.json";
+    const response = await this.fetchImpl(url, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error("Failed to load config.json");
+    }
+    return response.json();
   }
 
   /**

@@ -7,4 +7,6 @@ declare class GlobalRootHandler {
   helpers: Record<string, any>;
   getNamespace(): Record<string, any>;
   getDocument(): Document | undefined;
+  hasWindow(): boolean;
+  hasDocument(): boolean;
 }
