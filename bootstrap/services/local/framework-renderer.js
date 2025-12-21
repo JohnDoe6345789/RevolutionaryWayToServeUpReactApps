@@ -23,6 +23,7 @@ class FrameworkRenderer {
       throw new Error("Document required for FrameworkRenderer");
     }
     this.initialized = true;
+    return this;
   }
 
   render(config, registry, App) {

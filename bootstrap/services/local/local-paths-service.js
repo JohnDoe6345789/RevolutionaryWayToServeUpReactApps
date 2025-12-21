@@ -17,6 +17,7 @@ class LocalPathsService extends BaseService {
     this.namespace = this._resolveNamespace();
     this.helpers = this.namespace.helpers || (this.namespace.helpers = {});
     this.serviceRegistry = this._requireServiceRegistry();
+    return this;
   }
 
   isLocalModule(name) {
@@ -102,6 +103,7 @@ class LocalPathsService extends BaseService {
     if (typeof module !== "undefined" && module.exports) {
       module.exports = exports;
     }
+    return this;
   }
 
   _resolveNamespace() {

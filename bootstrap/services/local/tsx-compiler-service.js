@@ -26,6 +26,7 @@ class TsxCompilerService extends BaseService {
     this.moduleContextStack = [];
     this.fetchImpl = this.config.fetch ?? dependencies.fetch;
     this.Babel = this.config.Babel ?? dependencies.Babel;
+    return this;
   }
 
   transformSource(source, filePath) {
@@ -99,6 +100,7 @@ class TsxCompilerService extends BaseService {
     if (this.isCommonJs) {
       module.exports = exports;
     }
+    return this;
   }
 
   _resolveNamespace() {

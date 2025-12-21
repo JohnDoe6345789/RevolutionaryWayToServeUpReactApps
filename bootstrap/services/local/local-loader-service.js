@@ -120,6 +120,7 @@ class LocalLoaderService extends BaseService {
     this._ensureNotInitialized();
     this._markInitialized();
     new LocalLoaderInitializer(this).run();
+    return this;
   }
 
   frameworkRender(config, registry, App) {
@@ -164,6 +165,7 @@ class LocalLoaderService extends BaseService {
     if (this.isCommonJs) {
       module.exports = exports;
     }
+    return this;
   }
 }
 

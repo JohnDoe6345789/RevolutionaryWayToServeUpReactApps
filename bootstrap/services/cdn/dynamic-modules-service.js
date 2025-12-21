@@ -49,6 +49,7 @@ class DynamicModulesService extends BaseService {
         helperRegistry: this.helpers,
       })
     ).initialize();
+    return this;
   }
 
   /**
@@ -131,6 +132,7 @@ class DynamicModulesService extends BaseService {
     if (this.isCommonJs) {
       module.exports = exports;
     }
+    return this;
   }
 
   /**

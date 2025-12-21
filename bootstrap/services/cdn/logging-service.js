@@ -30,6 +30,7 @@ class LoggingService extends BaseService {
       folder: "services/cdn",
       domain: "cdn",
     });
+    return this;
   }
 
   setCiLoggingEnabled(enabled) {

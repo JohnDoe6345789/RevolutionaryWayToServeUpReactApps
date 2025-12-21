@@ -24,6 +24,7 @@ class EnvInitializer {
       domain: "core",
     });
     this.initialized = true;
+    return this;
   }
 
   ensureProxyMode() {

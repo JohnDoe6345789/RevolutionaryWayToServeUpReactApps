@@ -24,6 +24,7 @@ class ModuleLoaderAggregator {
     this._loadDependencies();
     this._buildExports();
     this._registerWithServiceRegistry();
+    return this;
   }
 
   _loadDependencies() {
@@ -80,6 +81,7 @@ class ModuleLoaderAggregator {
     if (this.isCommonJs) {
       module.exports = this.exports;
     }
+    return this;
   }
 }
 

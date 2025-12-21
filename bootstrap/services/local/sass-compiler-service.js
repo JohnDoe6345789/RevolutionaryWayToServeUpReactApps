@@ -19,6 +19,7 @@ class SassCompilerService extends BaseService {
     this.SassImpl = this.config.SassImpl;
     this.namespace = this._resolveNamespace();
     this.helpers = this.namespace.helpers || (this.namespace.helpers = {});
+    return this;
   }
 
   /**
@@ -123,6 +124,7 @@ class SassCompilerService extends BaseService {
     if (typeof module !== "undefined" && module.exports) {
       module.exports = exports;
     }
+    return this;
   }
 
   /**

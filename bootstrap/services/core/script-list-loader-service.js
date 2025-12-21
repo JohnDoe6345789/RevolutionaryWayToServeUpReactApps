@@ -33,6 +33,7 @@ class ScriptListLoader {
           console.error("rwtra:scripts", msg, data || "");
         }
       });
+    return this;
   }
 
   async loadScript(src) {

@@ -23,15 +23,17 @@ class LoggingManager {
       folder: "services/core",
       domain: "core",
     });
+    return this;
   }
 
   install(windowObj) {
     if (!hasWindow || !windowObj) {
-      return;
+      return this;
     }
     windowObj.__rwtraLog = this.logClient;
     windowObj.addEventListener("error", this._handleWindowError.bind(this));
     windowObj.addEventListener("unhandledrejection", this._handleUnhandledRejection.bind(this));
+    return this;
   }
 
   _handleWindowError(event) {

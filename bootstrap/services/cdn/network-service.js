@@ -69,6 +69,7 @@ class NetworkService extends BaseService {
     this.shouldRetryStatus = this.shouldRetryStatus.bind(this);
     this.probeUrl = this.probeUrl.bind(this);
     this.resolveModuleUrl = this.resolveModuleUrl.bind(this);
+    return this;
   }
 
   setFallbackProviders(providers) {

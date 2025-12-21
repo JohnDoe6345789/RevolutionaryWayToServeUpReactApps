@@ -44,6 +44,7 @@ class LocalModuleLoaderService extends BaseService {
     this.getModuleDir = this.localPaths?.getModuleDir;
     this.getCandidateLocalPaths = this.localPaths?.getCandidateLocalPaths;
     this.fetchImpl = this.config.fetch ?? dependencies.fetch;
+    return this;
   }
 
   createLocalModuleLoader(entryDir) {
@@ -171,6 +172,7 @@ class LocalModuleLoaderService extends BaseService {
     if (this.isCommonJs) {
       module.exports = exports;
     }
+    return this;
   }
 }
 

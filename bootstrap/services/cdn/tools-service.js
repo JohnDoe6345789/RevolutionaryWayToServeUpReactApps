@@ -27,6 +27,7 @@ class ToolsLoaderService extends BaseService {
     this.logClient = (this.logging && this.logging.logClient) || (() => {});
     this.loadScript = this.network?.loadScript ?? (() => Promise.resolve());
     this.resolveModuleUrl = this.network?.resolveModuleUrl ?? (() => "");
+    return this;
   }
 
   /**
@@ -162,6 +163,7 @@ class ToolsLoaderService extends BaseService {
     if (this.isCommonJs) {
       module.exports = exports;
     }
+    return this;
   }
 
   /**

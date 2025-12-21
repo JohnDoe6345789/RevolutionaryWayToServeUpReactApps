@@ -19,6 +19,7 @@ class SourceUtilsService extends BaseService {
     this.helpers = this.namespace.helpers || (this.namespace.helpers = {});
     this.isCommonJs = typeof module !== "undefined" && module.exports;
     this.serviceRegistry = this._requireServiceRegistry();
+    return this;
   }
 
   /**
@@ -146,6 +147,7 @@ class SourceUtilsService extends BaseService {
     if (this.isCommonJs) {
       module.exports = exports;
     }
+    return this;
   }
 
   /**

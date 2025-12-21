@@ -18,11 +18,11 @@ class ImportMapInitializer {
         ? fetch.bind(typeof globalThis !== "undefined" ? globalThis : this.window)
         : undefined);
     if (!this.window) {
-      return;
+      return this;
     }
     const importMapEl = this.window.document.querySelector("script[data-rwtra-importmap]");
     if (!importMapEl) {
-      return;
+      return this;
     }
 
     const namespace = this.window.__rwtraBootstrap || (this.window.__rwtraBootstrap = {});
@@ -46,7 +46,7 @@ class ImportMapInitializer {
         : () => {};
 
     if (this.window.__rwtraConfigPromise) {
-      return;
+      return this;
     }
 
     const configUrl = "config.json";
@@ -87,6 +87,7 @@ class ImportMapInitializer {
       });
 
     this.window.__rwtraConfigPromise = configPromise;
+    return this;
   }
 
   async _fetchConfig(configUrl) {
