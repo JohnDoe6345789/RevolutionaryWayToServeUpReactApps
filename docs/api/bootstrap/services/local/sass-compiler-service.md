@@ -9,7 +9,7 @@
 - `SassCompilerConfig`
 ## Functions / Classes
 
-- _None yet_
+- `_resolveNamespace` — derives the Sass namespace helpers that bind into the bootstrap helpers surface.
 
 ## Examples
 

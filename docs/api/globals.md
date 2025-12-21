@@ -130,6 +130,18 @@ This document lists every detected global symbol and exported helper so the docs
 
 ## bootstrap/configs/cdn/network-service.js
 
+## bootstrap/configs/cdn/network-module-resolver.js
+### Globals
+- `bootstrap/configs/cdn/network-module-resolver.js:NetworkModuleResolverConfig`
+
+## bootstrap/configs/cdn/network-probe-service.js
+### Globals
+- `bootstrap/configs/cdn/network-probe-service.js:NetworkProbeServiceConfig`
+
+## bootstrap/configs/cdn/network-provider-service.js
+### Globals
+- `bootstrap/configs/cdn/network-provider-service.js:NetworkProviderServiceConfig`
+
 ## bootstrap/configs/local/sass-compiler.js
 
 ## bootstrap/configs/core/script-list-loader.js
@@ -141,6 +153,10 @@ This document lists every detected global symbol and exported helper so the docs
 ## bootstrap/configs/cdn/tools.js
 
 ## bootstrap/configs/local/tsx-compiler.js
+
+## bootstrap/configs/helpers/local-helpers.js
+### Globals
+- `bootstrap/configs/helpers/local-helpers.js:LocalHelpersConfig`
 
 ## bootstrap/constants/ci-log-query-param.js
 
@@ -226,8 +242,16 @@ This document lists every detected global symbol and exported helper so the docs
 ## bootstrap/helpers/helper-registry-instance.js
 ### Globals
 - `bootstrap/helpers/helper-registry-instance.js:HelperRegistry`
+- `bootstrap/helpers/helper-registry-instance.js:helperRegistry`
 
 ## bootstrap/helpers/helper-registry.js
+
+## bootstrap/helpers/local-helpers.js
+### Globals
+- `bootstrap/helpers/local-helpers.js:HelperBase`
+- `bootstrap/helpers/local-helpers.js:LocalHelpersConfig`
+### Functions
+- `bootstrap/helpers/local-helpers.js:LocalHelpers`
 
 ## bootstrap/initializers/compilers/sass-compiler.js
 ### Globals
@@ -333,12 +357,51 @@ This document lists every detected global symbol and exported helper so the docs
 - `bootstrap/services/cdn/network-service.js:NetworkServiceConfig`
 - `bootstrap/services/cdn/network-service.js:globalObject`
 - `bootstrap/services/cdn/network-service.js:isCommonJs`
+- `bootstrap/services/cdn/network-service.js:NetworkModuleResolver`
+- `bootstrap/services/cdn/network-service.js:NetworkModuleResolverConfig`
+- `bootstrap/services/cdn/network-service.js:NetworkProbeService`
+- `bootstrap/services/cdn/network-service.js:NetworkProbeServiceConfig`
+- `bootstrap/services/cdn/network-service.js:NetworkProviderService`
+- `bootstrap/services/cdn/network-service.js:NetworkProviderServiceConfig`
 ### Functions
 - `bootstrap/services/cdn/network-service.js:addBase`
 - `bootstrap/services/cdn/network-service.js:createAliasMap`
 - `bootstrap/services/cdn/network-service.js:normalizeProviderBaseRawValue`
 - `bootstrap/services/cdn/network-service.js:onerror`
 - `bootstrap/services/cdn/network-service.js:onload`
+
+## bootstrap/services/cdn/network/network-env.js
+### Globals
+- `bootstrap/services/cdn/network/network-env.js:globalObject`
+- `bootstrap/services/cdn/network/network-env.js:isCommonJs`
+
+## bootstrap/services/cdn/network/network-module-resolver.js
+### Globals
+- `bootstrap/services/cdn/network/network-module-resolver.js:BaseService`
+- `bootstrap/services/cdn/network/network-module-resolver.js:NetworkModuleResolver`
+### Functions
+- `bootstrap/services/cdn/network/network-module-resolver.js:resolveModuleUrl`
+
+## bootstrap/services/cdn/network/network-probe-service.js
+### Globals
+- `bootstrap/services/cdn/network/network-probe-service.js:BaseService`
+- `bootstrap/services/cdn/network/network-probe-service.js:NetworkProbeService`
+### Functions
+- `bootstrap/services/cdn/network/network-probe-service.js:probeUrl`
+
+## bootstrap/services/cdn/network/network-provider-service.js
+### Globals
+- `bootstrap/services/cdn/network/network-provider-service.js:BaseService`
+- `bootstrap/services/cdn/network/network-provider-service.js:NetworkProviderService`
+### Functions
+- `bootstrap/services/cdn/network/network-provider-service.js:collectBases`
+- `bootstrap/services/cdn/network/network-provider-service.js:normalizeProviderBase`
+- `bootstrap/services/cdn/network/network-provider-service.js:resolveProvider`
+
+## bootstrap/services/cdn/network/provider-utils.js
+### Globals
+- `bootstrap/services/cdn/network/provider-utils.js:createAliasMap`
+- `bootstrap/services/cdn/network/provider-utils.js:normalizeProviderBaseRawValue`
 
 ## bootstrap/services/cdn/source-utils-service.js
 ### Globals
@@ -384,12 +447,6 @@ This document lists every detected global symbol and exported helper so the docs
 ### Globals
 - `bootstrap/services/local/framework-renderer.js:BaseService`
 
-## bootstrap/services/local/helpers/index.js
-### Globals
-- `bootstrap/services/local/helpers/index.js:FrameworkRenderer`
-- `bootstrap/services/local/helpers/index.js:LocalRequireBuilder`
-- `bootstrap/services/local/helpers/index.js:helperRegistry`
-
 ## bootstrap/services/local/local-dependency-loader.js
 ### Globals
 - `bootstrap/services/local/local-dependency-loader.js:BaseService`
@@ -400,6 +457,7 @@ This document lists every detected global symbol and exported helper so the docs
 - `bootstrap/services/local/local-loader-service.js:BaseService`
 - `bootstrap/services/local/local-loader-service.js:LocalDependencyLoaderConfig`
 - `bootstrap/services/local/local-loader-service.js:LocalLoaderConfig`
+- `bootstrap/services/local/local-loader-service.js:LocalHelpers`
 
 ## bootstrap/services/local/local-module-loader-service.js
 ### Globals

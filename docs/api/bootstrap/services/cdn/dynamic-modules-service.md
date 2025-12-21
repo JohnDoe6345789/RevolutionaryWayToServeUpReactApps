@@ -13,7 +13,8 @@
 - `ProviderResolverConfig`
 ## Functions / Classes
 
-- _None yet_
+- `_resolveNamespace` — builds the module namespace used by dynamic modules when they register providers.
+- `_resolveRule` — normalizes a provider rule before making candidate URLs.
 
 ## Examples
 

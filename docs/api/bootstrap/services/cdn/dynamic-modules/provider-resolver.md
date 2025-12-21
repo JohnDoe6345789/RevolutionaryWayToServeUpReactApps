@@ -9,7 +9,9 @@
 - `ProviderResolverConfig`
 ## Functions / Classes
 
-- _None yet_
+- `_addCandidate` — helper that deduplicates provider candidates for a module.
+- `buildCandidates` — assembles resolved URLs by combining providers, packages, and versions.
+- `resolveBases` — normalizes the final list of provider bases that will receive probes.
 
 ## Examples
 

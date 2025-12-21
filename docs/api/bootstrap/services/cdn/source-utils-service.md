@@ -9,7 +9,7 @@
 - `SourceUtilsConfig`
 ## Functions / Classes
 
-- _None yet_
+- `_resolveNamespace` — normalizes the namespace identifier used when scanning preload lists.
 
 ## Examples
 

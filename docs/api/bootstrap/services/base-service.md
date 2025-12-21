@@ -6,11 +6,13 @@
 
 ## Globals
 
-- _None yet_
+- `BaseService`
 
 ## Functions / Classes
 
-- _None yet_
+- `_ensureInitialized` — verifies the service has been bootstrapped before running protected methods.
+- `_requireServiceRegistry` — ensures the runtime `ServiceRegistry` exists before registration.
+- `_resolveNamespace` — binds the service into the shared bootstrap namespace so helpers can locate it.
 
 ## Examples
 

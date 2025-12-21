@@ -34,6 +34,23 @@ const resolveModuleId = (moduleName: string) => {
   }
 };
 
+const serviceRegistryInstance: { reset?: () => void } | null = (() => {
+  if (typeof require !== "function") {
+    return null;
+  }
+  try {
+    return require("../../bootstrap/services/service-registry-instance.js");
+  } catch {
+    return null;
+  }
+})();
+
+const resetServiceRegistry = () => {
+  if (serviceRegistryInstance?.reset) {
+    serviceRegistryInstance.reset();
+  }
+};
+
 const overrideModule = (moduleId: string, mockExports: unknown) => {
   if (typeof require !== "function" || !require.cache) {
     return;
@@ -104,4 +121,12 @@ const ensureJestShims = () => {
 
 ensureJestShims();
 
-export { afterEach, beforeEach, describe, expect, it, baseJest as jest };
+export {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  baseJest as jest,
+  resetServiceRegistry
+};

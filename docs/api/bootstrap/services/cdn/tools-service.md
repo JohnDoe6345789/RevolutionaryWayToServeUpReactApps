@@ -9,7 +9,7 @@
 - `ToolsLoaderConfig`
 ## Functions / Classes
 
-- _None yet_
+- `_resolveNamespace` — maps tool-specific helpers into the shared bootstrap namespace.
 
 ## Examples
 

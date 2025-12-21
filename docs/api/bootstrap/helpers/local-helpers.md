@@ -1,22 +1,22 @@
-# Module: `bootstrap/services/local/helpers/index.js`
+# Module: `bootstrap/helpers/local-helpers.js`
 
 ## Overview
 
-- **Purpose:** Register local helper constructors in the shared helper registry.
+- **Purpose:** Extends the base helper docbag to register the local renderer and require builder helpers inside the shared registry.
 
 ## Globals
-- `FrameworkRenderer`
-- `LocalRequireBuilder`
+- `HelperBase`
+- `LocalHelpersConfig`
 - `helperRegistry`
 ## Functions / Classes
 
-- _None yet_
+- `LocalHelpers` — helper class that wires renderer and require builder constructors into the registry, ensuring each helper is initialized once.
+- `initialize` — sets up the `frameworkRenderer` and `localRequireBuilder` entries only once.
 
 ## Examples
 
 ```ts
-const registry = helperRegistry;
-const Renderer = registry.getHelper("frameworkRenderer");
+const helpers = new LocalHelpers().initialize();
 ```
 
 ## Related docs

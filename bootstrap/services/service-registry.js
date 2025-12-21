@@ -52,6 +52,13 @@ class ServiceRegistry {
   isRegistered(name) {
     return this._services.has(name);
   }
+
+  /**
+   * Removes all registered services so the registry can be reused.
+   */
+  reset() {
+    this._services.clear();
+  }
 }
 
 module.exports = ServiceRegistry;

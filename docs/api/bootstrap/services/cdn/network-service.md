@@ -6,10 +6,22 @@
 
 ## Globals
 - `BaseService`
+- `DEFAULT_PROVIDER_ALIASES`
+- `NetworkModuleResolver`
+- `NetworkModuleResolverConfig`
+- `NetworkProbeService`
+- `NetworkProbeServiceConfig`
+- `NetworkProviderService`
+- `NetworkProviderServiceConfig`
 - `NetworkServiceConfig`
 - `globalObject`
+- `isCommonJs`
 ## Functions / Classes
-- `normalizeProviderBaseRawValue`
+- `addBase` — helper that filters out duplicate provider base entries.
+- `createAliasMap` — merges default aliases with overrides before normalization.
+- `normalizeProviderBaseRawValue` — ensures every provider base ends in `/` and uses `https://`.
+- `onerror` — handles script errors that occur while probing CDN hosts.
+- `onload` — called when script probes succeed to advance the bootstrap flow.
 ## Examples
 
 ```ts

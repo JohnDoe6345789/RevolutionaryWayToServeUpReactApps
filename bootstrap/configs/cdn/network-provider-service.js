@@ -5,10 +5,10 @@ const {
   proxyModeProxy: DEFAULT_PROXY_MODE_PROXY,
   proxyModeDirect: DEFAULT_PROXY_MODE_DIRECT,
 } = require("../../constants/common.js");
-const {
-  globalObject: DEFAULT_GLOBAL_OBJECT,
-  isCommonJs: DEFAULT_IS_COMMON_JS,
-} = require("../../services/cdn/network/network-env.js");
+const GlobalRootHandler = require("../../constants/global-root-handler.js");
+const globalRootHandler = new GlobalRootHandler();
+const DEFAULT_GLOBAL_OBJECT = globalRootHandler.root;
+const DEFAULT_IS_COMMON_JS = typeof module !== "undefined" && module.exports;
 
 /**
  * Configuration bag for provider normalization and selection helpers.

@@ -9,7 +9,9 @@
 - `LocalDependencyLoaderConfig`
 ## Functions / Classes
 
-- _None yet_
+- `LocalDependencyLoader` — helper that centralizes helper overrides, registry entries, and CommonJS fallbacks for the local loader.
+- `_dependencyDescriptors` — enumerates dependencies that the loader must resolve for each module (see `bootstrap/services/local/local-dependency-loader.js:_dependencyDescriptors`).
+- `_resolve` — fetches the dependency sources by combining overrides, helpers, and registry entries (see `bootstrap/services/local/local-dependency-loader.js:_resolve`).
 
 ## Examples
 

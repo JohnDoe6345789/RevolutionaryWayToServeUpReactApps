@@ -9,7 +9,7 @@
 - `LocalPathsConfig`
 ## Functions / Classes
 
-- _None yet_
+- `_resolveNamespace` — flattens local path segments into the helper namespace consumed by the loader.
 
 ## Examples
 

@@ -32,7 +32,6 @@ This section documents the bootstrap runtime, CDN helpers, and the loader helper
 - [`services/cdn/dynamic-modules/README.md`](services/cdn/dynamic-modules/README.md) – Dynamic module fetching helpers.
 - [`services/core/README.md`](services/core/README.md) – Core runtime services (env, logging, module registry).
 - [`services/local/README.md`](services/local/README.md) – Local-only services used by the loader and renderer.
-- [`services/local/helpers/README.md`](services/local/helpers/README.md) – Utility helpers shared by the local services.
 
 ## CDN helpers
 

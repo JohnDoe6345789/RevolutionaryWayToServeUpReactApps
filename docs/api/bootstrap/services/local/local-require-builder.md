@@ -9,7 +9,9 @@
 - `LocalRequireBuilderConfig`
 ## Functions / Classes
 
-- _None yet_
+- `_createRequire` — constructs the `require` wrapper that proxies to CDN helpers or local loaders (see `bootstrap/services/local/local-require-builder.js:_createRequire`).
+- `_isLocalModule` — inspects module specifiers to decide if they should be resolved locally (see `bootstrap/services/local/local-require-builder.js:_isLocalModule`).
+- `_resolveEntryDir` — computes the entry directory used by the require builder when compiling modules (see `bootstrap/services/local/local-require-builder.js:_resolveEntryDir`).
 
 ## Examples
 

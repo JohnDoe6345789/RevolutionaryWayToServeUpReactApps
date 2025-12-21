@@ -12,7 +12,8 @@
 - `LoggingManagerConfig`
 ## Functions / Classes
 
-- _None yet_
+- `_loggingBindings` — wires logging helpers whenever the bootstrap app needs to reconfigure telemetry targets.
+- `getExports` — exposes the sanitized export surface used by the runtime entrypoints.
 
 ## Examples
 

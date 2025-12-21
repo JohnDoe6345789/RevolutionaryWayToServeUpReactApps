@@ -6,11 +6,11 @@
 
 ## Globals
 
-- _None yet_
+- `BaseHelper`
 
 ## Functions / Classes
 
-- _None yet_
+- `_resolveHelperRegistry` — locates the helper registry namespace shared by bootstrap helpers.
 
 ## Examples
 

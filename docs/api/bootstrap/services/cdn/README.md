@@ -10,3 +10,4 @@ Documentation for CDN-focused bootstrap services such as dynamic module fetching
 - [`network-service.md`](network-service.md) – Explains how the network service probes providers, caches responses, and reports failures.
 - [`source-utils-service.md`](source-utils-service.md) – Chronicles helpers that inspect source files and preload dependencies across modules.
 - [`tools-service.md`](tools-service.md) – Covers the CDN toolset helpers that ship `loadScript`, `probeUrl`, and other utilities.
+- [`network/README.md`](network/README.md) – Catalogs the CDN network helpers that probe endpoints and normalize providers.

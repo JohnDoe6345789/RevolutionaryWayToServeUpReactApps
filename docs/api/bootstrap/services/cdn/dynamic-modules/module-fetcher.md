@@ -10,7 +10,13 @@
 - `globalScope`
 ## Functions / Classes
 
-- _None yet_
+- `_findUrl` — selects the first candidate URL that succeeds via the probe service.
+- `_loadEsm` — dynamically imports ESM-style modules once a URL is resolved.
+- `_loadGlobal` — attaches to a global namespace when the module is already loaded.
+- `_loadNamespace` — orchestrates ESM or global fetches before returning exports.
+- `_resolveGlobalName` — determines the global variable that a UMD bundle writes to.
+- `_resolveGlobalObject` — inspects the runtime globals to find the namespace container.
+- `fetchNamespace` — public helper invoked by the dynamic modules service to load dependencies.
 
 ## Examples
 

@@ -9,7 +9,7 @@
 - `TsxCompilerConfig`
 ## Functions / Classes
 
-- _None yet_
+- `_resolveNamespace` — maps TSX compiler helpers into the bootstrap helper namespace before execution.
 
 ## Examples
 

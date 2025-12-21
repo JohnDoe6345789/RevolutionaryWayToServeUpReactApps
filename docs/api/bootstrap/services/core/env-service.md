@@ -9,7 +9,7 @@
 - `EnvInitializerConfig`
 ## Functions / Classes
 
-- _None yet_
+- `ensureProxyMode` — returns the configured proxy mode (auto/proxy/direct) using defaults and environment overrides (see `bootstrap/services/core/env-service.js:ensureProxyMode`).
 
 ## Examples
 

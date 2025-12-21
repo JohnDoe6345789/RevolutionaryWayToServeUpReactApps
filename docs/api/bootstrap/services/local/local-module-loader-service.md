@@ -9,7 +9,9 @@
 - `LocalModuleLoaderConfig`
 ## Functions / Classes
 
-- _None yet_
+- `createLocalModuleLoader` — returns a cached loader helper that resolves modules via fetch/dynamic module helpers.
+- `fetchLocalModuleSource` — streams local source text from candidate paths using the configured fetch implementation.
+- `_resolveNamespace` — maps local module requests to their shared namespace before loading.
 
 ## Examples
 

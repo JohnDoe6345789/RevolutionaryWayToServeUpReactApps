@@ -8,7 +8,7 @@
 - `HelperRegistry`
 ## Functions / Classes
 
-- _None yet_
+- `helperRegistry` — the shared registry instance bootstrap services rely on to look up helper constructors.
 
 ## Examples
 

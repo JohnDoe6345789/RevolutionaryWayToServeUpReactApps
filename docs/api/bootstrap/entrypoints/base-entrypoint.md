@@ -9,6 +9,7 @@
 - `serviceRegistry`
 ## Functions / Classes
 - `configFactory`
+- `_createConfig` — builds the configuration helper bag used by derived entrypoints.
 ## Examples
 
 ```ts

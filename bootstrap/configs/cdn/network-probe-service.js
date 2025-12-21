@@ -1,4 +1,5 @@
-const { globalObject: DEFAULT_GLOBAL_OBJECT } = require("../../services/cdn/network/network-env.js");
+const GlobalRootHandler = require("../../constants/global-root-handler.js");
+const DEFAULT_GLOBAL_OBJECT = new GlobalRootHandler().root;
 
 /**
  * Configuration bag for script injection and probing helpers.

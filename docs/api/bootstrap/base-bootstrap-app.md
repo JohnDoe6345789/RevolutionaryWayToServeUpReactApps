@@ -8,7 +8,7 @@
 - `GlobalRootHandler`
 ## Functions / Classes
 
-- _None yet_
+- `_resolveHelper` — internal helper that resolves helper constructors and caches them after the helper registry is prepared.
 
 ## Examples
 

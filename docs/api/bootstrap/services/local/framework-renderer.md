@@ -8,7 +8,7 @@
 - `BaseService`
 ## Functions / Classes
 
-- _None yet_
+- `_getModuleExport` — inspects the compiled entrypoint to expose the top-level module export for rendering (see `bootstrap/services/local/framework-renderer.js:_getModuleExport`).
 
 ## Examples
 

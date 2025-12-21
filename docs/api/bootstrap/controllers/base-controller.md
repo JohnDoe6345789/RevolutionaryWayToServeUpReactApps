@@ -6,11 +6,11 @@
 
 ## Globals
 
-- _None yet_
+- `BaseController`
 
 ## Functions / Classes
 
-- _None yet_
+- `_ensureInitialized` — checks that controllers reach the required initialization phase before executing protected steps.
 
 ## Examples
 

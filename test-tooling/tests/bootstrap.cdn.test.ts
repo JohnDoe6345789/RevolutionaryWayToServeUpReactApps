@@ -1,4 +1,12 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from "./testGlobals";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+  resetServiceRegistry
+} from "./testGlobals";
 
 const createLocation = (href: string) => {
   const url = new URL(href);
@@ -16,6 +24,7 @@ const createLocation = (href: string) => {
 const resetGlobals = () => {
   global.__rwtraBootstrap = { helpers: {} };
   delete global.__RWTRA_PROXY_MODE__;
+  resetServiceRegistry();
 };
 
 beforeEach(() => {

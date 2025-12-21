@@ -10,7 +10,9 @@
 
 ## Functions / Classes
 
-- _None yet_
+- `getMetadata` — returns the metadata record for a registered helper namespace.
+- `isRegistered` — checks whether a helper name exists in the registry.
+- `listHelpers` — enumerates helper metadata currently registered within bootstrap.
 
 ## Examples
 

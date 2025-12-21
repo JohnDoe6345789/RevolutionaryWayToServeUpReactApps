@@ -9,7 +9,7 @@
 - `ImportMapInitConfig`
 ## Functions / Classes
 
-- _None yet_
+- `_fetchConfig` — retrieves the import map configuration before resolving CDN URLs.
 
 ## Examples
 
