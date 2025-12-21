@@ -93,7 +93,7 @@ describe("bootstrap/services/cdn/logging-service.js", () => {
   it("uses navigator.sendBeacon when CI logging is enabled", () => {
     service.setCiLoggingEnabled(true);
     service.logClient("event", { detail: "data" });
-    expect(globalThis.navigator!.sendBeacon).toHaveBeenCalledWith(
+    expect((globalThis.navigator as any).sendBeacon).toHaveBeenCalledWith(
       "/__client-log",
       expect.any(globalThis.Blob)
     );

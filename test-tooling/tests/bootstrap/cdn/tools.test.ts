@@ -1,16 +1,16 @@
 const ToolsLoaderService = require("../../../../bootstrap/services/cdn/tools-service.js");
 
 describe("bootstrap/services/cdn/tools-service.js", () => {
-  let service;
-  let mockLoadScript;
-  let mockResolveModuleUrl;
-  let network;
-  let logging;
-  let originalWindow;
+  let service: any;
+  let mockLoadScript: jest.Mock;
+  let mockResolveModuleUrl: jest.Mock;
+  let network: any;
+  let logging: any;
+  let originalWindow: any;
 
   beforeEach(() => {
     originalWindow = globalThis.window;
-    globalThis.window = {};
+    globalThis.window = {} as any;
     mockLoadScript = jest.fn(() => Promise.resolve());
     mockResolveModuleUrl = jest.fn(() => Promise.resolve("https://cdn.tools/tool.js"));
     network = {
