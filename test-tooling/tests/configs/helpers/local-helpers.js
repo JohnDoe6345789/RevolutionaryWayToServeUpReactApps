@@ -1,10 +1,16 @@
-/**
- * Auto-generated test stub for bootstrap/configs/helpers/local-helpers.js
- */
-const target = require('../../../../bootstrap/configs/helpers/local-helpers.js');
+const LocalHelpersConfig = require("../../../../bootstrap/configs/helpers/local-helpers.js");
 
-describe('bootstrap/configs/helpers/local-helpers.js', () => {
-  test('loads without throwing', () => {
-    expect(target).toBeDefined();
+describe("bootstrap/configs/helpers/local-helpers.js", () => {
+  describe("constructor", () => {
+    test("stores helperRegistry when provided", () => {
+      const registry = { name: "registry" };
+      const config = new LocalHelpersConfig({ helperRegistry: registry });
+      expect(config.helperRegistry).toBe(registry);
+    });
+
+    test("leaves helperRegistry undefined when omitted", () => {
+      const config = new LocalHelpersConfig();
+      expect(config.helperRegistry).toBeUndefined();
+    });
   });
 });
