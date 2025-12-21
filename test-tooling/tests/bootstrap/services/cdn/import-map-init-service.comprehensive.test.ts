@@ -144,30 +144,36 @@ describe("ImportMapInitializer", () => {
     });
 
     it("should handle modules with importSpecifiers", async () => {
+      const mockWindowWithSpecifiers = new MockWindow();
+      const mockImportMapScriptWithSpecifiers = new MockImportMapScript();
+      mockWindowWithSpecifiers.document.querySelector = jest.fn().mockReturnValue(mockImportMapScriptWithSpecifiers);
+
       const configWithModules = new ImportMapInitConfig({
-        window: mockWindow,
+        window: mockWindowWithSpecifiers,
         fetch: () => Promise.resolve({
           ok: true,
           status: 200,
           json: () => Promise.resolve({
             modules: [
-              { 
-                name: 'test-module', 
-                importSpecifiers: ['test-module', '@test/alias'] 
+              {
+                name: 'test-module',
+                url: 'https://example.com/test-module.js',
+                importSpecifiers: ['test-module', '@test/alias']
               }
             ]
           })
         })
       });
-      
+
       const service = new ImportMapInitializer(configWithModules);
-      mockWindow.document.querySelector = jest.fn().mockReturnValue(mockImportMapScript);
-      
+
       await service.initialize();
-      await mockWindow.__rwtraConfigPromise;
-      
-      expect(mockImportMapScript.textContent).toContain('test-module');
-      expect(mockImportMapScript.textContent).toContain('@test/alias');
+      if (mockWindowWithSpecifiers.__rwtraConfigPromise) {
+        await mockWindowWithSpecifiers.__rwtraConfigPromise;
+      }
+
+      expect(mockImportMapScriptWithSpecifiers.textContent).toContain('test-module');
+      expect(mockImportMapScriptWithSpecifiers.textContent).toContain('@test/alias');
     });
 
     it("should handle modules without importSpecifiers", async () => {
@@ -214,8 +220,9 @@ describe("ImportMapInitializer", () => {
     });
 
     it("should fetch config successfully", async () => {
+      importMapInitializer.fetchImpl = mockFetch;
       const config = await importMapInitializer._fetchConfig("config.json");
-      
+
       expect(config).toBeDefined();
       expect(config.fallbackProviders).toBeDefined();
     });

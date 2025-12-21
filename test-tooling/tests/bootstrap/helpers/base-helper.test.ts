@@ -30,7 +30,6 @@ describe("bootstrap/helpers/base-helper.js", () => {
       []
     );
   });
-  });
 
   it("skips registration if the helper already exists", () => {
     const registry = {

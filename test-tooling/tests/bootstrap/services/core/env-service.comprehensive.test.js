@@ -1,6 +1,6 @@
-const EnvInitializer = require("../../../../../bootstrap/services/core/env-service.js");
-const EnvInitializerConfig = require("../../../../../bootstrap/configs/core/env.js");
-const ServiceRegistry = require("../../../../../bootstrap/services/service-registry.js");
+const EnvInitializer = require("../../../../bootstrap/services/core/env-service.js");
+const EnvInitializerConfig = require("../../../../bootstrap/configs/core/env.js");
+const ServiceRegistry = require("../../../../bootstrap/services/service-registry.js");
 
 describe("EnvInitializer", () => {
   describe("constructor", () => {
@@ -102,11 +102,11 @@ describe("EnvInitializer", () => {
       const mockGlobal = {};
       const config = new EnvInitializerConfig({ global: mockGlobal });
       const service = new EnvInitializer(config);
-
+      
       // Need to set the global property manually for this test since initialize hasn't been called
       service.global = mockGlobal;
       service.ensureProxyMode();
-
+      
       expect(mockGlobal.__RWTRA_PROXY_MODE__).toBe("auto");
     });
 
@@ -114,11 +114,11 @@ describe("EnvInitializer", () => {
       const mockGlobal = { __RWTRA_PROXY_MODE__: "proxy" };
       const config = new EnvInitializerConfig({ global: mockGlobal });
       const service = new EnvInitializer(config);
-
+      
       // Need to set the global property manually for this test since initialize hasn't been called
       service.global = mockGlobal;
       service.ensureProxyMode();
-
+      
       expect(mockGlobal.__RWTRA_PROXY_MODE__).toBe("proxy");
     });
 
@@ -126,11 +126,11 @@ describe("EnvInitializer", () => {
       const mockGlobal = { __RWTRA_PROXY_MODE__: null };
       const config = new EnvInitializerConfig({ global: mockGlobal });
       const service = new EnvInitializer(config);
-
+      
       // Need to set the global property manually for this test since initialize hasn't been called
       service.global = mockGlobal;
       service.ensureProxyMode();
-
+      
       expect(mockGlobal.__RWTRA_PROXY_MODE__).toBe(null);
     });
   });

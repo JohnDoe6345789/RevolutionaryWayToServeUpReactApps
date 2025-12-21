@@ -306,7 +306,7 @@ describe("LocalRequireBuilder", () => {
         return "dynamic-content";
       };
 
-      const requireAsync = initializedBuilder._createRequireAsync({
+      const requireAsync = initializedBuilderForDynamic._createRequireAsync({
         registry,
         config,
         resolvedEntryDir: "",
@@ -442,10 +442,12 @@ describe("LocalRequireBuilder", () => {
       config.helperRegistry = mockRegistry;
       const builder = new LocalRequireBuilder(config);
 
-      // Initialize with mock functions
+      // Initialize with mock functions for local modules
       const mockLoadDynamicModule = () => {};
-      const mockIsLocalModule = () => true;
-      builder.initialize({
+      const mockIsLocalModule = (name) => name.startsWith('.') || name.startsWith('/') || name.startsWith('local:');
+      const builder2 = new LocalRequireBuilder(new LocalRequireBuilderConfig());
+      builder2.config.helperRegistry = mockRegistry;
+      builder2.initialize({
         loadDynamicModule: mockLoadDynamicModule,
         isLocalModule: mockIsLocalModule
       });
@@ -462,8 +464,8 @@ describe("LocalRequireBuilder", () => {
         dynamicModuleCallArgs = { name, cfg, reg };
         return "dynamic-content";
       };
-      
-      const requireFn = builder.create({
+
+      const requireFn = builder2.create({
         registry,
         config: { dynamicModules: [{ prefix: "dynamic:" }] },
         entryDir: "/base/path",
