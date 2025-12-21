@@ -270,6 +270,22 @@ class TestDocCoverage(unittest.TestCase):
             self.assertIn("- api/src", output)
             self.assertIn("Overall:    98.0% (penalized 2.0% for 1 missing README)", output)
 
+    def test_missing_globals_and_functions_reported(self):
+        with TemporaryDirectory() as tmpdir:
+            repo_root = Path(tmpdir) / "repo"
+            src_dir = repo_root / "src"
+            docs_dir = repo_root / "docs" / "api"
+            src_dir.mkdir(parents=True)
+            docs_dir.mkdir(parents=True)
+            (src_dir / "widget.js").write_text("const secret = 1\nfunction hidden() {}\n", encoding="utf-8")
+            (docs_dir / "widget.md").write_text("# Module: `src/widget.js`\n", encoding="utf-8")
+
+            output, _ = self._run_cli(repo_root)
+            self.assertIn("Missing documented globals:", output)
+            self.assertIn("src/widget.js:secret", output)
+            self.assertIn("Missing documented functions:", output)
+            self.assertIn("src/widget.js:hidden", output)
+
     def test_extra_module_docs_penalty(self):
         with TemporaryDirectory() as tmpdir:
             repo_root = Path(tmpdir) / "repo"

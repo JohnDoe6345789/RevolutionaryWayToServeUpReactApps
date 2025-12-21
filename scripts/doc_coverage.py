@@ -36,6 +36,8 @@ STRINGS = {
     "stub_penalty_note": "...convert or delete these matching templates so the penalty vanishes:",
     "missing_readme_title": "Missing README.md in these directories:",
     "missing_readme_links_title": "README files missing links to local docs:",
+    "missing_globals_title": "Missing documented globals:",
+    "missing_functions_title": "Missing documented functions:",
     "bootstrap_unmatched_title": "Bootstrap docs without matching source files:",
     "extra_docs_title": "Documented modules without matching source files:",
     "misplaced_docs_title": "Documented modules not located at expected path:",
@@ -77,6 +79,8 @@ PATH_CONFIG = {
 }
 MODULE_HEADING_RE = re.compile(r"#\s*Module:\s*`([^`]+)`", re.IGNORECASE)
 LINK_TARGET_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
+MISSING_GLOBALS_TITLE = "Missing documented globals:"
+MISSING_FUNCTIONS_TITLE = "Missing documented functions:"
 
 
 @dataclass
@@ -292,6 +296,8 @@ class ReportMetrics:
     functions_docged: int
     functions_total: int
     missing_modules: list[str]
+    missing_globals: list[str]
+    missing_functions: list[str]
     coverage_pct: float
     coverage_with_penalty: float
     penalties: dict[str, object]
@@ -388,6 +394,21 @@ class DocumentationAnalyzer:
         return documented, len(names_set)
 
     @staticmethod
+    def find_missing_names(names: Iterable[str], doc_text: str) -> list[str]:
+        """Return sorted names from the iterable that are not documented."""
+        missing: set[str] = set()
+        documented_cache: dict[str, bool] = {}
+        for name in names:
+            if name in documented_cache:
+                if not documented_cache[name]:
+                    missing.add(name)
+                continue
+            documented = DocumentationAnalyzer.is_documented(name, doc_text)
+            documented_cache[name] = documented
+            if not documented:
+                missing.add(name)
+        return sorted(missing)
+    @staticmethod
     def compute_module_coverage(modules: Sequence[str], documented_modules: set[str]) -> tuple[int, int, list[str]]:
         """Compare module file list against documented module headings."""
         unique_modules = list(dict.fromkeys(modules))
@@ -462,6 +483,8 @@ class ExecutionContext:
     metrics: ReportMetrics | None = None
     strict_failure: bool = False
     missing_modules: list[str] = field(default_factory=list)
+    missing_globals: list[str] = field(default_factory=list)
+    missing_functions: list[str] = field(default_factory=list)
 
 
 class ModuleCollectorService:
@@ -932,6 +955,14 @@ class ReporterService:
             print(STRINGS["missing_modules"])
             for module in metrics.missing_modules:
                 print(f"  - {module}")
+        if metrics.missing_globals:
+            print(STRINGS["missing_globals_title"])
+            for item in metrics.missing_globals:
+                print(f"  - {item}")
+        if metrics.missing_functions:
+            print(STRINGS["missing_functions_title"])
+            for item in metrics.missing_functions:
+                print(f"  - {item}")
         penalty_specs = [
             PenaltySpec(
                 len(metrics.penalties[cfg["items_key"]]),
@@ -1052,6 +1083,8 @@ class DocCoverageFramework:
         )
         globals_docged, globals_total = DocumentationAnalyzer.compute_coverage(context.globals_list, context.doc_text)
         functions_docged, functions_total = DocumentationAnalyzer.compute_coverage(context.functions_list, context.doc_text)
+        context.missing_globals = DocumentationAnalyzer.find_missing_names(context.globals_list, context.doc_text)
+        context.missing_functions = DocumentationAnalyzer.find_missing_names(context.functions_list, context.doc_text)
         overall_total = module_total + globals_total + functions_total
         overall_docged = module_docged + globals_docged + functions_docged
         context.module_docged = module_docged
@@ -1102,6 +1135,8 @@ class DocCoverageFramework:
             functions_docged=context.functions_docged,
             functions_total=context.functions_total,
             missing_modules=context.missing_modules,
+            missing_globals=context.missing_globals,
+            missing_functions=context.missing_functions,
             coverage_pct=context.coverage_pct,
             coverage_with_penalty=context.coverage_with_penalty,
             penalties=context.penalties or {},
