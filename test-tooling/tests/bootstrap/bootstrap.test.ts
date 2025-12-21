@@ -22,8 +22,8 @@ import {
   collectDynamicModuleImports,
   createRequire,
   preloadModulesFromSource
-} from "../../bootstrap.js";
-import { resolveLocalModuleBase } from "../../bootstrap/initializers/path-utils/local-paths.js";
+} from "../../../bootstrap.js";
+import { resolveLocalModuleBase } from "../../../bootstrap/initializers/path-utils/local-paths.js";
 
 describe("bootstrap helpers", () => {
   afterEach(() => {

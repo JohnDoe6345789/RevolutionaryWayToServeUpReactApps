@@ -1,7 +1,7 @@
-import BootstrapApp from "../../bootstrap/bootstrap-app.js";
+import BootstrapApp from "../../../bootstrap/bootstrap-app.js";
 
 // Mock the dependencies
-jest.mock("../../bootstrap/interfaces/base-bootstrap-app.js", () => {
+jest.mock("../../../bootstrap/interfaces/base-bootstrap-app.js", () => {
   return {
     __esModule: true,
     default: jest.fn().mockImplementation(() => {
@@ -45,7 +45,7 @@ jest.mock("../../bootstrap/interfaces/base-bootstrap-app.js", () => {
   };
 });
 
-jest.mock("../../bootstrap/services/core/logging-manager.js", () => {
+jest.mock("../../../bootstrap/services/core/logging-manager.js", () => {
   return {
     __esModule: true,
     default: jest.fn().mockImplementation((config) => {
@@ -57,14 +57,14 @@ jest.mock("../../bootstrap/services/core/logging-manager.js", () => {
   };
 });
 
-jest.mock("../../bootstrap/configs/core/logging-manager.js", () => {
+jest.mock("../../../bootstrap/configs/core/logging-manager.js", () => {
   return {
     __esModule: true,
     default: jest.fn().mockImplementation((config) => config)
   };
 });
 
-jest.mock("../../bootstrap/controllers/bootstrapper.js", () => {
+jest.mock("../../../bootstrap/controllers/bootstrapper.js", () => {
   return {
     __esModule: true,
     default: jest.fn().mockImplementation((config) => {
@@ -77,14 +77,14 @@ jest.mock("../../bootstrap/controllers/bootstrapper.js", () => {
   };
 });
 
-jest.mock("../../bootstrap/configs/core/bootstrapper.js", () => {
+jest.mock("../../../bootstrap/configs/core/bootstrapper.js", () => {
   return {
     __esModule: true,
     default: jest.fn().mockImplementation((config) => config)
   };
 });
 
-jest.mock("../../bootstrap/services/service-registry-instance.js", () => {
+jest.mock("../../../bootstrap/services/service-registry-instance.js", () => {
   return {};
 });
 
@@ -132,13 +132,13 @@ describe("BootstrapApp", () => {
     it("should create logging manager with proper config", () => {
       const app = new BootstrapApp();
 
-      expect(require("../../bootstrap/services/core/logging-manager.js").default).toHaveBeenCalled();
+      expect(require("../../../bootstrap/services/core/logging-manager.js").default).toHaveBeenCalled();
     });
 
     it("should create bootstrapper with proper config", () => {
       const app = new BootstrapApp();
 
-      expect(require("../../bootstrap/controllers/bootstrapper.js").default).toHaveBeenCalled();
+      expect(require("../../../bootstrap/controllers/bootstrapper.js").default).toHaveBeenCalled();
     });
 
     it("should initialize with default properties", () => {

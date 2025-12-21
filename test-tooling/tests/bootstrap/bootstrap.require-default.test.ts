@@ -1,4 +1,4 @@
-import { createRequire, makeNamespace } from "../../bootstrap";
+import { createRequire, makeNamespace } from "../../../bootstrap";
 
 // Reproduces the runtime failure where React gets an object instead of a component
 // when using default imports against the loader's registry entries.
