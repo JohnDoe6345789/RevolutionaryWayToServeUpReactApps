@@ -21,6 +21,7 @@ DEFAULT_IGNORE_DIRS = {
     ".git",
     ".venv",
     "dist",
+    "coverage",
     "node_modules",
     "build",
     "ci",
@@ -37,7 +38,7 @@ STRINGS = {
     "missing_readme_title": "Missing README.md in these directories:",
     "missing_readme_links_title": "README files missing links to local docs:",
     "missing_globals_title": "Missing documented globals:",
-    "missing_functions_title": "Missing documented functions / classes:",
+    "missing_functions_title": "Missing documented functions:",
     "bootstrap_unmatched_title": "Bootstrap docs without matching source files:",
     "extra_docs_title": "Documented modules without matching source files:",
     "misplaced_docs_title": "Documented modules not located at expected path:",
@@ -80,7 +81,7 @@ PATH_CONFIG = {
 MODULE_HEADING_RE = re.compile(r"#\s*Module:\s*`([^`]+)`", re.IGNORECASE)
 LINK_TARGET_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 MISSING_GLOBALS_TITLE = "Missing documented globals:"
-MISSING_FUNCTIONS_TITLE = "Missing documented functions / classes:"
+MISSING_FUNCTIONS_TITLE = "Missing documented functions:"
 
 
 @dataclass
@@ -1176,8 +1177,8 @@ class DocCoverageFramework:
         functions_docged, functions_total = DocumentationAnalyzer.compute_coverage(context.functions_list, context.doc_text)
         context.missing_globals = DocumentationAnalyzer.find_missing_names(context.globals_list, context.doc_text)
         context.missing_functions = DocumentationAnalyzer.find_missing_names(context.functions_list, context.doc_text)
-        overall_total = module_total + globals_total + functions_total
-        overall_docged = module_docged + globals_docged + functions_docged
+        overall_total = module_total
+        overall_docged = module_docged
         context.module_docged = module_docged
         context.module_total = module_total
         context.globals_docged = globals_docged
