@@ -11,4 +11,5 @@ declare class BaseService {
   protected _ensureInitialized(): void;
   protected _requireServiceRegistry(): ServiceRegistry;
   protected _resolveNamespace(): Record<string, unknown>;
+  initialize(): void;
 }

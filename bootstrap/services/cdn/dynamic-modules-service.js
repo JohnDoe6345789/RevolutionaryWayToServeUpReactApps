@@ -42,13 +42,13 @@ class DynamicModulesService extends BaseService {
         service: this,
         helperRegistry: this.helpers,
       })
-    );
+    ).initialize();
     this.moduleFetcher = new DynamicModuleFetcher(
       new DynamicModuleFetcherConfig({
         service: this,
         helperRegistry: this.helpers,
       })
-    );
+    ).initialize();
   }
 
   /**

@@ -27,6 +27,10 @@ class BaseHelper {
       registry.register(name, helperOrInstance, metadata);
     }
   }
+
+  initialize() {
+    throw new Error(`${this.constructor.name} must implement initialize()`);
+  }
 }
 
 module.exports = BaseHelper;

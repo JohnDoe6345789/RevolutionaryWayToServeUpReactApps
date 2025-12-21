@@ -8,4 +8,5 @@ declare class BaseHelper {
   protected initialized: boolean;
   protected _resolveHelperRegistry(): HelperRegistry;
   protected _registerHelper(name: string, helperOrInstance: unknown, metadata?: Record<string, unknown>): void;
+  initialize(): void;
 }

@@ -7,6 +7,10 @@ class BaseService {
     this.initialized = false;
   }
 
+  initialize() {
+    throw new Error(`${this.constructor.name} must implement initialize()`);
+  }
+
   _ensureNotInitialized() {
     if (this.initialized) {
       throw new Error(`${this.constructor.name} already initialized`);

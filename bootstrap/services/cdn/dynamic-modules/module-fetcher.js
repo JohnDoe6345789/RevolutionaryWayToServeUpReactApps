@@ -18,12 +18,20 @@ class DynamicModuleFetcher extends BaseHelper {
     super(config);
     this.config = config;
     this.service = config.service;
-    if (config.helperRegistry) {
+  }
+
+  initialize() {
+    if (this.initialized) {
+      return this;
+    }
+    if (this.config.helperRegistry) {
       this._registerHelper("dynamicModuleFetcher", this, {
         folder: "services/cdn",
         domain: "cdn",
       });
     }
+    this.initialized = true;
+    return this;
   }
 
   async fetchNamespace(rule, icon, registry, urls) {

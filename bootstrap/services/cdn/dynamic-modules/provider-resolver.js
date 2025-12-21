@@ -8,12 +8,20 @@ class ProviderResolver extends BaseHelper {
   constructor(config = new ProviderResolverConfig()) {
     super(config);
     this.service = config.service;
-    if (config.helperRegistry) {
+  }
+
+  initialize() {
+    if (this.initialized) {
+      return this;
+    }
+    if (this.config.helperRegistry) {
       this._registerHelper("dynamicModulesProviderResolver", this, {
         folder: "services/cdn",
         domain: "cdn",
       });
     }
+    this.initialized = true;
+    return this;
   }
 
   resolveBases(rule) {
