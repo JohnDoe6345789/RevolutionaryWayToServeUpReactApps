@@ -46,7 +46,7 @@ describe("bootstrap/helpers/base-helper.js", () => {
       helper._registerHelper("alpha", { name: "service" }, { folder: "helpers" });
 
       expect(registry.isRegistered).toHaveBeenCalledWith("alpha");
-      expect(register).toHaveBeenCalledWith("alpha", { name: "service" }, { folder: "helpers" });
+      expect(register).toHaveBeenCalledWith("alpha", { name: "service" }, { folder: "helpers" }, []);
     });
 
     test("skips registration when already registered", () => {

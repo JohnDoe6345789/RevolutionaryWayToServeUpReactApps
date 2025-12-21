@@ -27,7 +27,7 @@ class BaseHelper {
   _registerHelper(name, helperOrInstance, metadata = {}) {
     const registry = this._resolveHelperRegistry();
     if (!registry.isRegistered(name)) {
-      registry.register(name, helperOrInstance, metadata);
+      registry.register(name, helperOrInstance, metadata, []);
     }
   }
 

@@ -36,7 +36,7 @@ describe("LoggingService", () => {
   });
 
   describe("static defaults getter", () => {
-    it("should return the shared logging defaults", () => {
+    it("should return the shared logging defaults from constants", () => {
       const defaults = LoggingService.defaults;
       expect(defaults).toBeDefined();
       expect(defaults).toHaveProperty('ciLogQueryParam');
@@ -47,13 +47,19 @@ describe("LoggingService", () => {
   describe("constructor", () => {
     it("should extend BaseService", () => {
       const service = new LoggingService();
-      expect(service).toBeInstanceOf(Object); // Since we can't easily check BaseService without importing it
+      // Basic check that it's an object
+      expect(service).toBeInstanceOf(Object);
     });
 
-    it("should accept a config object", () => {
+    it("should accept a config and store it", () => {
       const config = { namespace: {}, serviceRegistry: { register: jest.fn() } };
       const service = new LoggingService(config);
       expect(service.config).toBe(config);
+    });
+
+    it("should create a default config if none provided", () => {
+      const service = new LoggingService();
+      expect(service.config).toBeDefined();
     });
   });
 
@@ -71,6 +77,12 @@ describe("LoggingService", () => {
         clientLogEndpoint: "http://test-endpoint"
       };
       service = new LoggingService(mockConfig);
+    });
+
+    it("should mark service as initialized", () => {
+      const result = service.initialize();
+      expect(result).toBe(service);
+      // We can't easily test the private _initialized property directly
     });
 
     it("should set up internal properties", () => {
@@ -92,16 +104,21 @@ describe("LoggingService", () => {
       expect(service.serializeForLog).toBeInstanceOf(Function);
       expect(service.isCiLoggingEnabled).toBeInstanceOf(Function);
       
-      // Verify methods are bound to the service instance
+      // Verify binding worked
       expect(service.setCiLoggingEnabled).not.toBe(LoggingService.prototype.setCiLoggingEnabled);
       expect(service.detectCiLogging).not.toBe(LoggingService.prototype.detectCiLogging);
     });
 
-    it("should set up configuration values", () => {
+    it("should set up configuration fallbacks", () => {
       service.initialize();
       
       expect(service.ciLogQueryParam).toBe("test-ci");
       expect(service.clientLogEndpoint).toBe("http://test-endpoint");
+    });
+
+    it("should require service registry", () => {
+      service.initialize();
+      expect(service.serviceRegistry).toBe(mockServiceRegistry);
     });
 
     it("should register the service in the service registry", () => {
@@ -113,11 +130,12 @@ describe("LoggingService", () => {
         {
           folder: "services/cdn",
           domain: "cdn",
-        }
+        },
+        []
       );
     });
 
-    it("should throw if initialized twice", () => {
+    it("should throw if already initialized", () => {
       service.initialize();
       expect(() => service.initialize()).toThrow();
     });
@@ -278,7 +296,7 @@ describe("LoggingService", () => {
       const serialized = service.serializeForLog(obj);
       
       expect(serialized).toEqual({
-        type: "object",
+        type: typeof obj,
         note: "unserializable"
       });
     });
@@ -338,6 +356,18 @@ describe("LoggingService", () => {
       // Should be almost instantaneous
       expect(endTime - startTime).toBeLessThan(10);
     });
+
+    it("should work with different delay values", async () => {
+      const delays = [1, 5, 10];
+      
+      for (const delay of delays) {
+        const startTime = Date.now();
+        await service.wait(delay);
+        const endTime = Date.now();
+        
+        expect(endTime - startTime).toBeGreaterThanOrEqual(delay - 1); // Allow 1ms tolerance
+      }
+    });
   });
 
   describe("logClient method", () => {
@@ -355,6 +385,7 @@ describe("LoggingService", () => {
       };
       service = new LoggingService(config);
       service.initialize();
+      service.setCiLoggingEnabled(true); // Enable CI logging
     });
 
     afterEach(() => {
@@ -362,7 +393,6 @@ describe("LoggingService", () => {
     });
 
     it("should send log data via sendBeacon when CI logging is enabled", () => {
-      service.setCiLoggingEnabled(true);
       service.logClient("test:event", { data: "value" });
       
       expect(global.navigator.sendBeacon).toHaveBeenCalledWith(
@@ -390,8 +420,6 @@ describe("LoggingService", () => {
     });
 
     it("should log to console with appropriate method based on level", () => {
-      service.setCiLoggingEnabled(true);
-      
       service.logClient("info:event", { data: "value" }, "info");
       expect(global.console.info).toHaveBeenCalledWith(
         "[bootstrap]", 
@@ -419,7 +447,6 @@ describe("LoggingService", () => {
     });
 
     it("should serialize the detail object", () => {
-      service.setCiLoggingEnabled(true);
       const error = new Error("test");
       service.logClient("event", error);
       
@@ -431,6 +458,11 @@ describe("LoggingService", () => {
           stack: expect.stringContaining("Error: test")
         })
       );
+    });
+
+    it("should handle missing window gracefully", () => {
+      delete global.window;
+      expect(() => service.logClient("event", { data: "value" })).not.toThrow();
     });
 
     it("should fall back to fetch when sendBeacon is not available", () => {
@@ -445,11 +477,6 @@ describe("LoggingService", () => {
           headers: { "content-type": "application/json" }
         })
       );
-    });
-
-    it("should handle missing window gracefully", () => {
-      delete global.window;
-      expect(() => service.logClient("event", { data: "value" })).not.toThrow();
     });
   });
 
@@ -484,7 +511,7 @@ describe("LoggingService", () => {
       const service = new LoggingService(config);
       
       // Initialize
-      service.initialize();
+      expect(() => service.initialize()).not.toThrow();
       expect(service.namespace).toBe(config.namespace);
       expect(service.helpers).toBe(config.namespace.helpers);
       

@@ -7,7 +7,7 @@ describe("bootstrap/helpers/helper-registry.js", () => {
     const helper = { ping: () => "pong" };
     const metadata = { scope: "runtime", version: 2 };
 
-    registry.register("core:health", helper, metadata);
+    registry.register("core:health", helper, metadata, []);
 
     expect(registry.getHelper("core:health")).toBe(helper);
     expect(registry.getMetadata("core:health")).toBe(metadata);
@@ -19,10 +19,10 @@ describe("bootstrap/helpers/helper-registry.js", () => {
   it('rejects duplicate registrations and missing names', () => {
     const registry = new HelperRegistry();
 
-    registry.register("ui:nav", { render: () => null });
-    expect(() => registry.register("ui:nav", { render: () => null }))
+    registry.register("ui:nav", { render: () => null }, {}, []);
+    expect(() => registry.register("ui:nav", { render: () => null }, {}, []))
       .toThrow("Helper already registered: ui:nav");
-    expect(() => registry.register("", { render: () => null }))
+    expect(() => registry.register("", { render: () => null }, {}, []))
       .toThrow("Helper name is required");
   });
 });

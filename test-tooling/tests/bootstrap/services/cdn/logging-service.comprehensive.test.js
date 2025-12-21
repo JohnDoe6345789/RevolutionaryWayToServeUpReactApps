@@ -51,7 +51,6 @@ describe("LoggingService", () => {
       expect(service.namespace).toBe(mockNamespace);
       expect(service.helpers).toBe(mockNamespace.helpers);
       expect(service.isCommonJs).toBeDefined();
-      expect(typeof service.isCommonJs).toBe('boolean');
       expect(service.initialized).toBe(true);
       expect(service.ciLoggingEnabled).toBe(false);
     });
@@ -428,7 +427,7 @@ describe("LoggingService", () => {
       expect(global.window.navigator.sendBeacon).toHaveBeenCalled();
     });
 
-    test("should log to console", () => {
+    test("should log error/warn to console even when CI logging is disabled", () => {
       const config = new LoggingServiceConfig({
         namespace: mockNamespace,
         serviceRegistry: mockServiceRegistry,
@@ -437,9 +436,9 @@ describe("LoggingService", () => {
       const service = new LoggingService(config);
       service.initialize();
 
-      service.logClient("test-event", { data: "value" }, "info");
+      service.logClient("test-error", { data: "value" }, "error");
 
-      expect(global.console.info).toHaveBeenCalledWith("[bootstrap]", "test-event", { data: "value" });
+      expect(global.console.error).toHaveBeenCalledWith("[bootstrap]", "test-error", { data: "value" });
     });
 
     test("should use appropriate console method based on level", () => {

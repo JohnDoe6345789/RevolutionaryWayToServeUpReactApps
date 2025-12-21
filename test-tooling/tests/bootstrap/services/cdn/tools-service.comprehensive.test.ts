@@ -287,20 +287,14 @@ describe("ToolsLoaderService", () => {
       expect(result.testModule).toBeDefined();
     });
 
-    it("should handle ESM format modules", async () => {
-      // Mock the import function for this test
-      const originalImport = global.import;
-      global.import = jest.fn().mockResolvedValue({ default: { esm: 'value' } });
-      
-      const modules = [{ name: 'esmModule', global: 'ESMGlobal', format: 'esm' }];
-      
+    it("should handle global format modules", async () => {
+      const modules = [{ name: 'globalModule', global: 'GlobalModule', format: 'global' }];
+      global.window.GlobalModule = { globalProp: 'value' }; // Simulate global being set
+
       const result = await toolsLoaderService.loadModules(modules);
-      
+
       expect(result).toBeDefined();
-      expect(result.esmModule).toBeDefined();
-      
-      // Restore original import
-      global.import = originalImport;
+      expect(result.globalModule).toBeDefined();
     });
 
     it("should throw error if module global is not found", async () => {

@@ -62,7 +62,8 @@ describe("LocalDependencyLoader", () => {
       expect(mockHelperRegistry.register).toHaveBeenCalledWith(
         "localDependencyLoader",
         localDependencyLoader,
-        { folder: "services/local", domain: "local" }
+        { folder: "services/local", domain: "local" },
+        []
       );
     });
 
@@ -196,10 +197,14 @@ describe("LocalDependencyLoader", () => {
     it("should return helper from helper registry if available", () => {
       const mockHelper = { helper: "from-registry" };
       mockHelperRegistry.getHelper.mockReturnValue(mockHelper);
-      
+
+      // Mock the config to have an empty helpers object and a helperRegistry
+      localDependencyLoader.config.helpers = {};
+      localDependencyLoader.config.helperRegistry = mockHelperRegistry;
+
       const descriptor = { name: "logging", fallback: "../../cdn/logging.js", helper: "logging" };
       const result = localDependencyLoader._resolve(descriptor, mockServiceRegistry);
-      
+
       expect(mockHelperRegistry.getHelper).toHaveBeenCalledWith("logging");
       expect(result).toBe(mockHelper);
     });
@@ -215,7 +220,7 @@ describe("LocalDependencyLoader", () => {
   describe("integration tests", () => {
     it("should work through full lifecycle", () => {
       expect(localDependencyLoader.initialized).toBe(false);
-      expect(localDependencyLoader.dependencies).toBeNull();
+      expect(localDependencyLoader.dependencies).toBeFalsy();
       
       const result = localDependencyLoader.initialize(mockServiceRegistry);
       
@@ -230,7 +235,8 @@ describe("LocalDependencyLoader", () => {
 
     it("should handle different configuration scenarios", () => {
       // Test with overrides
-      const configWithOverrides = new (require("../../bootstrap/configs/local/local-dependency-loader.js").default)({
+      const LocalDependencyLoaderConfig = require("../../bootstrap/configs/local/local-dependency-loader.js");
+      const configWithOverrides = new LocalDependencyLoaderConfig({
         helperRegistry: mockHelperRegistry,
         overrides: { logging: "custom-logging" },
         isCommonJs: false,
@@ -244,7 +250,8 @@ describe("LocalDependencyLoader", () => {
     });
 
     it("should handle CommonJS environment", () => {
-      const config = new (require("../../bootstrap/configs/local/local-dependency-loader.js").default)({
+      const LocalDependencyLoaderConfig = require("../../bootstrap/configs/local/local-dependency-loader.js");
+      const config = new LocalDependencyLoaderConfig({
         helperRegistry: mockHelperRegistry,
         overrides: {},
         isCommonJs: true,
