@@ -1,15 +1,32 @@
+#!/usr/bin/env node
+
 /**
- * Interface Coverage Analysis Tool
+ * Interface Coverage Plugin
  * Analyzes and reports interface compliance across the bootstrap system.
+ * Migrated from interface-coverage-tool.js
  */
 
 const fs = require('fs');
 const path = require('path');
+const BasePlugin = require('../lib/base-plugin');
 
-class InterfaceCoverageTool {
+class InterfaceCoveragePlugin extends BasePlugin {
   constructor() {
-    this.bootstrapPath = path.join(__dirname, '..', 'bootstrap');
-    this.interfacesPath = path.join(this.bootstrapPath, 'interfaces');
+    super({
+      name: 'interface-coverage',
+      description: 'Analyzes interface compliance across the bootstrap system',
+      version: '1.0.0',
+      author: 'RWTRA',
+      category: 'analysis',
+      commands: [
+        {
+          name: 'interface-coverage',
+          description: 'Run interface compliance analysis on the bootstrap system'
+        }
+      ],
+      dependencies: []
+    });
+
     this.results = {
       totalClasses: 0,
       compliantClasses: 0,
@@ -22,17 +39,32 @@ class InterfaceCoverageTool {
   }
 
   /**
-   * Runs the complete interface coverage analysis.
+   * Main plugin execution method
+   * @param {Object} context - Execution context
+   * @returns {Promise<Object>} - Analysis results
    */
-  async analyze() {
-    console.log('🔍 Starting Interface Coverage Analysis...\n');
+  async execute(context) {
+    await this.initialize(context);
+    
+    this.log('Starting interface coverage analysis...', 'info');
+    this.log(this.colorize('🔍 Starting Interface Coverage Analysis...', context.colors.cyan));
+    
+    const bootstrapPath = context.options['bootstrap-path'] || path.join(context.bootstrapPath, 'bootstrap');
+    this.bootstrapPath = bootstrapPath;
+    this.interfacesPath = path.join(this.bootstrapPath, 'interfaces');
     
     await this._analyzeInterfaces();
     await this._analyzeSkeletonClasses();
     await this._analyzeConcreteClasses();
     await this._analyzeCompliance();
     
-    this._generateReport();
+    this._generateReport(context);
+    
+    // Save results if output directory specified
+    if (context.options.output) {
+      await this._saveResults(context);
+    }
+    
     return this.results;
   }
 
@@ -40,7 +72,7 @@ class InterfaceCoverageTool {
    * Analyzes all interface definitions.
    */
   async _analyzeInterfaces() {
-    console.log('📋 Analyzing Interface Definitions...');
+    this.log('Analyzing Interface Definitions...', 'info');
     
     const interfaceFiles = await this._findFiles(this.interfacesPath, '.d.ts');
     
@@ -48,21 +80,23 @@ class InterfaceCoverageTool {
       const content = fs.readFileSync(file, 'utf8');
       const interfaceName = this._extractInterfaceName(content);
       
-      this.results.interfaces[interfaceName] = {
-        file: path.relative(this.bootstrapPath, file),
-        methods: this._extractInterfaceMethods(content),
-        type: 'interface'
-      };
+      if (interfaceName) {
+        this.results.interfaces[interfaceName] = {
+          file: path.relative(this.bootstrapPath, file),
+          methods: this._extractInterfaceMethods(content),
+          type: 'interface'
+        };
+      }
     }
     
-    console.log(`   Found ${Object.keys(this.results.interfaces).length} interfaces`);
+    this.log(`Found ${Object.keys(this.results.interfaces).length} interfaces`, 'info');
   }
 
   /**
    * Analyzes all skeleton class implementations.
    */
   async _analyzeSkeletonClasses() {
-    console.log('🦴 Analyzing Skeleton Classes...');
+    this.log('Analyzing Skeleton Classes...', 'info');
     
     const interfaceFiles = await this._findFiles(this.interfacesPath, '.js');
     
@@ -79,14 +113,14 @@ class InterfaceCoverageTool {
       }
     }
     
-    console.log(`   Found ${Object.keys(this.results.skeletonClasses).length} skeleton classes`);
+    this.log(`Found ${Object.keys(this.results.skeletonClasses).length} skeleton classes`, 'info');
   }
 
   /**
    * Analyzes all concrete class implementations.
    */
   async _analyzeConcreteClasses() {
-    console.log('🏗️ Analyzing Concrete Classes...');
+    this.log('Analyzing Concrete Classes...', 'info');
     
     const allFiles = await this._getAllJavaScriptFiles();
     
@@ -94,7 +128,7 @@ class InterfaceCoverageTool {
       const content = fs.readFileSync(file, 'utf8');
       const className = this._extractClassName(content);
       
-      if (className && !className.startsWith('Base') && className !== 'InterfaceCoverageTool') {
+      if (className && !className.startsWith('Base') && className !== 'InterfaceCoveragePlugin') {
         this.results.concreteClasses[className] = {
           file: path.relative(this.bootstrapPath, file),
           extends: this._extractExtends(content),
@@ -106,14 +140,14 @@ class InterfaceCoverageTool {
       }
     }
     
-    console.log(`   Found ${Object.keys(this.results.concreteClasses).length} concrete classes`);
+    this.log(`Found ${Object.keys(this.results.concreteClasses).length} concrete classes`, 'info');
   }
 
   /**
    * Analyzes interface compliance across all classes.
    */
   async _analyzeCompliance() {
-    console.log('✅ Analyzing Interface Compliance...');
+    this.log('Analyzing Interface Compliance...', 'info');
     
     for (const [className, classInfo] of Object.entries(this.results.concreteClasses)) {
       const isCompliant = this._checkClassCompliance(className, classInfo);
@@ -212,12 +246,12 @@ class InterfaceCoverageTool {
   /**
    * Generates and displays the coverage report.
    */
-  _generateReport() {
-    console.log('\n📊 INTERFACE COVERAGE REPORT');
+  _generateReport(context) {
+    console.log(context.colors.reset + '\n📊 INTERFACE COVERAGE REPORT');
     console.log('================================');
     
     // Summary
-    console.log(`\n📈 SUMMARY:`);
+    console.log('\n📈 SUMMARY:');
     console.log(`   Total Classes: ${this.results.totalClasses}`);
     console.log(`   Compliant Classes: ${this.results.compliantClasses}`);
     console.log(`   Coverage: ${this.results.coverage}%`);
@@ -225,20 +259,20 @@ class InterfaceCoverageTool {
     console.log(`   Skeleton Classes: ${Object.keys(this.results.skeletonClasses).length}`);
     
     // Interface Details
-    console.log(`\n🔗 INTERFACES:`);
+    console.log('\n🔗 INTERFACES:');
     for (const [name, info] of Object.entries(this.results.interfaces)) {
       console.log(`   ${name}: ${info.methods.length} methods`);
     }
     
     // Skeleton Class Details
-    console.log(`\n🦴 SKELETON CLASSES:`);
+    console.log('\n🦴 SKELETON CLASSES:');
     for (const [name, info] of Object.entries(this.results.skeletonClasses)) {
-      console.log(`   ${name}: implements ${info.implements}`);
+      console.log(`   ${name}: implements ${info.implements || 'none'}`);
     }
     
     // Compliance Issues
     if (this.results.missingImplementations.length > 0) {
-      console.log(`\n❌ COMPLIANCE ISSUES:`);
+      console.log('\n❌ COMPLIANCE ISSUES:');
       for (const issue of this.results.missingImplementations) {
         console.log(`   ${issue.class} (${issue.file}):`);
         for (const problem of issue.issues) {
@@ -246,40 +280,41 @@ class InterfaceCoverageTool {
         }
       }
     } else {
-      console.log(`\n✅ ALL CLASSES COMPLIANT!`);
+      console.log('\n✅ ALL CLASSES COMPLIANT!');
     }
     
     // Coverage by Category
-    console.log(`\n📋 COVERAGE BY CATEGORY:`);
+    console.log('\n📋 COVERAGE BY CATEGORY:');
     const categoryStats = this._calculateCategoryStats();
     for (const [category, stats] of Object.entries(categoryStats)) {
       const percentage = stats.total > 0 ? Math.round((stats.compliant / stats.total) * 100) : 0;
       console.log(`   ${category}: ${stats.compliant}/${stats.total} (${percentage}%)`);
     }
     
+    // Recommendations
     console.log('\n🎯 RECOMMENDATIONS:');
-    this._generateRecommendations();
+    this._generateRecommendations(context);
   }
 
   /**
    * Generates recommendations based on analysis results.
    */
-  _generateRecommendations() {
+  _generateRecommendations(context) {
     if (this.results.coverage < 50) {
-      console.log('   - Priority: Update remaining classes to extend skeleton classes');
+      console.log(context.colors.yellow + '   - Priority: Update remaining classes to extend skeleton classes' + context.colors.reset);
     }
     
     if (this.results.missingImplementations.length > 0) {
-      console.log('   - Fix compliance issues in identified classes');
-      console.log('   - Update TypeScript declarations to implement interfaces');
+      console.log(context.colors.yellow + '   - Fix compliance issues in identified classes' + context.colors.reset);
+      console.log(context.colors.yellow + '   - Update TypeScript declarations to implement interfaces' + context.colors.reset);
     }
     
     if (Object.keys(this.results.interfaces).length === 0) {
-      console.log('   - Create missing interface definitions');
+      console.log(context.colors.yellow + '   - Create missing interface definitions' + context.colors.reset);
     }
     
     if (Object.keys(this.results.skeletonClasses).length === 0) {
-      console.log('   - Create skeleton class implementations');
+      console.log(context.colors.yellow + '   - Create skeleton class implementations' + context.colors.reset);
     }
   }
 
@@ -312,6 +347,8 @@ class InterfaceCoverageTool {
     const files = [];
     
     const scanDirectory = (dir) => {
+      if (!fs.existsSync(dir)) return;
+      
       const items = fs.readdirSync(dir);
       
       for (const item of items) {
@@ -335,6 +372,9 @@ class InterfaceCoverageTool {
    */
   async _findFiles(dir, pattern) {
     const files = [];
+    
+    if (!fs.existsSync(dir)) return files;
+    
     const items = fs.readdirSync(dir);
     
     for (const item of items) {
@@ -383,7 +423,7 @@ class InterfaceCoverageTool {
    */
   _extractInterfaceMethods(content) {
     const methodMatches = content.matchAll(/(\w+)\([^)]*\):/g);
-    return methodMatches ? methodMatches.map(match => match[1]) : [];
+    return methodMatches ? Array.from(methodMatches, match => match[1]) : [];
   }
 
   /**
@@ -391,21 +431,40 @@ class InterfaceCoverageTool {
    */
   _extractClassMethods(content) {
     const methodMatches = content.matchAll(/(\w+)\([^)]*\):/g);
-    return methodMatches ? methodMatches.map(match => match[1]) : [];
+    return methodMatches ? Array.from(methodMatches, match => match[1]) : [];
+  }
+
+  /**
+   * Saves analysis results to file
+   */
+  async _saveResults(context) {
+    const outputDir = context.options['output-dir'] || path.join(context.bootstrapPath, 'reports');
+    
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
+    
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const resultsPath = path.join(outputDir, `interface-coverage-${timestamp}.json`);
+    
+    const reportData = {
+      timestamp,
+      summary: {
+        totalClasses: this.results.totalClasses,
+        compliantClasses: this.results.compliantClasses,
+        coverage: this.results.coverage,
+        interfaces: Object.keys(this.results.interfaces).length,
+        skeletonClasses: Object.keys(this.results.skeletonClasses).length
+      },
+      interfaces: this.results.interfaces,
+      skeletonClasses: this.results.skeletonClasses,
+      concreteClasses: this.results.concreteClasses,
+      complianceIssues: this.results.missingImplementations
+    };
+    
+    fs.writeFileSync(resultsPath, JSON.stringify(reportData, null, 2), 'utf8');
+    this.log(`Results saved to: ${resultsPath}`, 'info');
   }
 }
 
-// CLI execution
-if (require.main === module) {
-  const tool = new InterfaceCoverageTool();
-  
-  tool.analyze().then(results => {
-    console.log('\n🎉 Analysis Complete!');
-    process.exit(results.missingImplementations.length > 0 ? 1 : 0);
-  }).catch(error => {
-    console.error('❌ Analysis failed:', error.message);
-    process.exit(1);
-  });
-}
-
-module.exports = InterfaceCoverageTool;
+module.exports = InterfaceCoveragePlugin;

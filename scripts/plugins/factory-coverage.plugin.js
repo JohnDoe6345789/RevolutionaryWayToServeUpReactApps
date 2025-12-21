@@ -1,36 +1,68 @@
+#!/usr/bin/env node
+
 /**
- * Factory Coverage Analysis Tool
+ * Factory Coverage Plugin
  * Analyzes and reports factory class compliance across the bootstrap system.
+ * Migrated from factory-coverage-tool.js
  */
 
 const fs = require('fs');
 const path = require('path');
-const InterfaceCoverageTool = require('./interface-coverage-tool.js');
+const BasePlugin = require('../lib/base-plugin');
 
-class FactoryCoverageTool {
+class FactoryCoveragePlugin extends BasePlugin {
   constructor() {
-    this.bootstrapPath = path.join(__dirname, '..', 'bootstrap');
-    this.interfacesPath = path.join(this.bootstrapPath, 'interfaces');
+    super({
+      name: 'factory-coverage',
+      description: 'Analyzes factory class compliance across the bootstrap system',
+      version: '1.0.0',
+      author: 'RWTRA',
+      category: 'analysis',
+      commands: [
+        {
+          name: 'factory-coverage',
+          description: 'Run factory compliance analysis on the bootstrap system'
+        }
+      ],
+      dependencies: []
+    });
+
     this.results = {
       totalFactories: 0,
       compliantFactories: 0,
       factories: {},
+      baseFactoryInterface: null,
       missingBaseFactory: false,
       recommendations: []
     };
   }
 
   /**
-   * Runs a complete factory coverage analysis.
+   * Main plugin execution method
+   * @param {Object} context - Execution context
+   * @returns {Promise<Object>} - Analysis results
    */
-  async analyze() {
-    console.log('🏭 Starting Factory Coverage Analysis...\n');
+  async execute(context) {
+    await this.initialize(context);
+    
+    this.log('Starting factory coverage analysis...', 'info');
+    this.log(this.colorize('🏭 Starting Factory Coverage Analysis...', context.colors.cyan));
+    
+    const bootstrapPath = context.options['bootstrap-path'] || path.join(context.bootstrapPath, 'bootstrap');
+    this.bootstrapPath = bootstrapPath;
+    this.interfacesPath = path.join(this.bootstrapPath, 'interfaces');
     
     await this._analyzeBaseFactoryInterface();
     await this._analyzeFactoryClasses();
     await this._analyzeCompliance();
     
-    this._generateReport();
+    this._generateReport(context);
+    
+    // Save results if output directory specified
+    if (context.options.output) {
+      await this._saveResults(context);
+    }
+    
     return this.results;
   }
 
@@ -38,7 +70,7 @@ class FactoryCoverageTool {
    * Analyzes the BaseFactory interface definition.
    */
   async _analyzeBaseFactoryInterface() {
-    console.log('📋 Analyzing BaseFactory Interface...');
+    this.log('Analyzing BaseFactory Interface...', 'info');
     
     const baseFactoryFile = path.join(this.interfacesPath, 'base-factory.d.ts');
     
@@ -52,11 +84,11 @@ class FactoryCoverageTool {
         found: true
       };
       
-      console.log(`   Found BaseFactory interface with ${methods.length} methods`);
+      this.log(`Found BaseFactory interface with ${methods.length} methods`, 'info');
     } else {
       this.results.missingBaseFactory = true;
       this.results.recommendations.push('Create BaseFactory interface definition');
-      console.log('   ❌ BaseFactory interface not found');
+      this.log('❌ BaseFactory interface not found', 'warn');
     }
   }
 
@@ -64,7 +96,7 @@ class FactoryCoverageTool {
    * Analyzes all factory classes in the codebase.
    */
   async _analyzeFactoryClasses() {
-    console.log('🏭 Analyzing Factory Classes...');
+    this.log('Analyzing Factory Classes...', 'info');
     
     const factoryFiles = await this._findFactoryFiles();
     
@@ -72,25 +104,27 @@ class FactoryCoverageTool {
       const content = fs.readFileSync(file, 'utf8');
       const className = this._extractClassName(content);
       
-      this.results.factories[className] = {
-        file: path.relative(this.bootstrapPath, file),
-        extends: this._extractExtends(content),
-        implements: this._extractImplements(content),
-        methods: this._extractClassMethods(content),
-        category: this._categorizeFactory(file, className)
-      };
-      
-      this.results.totalFactories++;
+      if (className) {
+        this.results.factories[className] = {
+          file: path.relative(this.bootstrapPath, file),
+          extends: this._extractExtends(content),
+          implements: this._extractImplements(content),
+          methods: this._extractClassMethods(content),
+          category: this._categorizeFactory(file, className)
+        };
+        
+        this.results.totalFactories++;
+      }
     }
     
-    console.log(`   Found ${Object.keys(this.results.factories).length} factory classes`);
+    this.log(`Found ${Object.keys(this.results.factories).length} factory classes`, 'info');
   }
 
   /**
    * Analyzes compliance of factory classes with BaseFactory pattern.
    */
   async _analyzeCompliance() {
-    console.log('✅ Analyzing Factory Compliance...');
+    this.log('Analyzing Factory Compliance...', 'info');
     
     for (const [className, classInfo] of Object.entries(this.results.factories)) {
       const isCompliant = this._checkFactoryCompliance(className, classInfo);
@@ -133,6 +167,8 @@ class FactoryCoverageTool {
     const factoryFiles = [];
     
     const scanDirectory = (dir) => {
+      if (!fs.existsSync(dir)) return;
+      
       const items = fs.readdirSync(dir);
       
       for (const item of items) {
@@ -181,12 +217,12 @@ class FactoryCoverageTool {
   /**
    * Generates and displays the factory coverage report.
    */
-  _generateReport() {
-    console.log('\n🏭 FACTORY COVERAGE REPORT');
+  _generateReport(context) {
+    console.log(context.colors.reset + '\n🏭 FACTORY COVERAGE REPORT');
     console.log('================================');
     
     // Summary
-    console.log(`\n📈 SUMMARY:`);
+    console.log('\n📈 SUMMARY:');
     console.log(`   Total Factories: ${this.results.totalFactories}`);
     console.log(`   Compliant Factories: ${this.results.compliantFactories}`);
     
@@ -197,14 +233,14 @@ class FactoryCoverageTool {
     
     // Base Factory Interface Status
     if (this.results.baseFactoryInterface) {
-      console.log(`\n📋 BASE FACTORY INTERFACE:`);
+      console.log('\n📋 BASE FACTORY INTERFACE:');
       console.log(`   Methods: ${this.results.baseFactoryInterface.methods.join(', ')}`);
     } else {
-      console.log(`\n❌ BASE FACTORY INTERFACE: Missing`);
+      console.log('\n❌ BASE FACTORY INTERFACE: Missing');
     }
     
     // Factory Class Details
-    console.log(`\n🏭 FACTORY CLASSES:`);
+    console.log('\n🏭 FACTORY CLASSES:');
     for (const [name, info] of Object.entries(this.results.factories)) {
       const status = info.extends === 'BaseFactory' || info.implements ? '✅' : '❌';
       console.log(`   ${status} ${name} (${info.category}): ${info.extends || 'No extends'}`);
@@ -218,7 +254,7 @@ class FactoryCoverageTool {
       });
     
     if (nonCompliantFactories.length > 0) {
-      console.log(`\n❌ COMPLIANCE ISSUES:`);
+      console.log('\n❌ COMPLIANCE ISSUES:');
       for (const [name, info] of nonCompliantFactories) {
         const compliance = this._checkFactoryCompliance(name, info);
         for (const issue of compliance.issues) {
@@ -226,21 +262,21 @@ class FactoryCoverageTool {
         }
       }
     } else {
-      console.log(`\n✅ ALL FACTORIES COMPLIANT!`);
+      console.log('\n✅ ALL FACTORIES COMPLIANT!');
     }
     
     // Recommendations
-    console.log(`\n🎯 RECOMMENDATIONS:`);
+    console.log('\n🎯 RECOMMENDATIONS:');
     for (const recommendation of this.results.recommendations) {
-      console.log(`   - ${recommendation}`);
+      console.log(context.colors.yellow + `   - ${recommendation}` + context.colors.reset);
     }
     
     if (this.results.missingBaseFactory) {
-      console.log(`\n📋 URGENT: Create BaseFactory interface to enable proper factory patterns`);
+      console.log(context.colors.red + '\n📋 URGENT: Create BaseFactory interface to enable proper factory patterns' + context.colors.reset);
     }
     
     // Coverage by Category
-    console.log(`\n📊 COVERAGE BY CATEGORY:`);
+    console.log('\n📊 COVERAGE BY CATEGORY:');
     const categoryStats = this._calculateCategoryStats();
     for (const [category, stats] of Object.entries(categoryStats)) {
       const percentage = stats.total > 0 ? Math.round((stats.compliant / stats.total) * 100) : 0;
@@ -279,6 +315,9 @@ class FactoryCoverageTool {
    */
   async _findFiles(dir, pattern) {
     const files = [];
+    
+    if (!fs.existsSync(dir)) return files;
+    
     const items = fs.readdirSync(dir);
     
     for (const item of items) {
@@ -319,29 +358,46 @@ class FactoryCoverageTool {
    */
   _extractInterfaceMethods(content) {
     const methodMatches = content.matchAll(/(\w+)\([^)]*\):/g);
-    return methodMatches ? methodMatches.map(match => match[1]) : [];
+    return methodMatches ? Array.from(methodMatches, match => match[1]) : [];
   }
 
   /**
    * Extracts method names from JavaScript class.
    */
   _extractClassMethods(content) {
-    const methodMatches = content.matchAll(/(\w+)\([^)]*\):/g);
-    return methodMatches ? methodMatches.map(match => match[1]) : [];
+    const methodMatches = content.matchAll(/(\w+)\([^)]*\)\s*[:{]/g);
+    return methodMatches ? Array.from(methodMatches, match => match[1]) : [];
+  }
+
+  /**
+   * Saves analysis results to file
+   */
+  async _saveResults(context) {
+    const outputDir = context.options['output-dir'] || path.join(context.bootstrapPath, 'reports');
+    
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
+    
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const resultsPath = path.join(outputDir, `factory-coverage-${timestamp}.json`);
+    
+    const reportData = {
+      timestamp,
+      summary: {
+        totalFactories: this.results.totalFactories,
+        compliantFactories: this.results.compliantFactories,
+        coverage: this.results.totalFactories > 0 ? Math.round((this.results.compliantFactories / this.results.totalFactories) * 100) : 0,
+        missingBaseFactory: this.results.missingBaseFactory
+      },
+      baseFactoryInterface: this.results.baseFactoryInterface,
+      factories: this.results.factories,
+      recommendations: this.results.recommendations
+    };
+    
+    fs.writeFileSync(resultsPath, JSON.stringify(reportData, null, 2), 'utf8');
+    this.log(`Results saved to: ${resultsPath}`, 'info');
   }
 }
 
-// CLI execution
-if (require.main === module) {
-  const tool = new FactoryCoverageTool();
-  
-  tool.analyze().then(results => {
-    console.log('\n🎉 Factory Analysis Complete!');
-    process.exit(results.missingBaseFactory || results.compliantFactories < results.totalFactories ? 1 : 0);
-  }).catch(error => {
-    console.error('❌ Factory analysis failed:', error.message);
-    process.exit(1);
-  });
-}
-
-module.exports = FactoryCoverageTool;
+module.exports = FactoryCoveragePlugin;
