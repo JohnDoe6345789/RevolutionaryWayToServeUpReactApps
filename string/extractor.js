@@ -262,11 +262,20 @@ class StringExtractor {
    * Check if path matches a pattern
    */
   matchesPattern(path, pattern) {
+    // Special handling for /** patterns (common for directory exclusion)
+    if (pattern.endsWith('/**')) {
+      const prefix = pattern.slice(0, -3); // remove `/**`
+      return path === prefix || path.startsWith(prefix + '/');
+    }
+
+    // Convert glob pattern to regex for other patterns
+    // First replace ** with a placeholder to avoid interference
     const regexPattern = pattern
-      .replace(/\*\*/g, '.*')
+      .replace(/\*\*/g, '___GLOBSTAR___')
       .replace(/\*/g, '[^/]*')
-      .replace(/\?/g, '.');
-    
+      .replace(/\?/g, '.')
+      .replace(/___GLOBSTAR___/g, '.*');
+
     return new RegExp(`^${regexPattern}$`).test(path);
   }
 
