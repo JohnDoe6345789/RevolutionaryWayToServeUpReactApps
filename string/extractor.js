@@ -369,12 +369,7 @@ class StringExtractor {
       
       while ((match = pattern.exec(line)) !== null) {
         const stringContent = match[1];
-        
-        // Skip if string should be ignored
-        if (this.shouldIgnoreString(stringContent, line, match.index)) {
-          continue;
-        }
-        
+
         // Skip if match is incomplete or malformed
         if (!stringContent || stringContent.length === 0) {
           continue;
@@ -406,34 +401,7 @@ class StringExtractor {
     return strings;
   }
 
-  /**
-   * Check if string should be ignored
-   */
-  shouldIgnoreString(stringContent, line, index) {
-    // Check ignore patterns
-    for (const pattern of this.ignorePatterns) {
-      if (pattern.test(stringContent) || pattern.test(line.trim())) {
-        return true;
-      }
-    }
-    
-    // Check if already using string service
-    const beforeString = line.substring(0, index);
-    if (beforeString.includes('strings.')) {
-      return true;
-    }
-    
-    // Check if it's in a comment
-    const commentIndex = Math.max(
-      line.lastIndexOf('//', index),
-      line.lastIndexOf('/*', index)
-    );
-    if (commentIndex > -1) {
-      return true;
-    }
-    
-    return false;
-  }
+
 
   /**
    * Generate key for string
