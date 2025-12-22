@@ -1,0 +1,98 @@
+{
+  "dependencyRegistry": {
+    "messages": {
+      "alreadyRegistered": "Dependency '{name}' is already registered",
+      "createInstanceFailed": "Failed to create instance of '{name}': {error}",
+      "registeredSuccess": "✅ Registered dependency: {name}",
+      "notFound": "Dependency '{name}' is not registered",
+      "unregisteredSuccess": "🗑️  Unregistered dependency: {name}",
+      "clearedAll": "🧹 Cleared all dependencies",
+      "validationFailed": "Validation failed for '{name}' ({rule}): {error}",
+      "circularDependency": "Circular dependency detected for '{name}': {path}",
+      "processingRegistrations": "✅ Processed {count} auto-registrations",
+      "dependencySystemInitialized": "✅ Dependency system initialized",
+      "exportedGraph": "📊 Dependency graph exported to {filename} ({format} format)"
+    },
+    "validation": {
+      "dependencyExists": "Dependency '{dep}' must be a string",
+      "factoryExpectsParams": "Factory for '{name}' expects parameters but no dependencies provided",
+      "namingConvention": "Dependency name '{name}' should follow PascalCase convention"
+    },
+    "logging": {
+      "info": "info",
+      "success": "success", 
+      "warning": "warning",
+      "error": "error"
+    }
+  },
+  "dependencyValidator": {
+    "messages": {
+      "ruleAdded": "✅ Added validation rule: {name}",
+      "ruleRemoved": "🗑️  Removed validation rule: {name}"
+    }
+  },
+  "circularDependencyDetector": {
+    "messages": {
+      "circularPath": "Circular dependency path: {path}"
+    }
+  },
+  "dependencyInjector": {
+    "messages": {
+      "dependenciesResolved": "✅ Resolved {count} dependencies",
+      "cacheCleared": "💾 Injection cache cleared"
+    }
+  },
+  "dependencyManager": {
+    "messages": {
+      "autoRegisteringMissing": "⚠️  Auto-registering missing dependency '{dep}' for '{parent}'",
+      "systemInitialized": "✅ Dependency system initialized",
+      "circularDependenciesDetected": "❌ Circular dependencies detected:",
+      "dependencyStats": "📊 Dependency Statistics:",
+      "totalDependencies": "  Total Dependencies: {count}",
+      "singletons": "  Singletons: {count}",
+      "cached": "  Cached: {count}"
+    }
+  },
+  "autoRegistrationSystem": {
+    "messages": {
+      "failedToRegister": "Failed to register {className}: {error}",
+      "queueStatus": "📝 Registration queue status",
+      "queueLength": "  Queue length: {count}",
+      "processing": "  Processing: {status}",
+      "queuedClasses": "  Queued classes: {classes}"
+    }
+  },
+  "dependencyCache": {
+    "messages": {
+      "cacheCleared": "💾 Cache cleared",
+      "cacheStats": "📊 Cache Statistics:",
+      "cacheSize": "  Cache size: {size}",
+      "maxSize": "  Max size: {maxSize}",
+      "hits": "  Hits: {count}",
+      "misses": "  Misses: {count}",
+      "evictions": "  Evictions: {count}",
+      "hitRate": "  Hit rate: {rate}%"
+    }
+  },
+  "singletonManager": {
+    "messages": {
+      "instanceDestroyed": "🗑️  Singleton instance destroyed: {name}",
+      "allInstancesDestroyed": "🧹 All singleton instances destroyed",
+      "instanceStats": "📊 Singleton Statistics:",
+      "totalSingletons": "  Total singletons: {count}",
+      "instanceInfo": "  {name}: created={created}, accessed={count}, lastAccessed={lastAccessed}"
+    }
+  },
+  "registryUtils": {
+    "messages": {
+      "graphAnalysis": "📊 Dependency Graph Analysis:",
+      "totalNodes": "  Total nodes: {count}",
+      "totalEdges": "  Total edges: {count}",
+      "maxDepth": "  Maximum depth: {depth}",
+      "leafNodes": "  Leaf nodes: {nodes}",
+      "rootNodes": "  Root nodes: {nodes}",
+      "criticalDependencies": "🎯 Critical Dependencies:",
+      "criticalDependency": "  {node}: {count} incoming dependencies ({percentage}%)"
+    }
+  }
+}

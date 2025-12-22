@@ -1,0 +1,197 @@
+{
+  "javascript": {
+    "errorHandling": {
+      "throwError": "throw new Error('{message}');",
+      "throwErrorWithCode": "throw new Error('{message}');"
+    },
+    "logging": {
+      "log": "console.log('{message}'{levelOption});",
+      "logWithLevel": "console.log('[{timestamp}] [{context}] {prefix} {message}');"
+    },
+    "moduleExport": {
+      "class": "module.exports = {className};",
+      "multiple": "module.exports = { {exports} };",
+      "default": "export default {className};"
+    },
+    "classDeclaration": {
+      "basic": "class {className} {",
+      "extends": "class {className} extends {baseClass} {",
+      "constructor": "  constructor({params}) {",
+      "method": "  {async }{methodName}({params}) {",
+      "property": "  {propertyName};"
+    },
+    "comments": {
+      "single": "// {comment}",
+      "multi": "/*\n * {comment}\n */",
+      "jsdoc": "/**\n * {comment}\n */"
+    },
+    "dataStructures": {
+      "map": "new Map()",
+      "set": "new Set()",
+      "object": "{ {key}: {value} }"
+    },
+    "controlFlow": {
+      "if": "if ({condition}) {",
+      "else": "} else {",
+      "for": "for (const {item} of {collection}) {",
+      "tryCatch": "try {",
+      "catch": "} catch ({errorVar}) {"
+    }
+  },
+  "python": {
+    "errorHandling": {
+      "throwError": "raise Exception('{message}')",
+      "throwErrorWithCode": "raise {ExceptionClass}('{message}')"
+    },
+    "logging": {
+      "log": "print('{message}')",
+      "logWithLevel": "print('[{timestamp}] [{context}] {prefix} {message}')"
+    },
+    "moduleExport": {
+      "class": "",
+      "multiple": "",
+      "default": ""
+    },
+    "classDeclaration": {
+      "basic": "class {className}:",
+      "extends": "class {className}({baseClass}):",
+      "constructor": "  def __init__(self{params}):",
+      "method": "  {async }def {methodName}(self{params}):",
+      "property": "  self.{propertyName} = None"
+    },
+    "comments": {
+      "single": "# {comment}",
+      "multi": "\"\"\"\n{comment}\n\"\"\"",
+      "docstring": "\"\"\"\n{comment}\n\"\"\""
+    },
+    "dataStructures": {
+      "map": "dict()",
+      "set": "set()",
+      "object": "{ '{key}': {value} }"
+    },
+    "controlFlow": {
+      "if": "if {condition}:",
+      "else": "else:",
+      "for": "for {item} in {collection}:",
+      "tryCatch": "try:",
+      "catch": "except {errorVar}:"
+    }
+  },
+  "java": {
+    "errorHandling": {
+      "throwError": "throw new RuntimeException('{message}');",
+      "throwErrorWithCode": "throw new {ExceptionClass}('{message}');"
+    },
+    "logging": {
+      "log": "System.out.println('{message}');",
+      "logWithLevel": "System.out.println('[{timestamp}] [{context}] {prefix} {message}');"
+    },
+    "moduleExport": {
+      "class": "public class {className}",
+      "multiple": "",
+      "default": ""
+    },
+    "classDeclaration": {
+      "basic": "public class {className} {",
+      "extends": "public class {className} extends {baseClass} {",
+      "constructor": "  public {className}({params}) {",
+      "method": "  {access} {returnType} {methodName}({params}) {",
+      "property": "  private {type} {propertyName};"
+    },
+    "comments": {
+      "single": "// {comment}",
+      "multi": "/*\n * {comment}\n */",
+      "javadoc": "/**\n * {comment}\n */"
+    },
+    "dataStructures": {
+      "map": "new HashMap<>()",
+      "set": "new HashSet<>()",
+      "object": ""
+    },
+    "controlFlow": {
+      "if": "if ({condition}) {",
+      "else": "} else {",
+      "for": "for ({type} {item} : {collection}) {",
+      "tryCatch": "try {",
+      "catch": "} catch ({ExceptionClass} {errorVar}) {"
+    }
+  },
+  "cpp": {
+    "errorHandling": {
+      "throwError": "throw std::runtime_error('{message}');",
+      "throwErrorWithCode": "throw {ExceptionClass}('{message}');"
+    },
+    "logging": {
+      "log": "std::cout << '{message}' << std::endl;",
+      "logWithLevel": "std::cout << '[{timestamp}] [{context}] {prefix} {message}' << std::endl;"
+    },
+    "moduleExport": {
+      "class": "",
+      "multiple": "",
+      "default": ""
+    },
+    "classDeclaration": {
+      "basic": "class {className} {",
+      "extends": "class {className} : public {baseClass} {",
+      "constructor": "  {className}({params}) {",
+      "method": "  {returnType} {methodName}({params}) {",
+      "property": "  {type} {propertyName};"
+    },
+    "comments": {
+      "single": "// {comment}",
+      "multi": "/*\n * {comment}\n */",
+      "docstring": "/**\n * {comment}\n */"
+    },
+    "dataStructures": {
+      "map": "std::map<>",
+      "set": "std::set<>",
+      "object": ""
+    },
+    "controlFlow": {
+      "if": "if ({condition}) {",
+      "else": "} else {",
+      "for": "for (const auto& {item} : {collection}) {",
+      "tryCatch": "try {",
+      "catch": "} catch (const {ExceptionClass}& {errorVar}) {"
+    }
+  },
+  "typescript": {
+    "errorHandling": {
+      "throwError": "throw new Error('{message}');",
+      "throwErrorWithCode": "throw new {ExceptionClass}('{message}');"
+    },
+    "logging": {
+      "log": "console.log('{message}');",
+      "logWithLevel": "console.log('[{timestamp}] [{context}] {prefix} {message}');"
+    },
+    "moduleExport": {
+      "class": "export class {className}",
+      "multiple": "export { {exports} };",
+      "default": "export default {className};"
+    },
+    "classDeclaration": {
+      "basic": "export class {className} {",
+      "extends": "export class {className} extends {baseClass} {",
+      "constructor": "  constructor({params}: {types}) {",
+      "method": "  {async }{methodName}({params}): {returnType} {",
+      "property": "  private {propertyName}: {type};"
+    },
+    "comments": {
+      "single": "// {comment}",
+      "multi": "/*\n * {comment}\n */",
+      "tsdoc": "/**\n * {comment}\n */"
+    },
+    "dataStructures": {
+      "map": "new Map<{keyType}, {valueType}>()",
+      "set": "new Set<{type}>()",
+      "object": "{ {key}: {value} }"
+    },
+    "controlFlow": {
+      "if": "if ({condition}) {",
+      "else": "} else {",
+      "for": "for (const {item} of {collection}) {",
+      "tryCatch": "try {",
+      "catch": "} catch ({errorVar}) {"
+    }
+  }
+}

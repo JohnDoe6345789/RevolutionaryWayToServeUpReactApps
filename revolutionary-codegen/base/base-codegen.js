@@ -16,6 +16,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const TemplateEngine = require('./template-engine');
 
 class BaseCodegen {
   constructor(options = {}) {
@@ -27,6 +28,7 @@ class BaseCodegen {
       verbose: options.verbose || false,
       enableInnovations: options.enableInnovations !== false,
       strictMode: options.strictMode || false,
+      language: options.language || 'javascript',
       ...options
     };
     
@@ -48,6 +50,12 @@ class BaseCodegen {
     
     // Initialize function registry
     this.initializeFunctionRegistry();
+    
+    // Initialize template engine for language-agnostic processing
+    this.templateEngine = new TemplateEngine(this.options.language, {
+      templateDir: options.templateDir || path.join(__dirname, '../templates'),
+      enableCaching: this.options.enableCaching !== false
+    });
     
     // Initialize innovation features
     if (this.options.enableInnovations) {
@@ -325,12 +333,32 @@ class BaseCodegen {
   }
 
   /**
-   * Process template with function evaluation
+   * Process template with function evaluation and language-specific syntax
    * @param {string} template - Template string
    * @param {Object} data - Data to interpolate
    * @returns {string} Processed template
    */
   processTemplate(template, data = {}) {
+    let processed = template;
+    
+    // Use template engine for language-agnostic processing
+    if (this.templateEngine && this.templateEngine.isLanguageSupported()) {
+      processed = this.templateEngine.renderTemplate(template, data);
+    } else {
+      // Fallback to original processing if template engine not available
+      processed = this.processTemplateFallback(template, data);
+    }
+    
+    return processed;
+  }
+
+  /**
+   * Fallback template processing when template engine is not available
+   * @param {string} template - Template string
+   * @param {Object} data - Data to interpolate
+   * @returns {string} Processed template
+   */
+  processTemplateFallback(template, data = {}) {
     let processed = template;
     
     // Process function placeholders like ${function:name}
@@ -358,6 +386,26 @@ class BaseCodegen {
     });
     
     return processed;
+  }
+
+  /**
+   * Get template engine instance
+   * @returns {TemplateEngine} Template engine
+   */
+  getTemplateEngine() {
+    return this.templateEngine;
+  }
+
+  /**
+   * Set language for template engine
+   * @param {string} language - Target language
+   * @returns {void}
+   */
+  setLanguage(language) {
+    this.options.language = language;
+    if (this.templateEngine) {
+      this.templateEngine.setLanguage(language);
+    }
   }
 
   /**
