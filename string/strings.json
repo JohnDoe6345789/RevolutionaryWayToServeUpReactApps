@@ -51,12 +51,8 @@
         "project_specification_is_required_specpath_or_spec": "Project specification is required (specPath or specification option)",
         "should_validate_required_properties": "should validate required properties",
         "business_logic_classes_must_be_an_array": "Business logic classes must be an array",
-        "class_name_is_required": "Class name is required",
-        "class_description_is_required": "Class description is required",
-        "class_module_path_is_required": "Class module path is required",
         "serviceregistry_must_be_an_object": "serviceRegistry must be an object",
-        "namespace_must_be_an_object": "namespace must be an object",
-        "configjson_must_be_a_valid_object": "configJson must be a valid object"
+        "namespace_must_be_an_object": "namespace must be an object"
       },
       "messages": {
         "initializing_service": "Initializing service...",
@@ -120,9 +116,7 @@
         "generating_typescript_definitions": "📝 Generating TypeScript definitions...",
         "generating_test_stubs": "🧪 Generating test stubs...",
         "generating_class_index": "📋 Generating class index...",
-        "initializing_business_logic_generator": "💼 Initializing business logic generator...",
         "generatedproject": "GeneratedProject",
-        "generating_business_logic_classes": "🏭 Generating business logic classes...",
         "should_initialize_successfully": "should initialize successfully",
         "string": "string",
         "object": "object",
@@ -159,14 +153,7 @@
         "initializing_nested_aggregates": "Initializing nested aggregates...",
         "initializing_plugin_groups": "Initializing plugin groups...",
         "nested_aggregates_initialized": "Nested aggregates initialized",
-        "plugin_groups_initialized": "Plugin groups initialized",
-        "string_1": "string",
-        "function_1": "function",
-        "utf8_1": "utf8",
-        "networkproviderservice_1": "networkProviderService",
-        "object_1": "object",
-        "object_2": "object",
-        "object_3": "object"
+        "plugin_groups_initialized": "Plugin groups initialized"
       },
       "labels": {
         "retro_gaming_hub": "RETRO GAMING HUB",

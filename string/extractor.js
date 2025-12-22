@@ -669,31 +669,21 @@ class StringExtractor {
   }
 
   /**
-   * Deduplicate strings in strings.json by content, keeping first occurrence
+   * Deduplicate strings in strings.json by content within each category, keeping first occurrence
    */
   deduplicateStrings() {
     const deduplicated = { i18n: { en: {} } };
 
-    // Create a map of content -> first key found
-    const contentToFirstKey = new Map();
-
-    // First pass: collect all unique content -> first key mappings
-    for (const category of Object.keys(this.codegenData.i18n.en)) {
-      for (const [key, content] of Object.entries(this.codegenData.i18n.en[category])) {
-        if (!contentToFirstKey.has(content)) {
-          contentToFirstKey.set(content, { key, category });
-        }
-      }
-    }
-
-    // Second pass: rebuild structure with deduplicated strings
+    // Process each category separately
     for (const category of Object.keys(this.codegenData.i18n.en)) {
       deduplicated.i18n.en[category] = {};
+      const seenContent = new Set();
+
+      // Keep only the first occurrence of each content within this category
       for (const [key, content] of Object.entries(this.codegenData.i18n.en[category])) {
-        // Only keep if this is the first occurrence of this content
-        const firstOccurrence = contentToFirstKey.get(content);
-        if (firstOccurrence.key === key && firstOccurrence.category === category) {
+        if (!seenContent.has(content)) {
           deduplicated.i18n.en[category][key] = content;
+          seenContent.add(content);
         }
       }
     }
@@ -1626,22 +1616,21 @@ async function main() {
       extractor.loadCodegenData();
       const deduplicatedData = extractor.deduplicateStrings();
 
+      // Write deduplicated data to strings.json
+      const stringsPath = extractor.codegenDataPath;
+      fs.writeFileSync(stringsPath, JSON.stringify(deduplicatedData, null, 2), 'utf8');
+
       const dedupeDataLog = {
         timestamp: new Date().toISOString(),
         component: 'main',
         level: 'info',
-        event: 'deduplication_data_output',
-        data: deduplicatedData
+        event: 'deduplication_complete',
+        data: {
+          file: stringsPath,
+          message: 'Deduplicated strings.json written to disk'
+        }
       };
       console.log(JSON.stringify(dedupeDataLog));
-
-      const dedupeCompleteLog = {
-        timestamp: new Date().toISOString(),
-        component: 'main',
-        level: 'info',
-        event: 'deduplication_complete'
-      };
-      console.log(JSON.stringify(dedupeCompleteLog));
 
       return deduplicatedData;
     } else if (options.dryRun) {
