@@ -1,4 +1,4 @@
-const { getStringService } = require('../services/string-service.js');
+const { getStringService } = require('../../string/string-service.js');
 
 const strings = getStringService();
 
@@ -23,7 +23,7 @@ class ConfigJsonParser {
    * @throws Error if configuration is invalid
    */
   validate() {
-    if (typeof this.configJson !== getMessage(getMessage(getMessage('object_4'))) || this.configJson === null) {
+    if (typeof this.configJson !== 'object' || this.configJson === null) {
       throw new Error(strings.getError('configjson_must_be_a_valid_object'));
     }
   }

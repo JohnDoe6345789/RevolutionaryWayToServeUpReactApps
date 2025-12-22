@@ -858,7 +858,7 @@ class StringExtractorVerifier {
           const key = match[2];
           const fullMatch = match[0];
 
-          // Check if key exists in strings.json
+          // Check if key exists in strings.json for the appropriate category
           const category = method.replace('get', '').toLowerCase();
           const keyExists = this.extractor.codegenData?.i18n?.en?.[category]?.[key];
 
@@ -866,7 +866,7 @@ class StringExtractorVerifier {
             this.verificationResults.failed.push({
               type: 'string_service_call',
               file: filePath,
-              message: `❌ String key not found: ${category}.${key}`
+              message: `❌ String key not found: ${key} in category ${category}`
             });
 
             this.verificationResults.todoItems.push({
@@ -874,8 +874,8 @@ class StringExtractorVerifier {
               priority: 'HIGH',
               action: 'Add Missing String Key',
               file: filePath,
-              details: `String key "${category}.${key}" not found in strings.json`,
-              suggestion: `Add the missing key to string/strings.json or check for typos`
+              details: `String key "${key}" not found in ${category} category`,
+              suggestion: `Add the missing key to string/strings.json under the ${category} category`
             });
           } else {
             this.verificationResults.passed.push({
@@ -903,6 +903,32 @@ class StringExtractorVerifier {
             });
           }
         }
+
+        // Check for incorrect import paths
+        const importRegex = /require\(['"`]([^'"`]*string-service[^'"`]*?)['"`]\)/g;
+        let importMatch;
+        while ((importMatch = importRegex.exec(content)) !== null) {
+          const importPath = importMatch[1];
+
+          // Check if import path points to correct location
+          if (importPath.includes('services/string-service') && !fs.existsSync(path.resolve(path.dirname(filePath), importPath))) {
+            this.verificationResults.failed.push({
+              type: 'import_path',
+              file: filePath,
+              message: `❌ Incorrect string service import path: ${importPath}`
+            });
+
+            this.verificationResults.todoItems.push({
+              number: this.verificationResults.todoItems.length + 1,
+              priority: 'HIGH',
+              action: 'Fix Import Path',
+              file: filePath,
+              details: `Import path "${importPath}" does not exist`,
+              suggestion: `Change to correct path: relative path to string/string-service.js`
+            });
+          }
+        }
+
       } catch (error) {
         this.verificationResults.warnings.push({
           type: 'string_service_call',

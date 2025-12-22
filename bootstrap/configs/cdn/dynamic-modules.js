@@ -1,4 +1,4 @@
-const { getStringService } = require('../../services/string-service.js');
+const { getStringService } = require('../../../string/string-service.js');
 
 const strings = getStringService();
 
@@ -20,10 +20,10 @@ class DynamicModulesConfig {
    * @throws Error if configuration is invalid
    */
   validate() {
-    if (this.serviceRegistry && typeof this.serviceRegistry !== getMessage(getMessage(getMessage('object_2')))) {
+    if (this.serviceRegistry && typeof this.serviceRegistry !== 'object') {
       throw new Error(strings.getError('serviceregistry_must_be_an_object'));
     }
-    if (this.namespace && typeof this.namespace !== getMessage(getMessage(getMessage('object_3')))) {
+    if (this.namespace && typeof this.namespace !== 'object') {
       throw new Error(strings.getError('namespace_must_be_an_object'));
     }
   }

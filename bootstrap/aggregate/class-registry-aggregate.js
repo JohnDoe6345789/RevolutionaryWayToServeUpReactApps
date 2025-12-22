@@ -1,7 +1,7 @@
 const BaseClass = require('../base/base-class.js');
 const NestedAggregate = require('./nested-aggregate.js');
 const PluginGroupAggregate = require('./plugin-group-aggregate.js');
-const { getStringService } = require('../services/string-service.js');
+const { getStringService } = require('../../string/string-service.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -29,17 +29,17 @@ class ClassRegistryAggregate extends BaseClass {
    */
   async initialize() {
     await this.loadClassList();
-    
+
     // Initialize nested aggregates if available
     if (this.processedConstants.constants && this.processedConstants.constants.enableNestedAggregates) {
       await this.initializeNestedAggregates();
     }
-    
+
     // Initialize plugin groups if enabled
     if (this.processedConstants.constants && this.processedConstants.constants.enablePluginGroups) {
       await this.initializePluginGroups();
     }
-    
+
     this.generateGetMethods();
     return super.initialize();
   }
@@ -52,22 +52,22 @@ class ClassRegistryAggregate extends BaseClass {
     try {
       const constantsContent = fs.readFileSync(this.constantsPath, 'utf8');
       let constants = JSON.parse(constantsContent);
-      
+
       // Process JS function calculations
       constants = this.processCalculatedConstants(constants);
-      
+
       // Flatten nested structure for backward compatibility
       this.classList = this.flattenClassHierarchy(constants.classes || []);
-      
+
       // Create class map for quick lookup
       this.classList.forEach(cls => {
         this.classMap.set(cls.name, cls);
       });
-      
+
       // Store the original nested structure
       this.nestedClasses = constants.classes || [];
       this.processedConstants = constants;
-      
+
       return this.classList;
     } catch (error) {
       throw new Error(`Failed to load class constants: ${error.message}`);
@@ -81,7 +81,7 @@ class ClassRegistryAggregate extends BaseClass {
    */
   processCalculatedConstants(constants) {
     const processed = JSON.parse(JSON.stringify(constants)); // Deep clone
-    
+
     // Process functions if they exist
     if (constants.functions) {
       for (const [key, funcBody] of Object.entries(constants.functions)) {
@@ -89,7 +89,7 @@ class ClassRegistryAggregate extends BaseClass {
           // Create a safe function execution context
           const func = new Function(funcBody);
           const result = func();
-          
+
           // Replace function references in the entire constants object
           this.replaceFunctionReferences(processed, `\${function:${key}}`, result);
         } catch (error) {
@@ -97,15 +97,15 @@ class ClassRegistryAggregate extends BaseClass {
         }
       }
     }
-    
+
     // Process constant references
     if (constants.constants) {
       for (const [key, value] of Object.entries(constants.constants)) {
-        if (typeof value === getMessage(getMessage('string')) && value.startsWith('${function:')) {
+        if (typeof value === 'string' && value.startsWith('${function:')) {
           // Functions already processed above
           continue;
         }
-        
+
         // Replace constant references
         this.replaceFunctionReferences(processed, `\${constants.${key}}`, value);
       }
@@ -122,11 +122,11 @@ class ClassRegistryAggregate extends BaseClass {
    */
   replaceFunctionReferences(obj, reference, value) {
     const processValue = (val) => {
-      if (typeof val === getMessage(getMessage('string_1'))) {
+      if (typeof val === 'string') {
         return val.replace(new RegExp(reference.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), value);
       } else if (Array.isArray(val)) {
         return val.map(processValue);
-      } else if (typeof val === getMessage(getMessage('object')) && val !== null) {
+      } else if (typeof val === 'object' && val !== null) {
         const result = {};
         for (const [k, v] of Object.entries(val)) {
           result[k] = processValue(v);
@@ -136,36 +136,6 @@ class ClassRegistryAggregate extends BaseClass {
       return val;
     };
 
-    return processValue(obj);
-  }
-      }
-    }
-    
-    return processed;
-  }
-
-  /**
-   * Replaces function references throughout an object
-   * @param {Object} obj - Object to process
-   * @param {string} reference - Reference to replace
-   * @param {*} value - Value to substitute
-   */
-  replaceFunctionReferences(obj, reference, value) {
-    const processValue = (val) => {
-      if (typeof val === getMessage(getMessage('string_2'))) {
-        return val.replace(new RegExp(reference.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), value);
-      } else if (Array.isArray(val)) {
-        return val.map(processValue);
-      } else if (typeof val === getMessage(getMessage('object_1')) && val !== null) {
-        const result = {};
-        for (const [k, v] of Object.entries(val)) {
-          result[k] = processValue(v);
-        }
-        return result;
-      }
-      return val;
-    };
-    
     return processValue(obj);
   }
 
@@ -176,7 +146,7 @@ class ClassRegistryAggregate extends BaseClass {
    */
   flattenClassHierarchy(classes) {
     const flattened = [];
-    
+
     const flatten = (classList) => {
       for (const cls of classList) {
         // Add the class itself
@@ -189,14 +159,14 @@ class ClassRegistryAggregate extends BaseClass {
           nestingLevel: cls.nestingLevel,
           config: cls.config || {}
         });
-        
+
         // Recursively process children
         if (cls.children && cls.children.length > 0) {
           flatten(cls.children);
         }
       }
     };
-    
+
     flatten(classes);
     return flattened;
   }
@@ -208,7 +178,7 @@ class ClassRegistryAggregate extends BaseClass {
   generateGetMethods() {
     this.classList.forEach(cls => {
       const methodName = `get${cls.name}`;
-      
+
       this[methodName] = async function(config = {}) {
         try {
           // Dynamically require the factory
@@ -218,7 +188,7 @@ class ClassRegistryAggregate extends BaseClass {
             targetClass: cls.name,
             dataClass: cls.dataClass
           });
-          
+
           await factory.initialize();
           return await factory.create(config);
         } catch (error) {
@@ -259,27 +229,27 @@ class ClassRegistryAggregate extends BaseClass {
    */
   async initializeNestedAggregates() {
     this.log(strings.getMessage('initializing_nested_aggregates'), 'info');
-    
+
     // Create nested aggregate instance
     this.nestedAggregate = new NestedAggregate({
       constantsPath: this.constantsPath,
       maxNestingLevel: this.processedConstants.constants.maxNestingLevel || 5
     });
-    
+
     await this.nestedAggregate.initialize();
-    
+
     // Add nested aggregate methods to this instance
     const nestedMethods = [
-      getMessage(getMessage('getaggregateinfo')), getMessage(getMessage('getrootaggregates')), getMessage(getMessage('getchildren')), getMessage(getMessage('getalldescendants')),
-      getMessage(getMessage('getaggregatetree')), getMessage(getMessage('getaggregatesatlevel')), getMessage(getMessage('validatehierarchy')), getMessage(getMessage('gethierarchystats'))
+      'getAggregateInfo', 'getRootAggregates', 'getChildren', 'getAllDescendants',
+      'getAggregateTree', 'getAggregatesAtLevel', 'validateHierarchy', 'getHierarchyStats'
     ];
 
     for (const method of nestedMethods) {
-      if (typeof this.nestedAggregate[method] === getMessage(getMessage('function'))) {
+      if (typeof this.nestedAggregate[method] === 'function') {
         this[method] = this.nestedAggregate[method].bind(this.nestedAggregate);
       }
     }
-    
+
     this.log(strings.getConsole('nested_aggregates_initialized'), 'info');
   }
 
@@ -288,28 +258,28 @@ class ClassRegistryAggregate extends BaseClass {
    */
   async initializePluginGroups() {
     this.log(strings.getMessage('initializing_plugin_groups'), 'info');
-    
+
     // Create plugin group aggregate instance
     this.pluginGroupAggregate = new PluginGroupAggregate({
       groupsPath: path.join(__dirname, '..', 'plugins', 'groups'),
       enableValidation: this.processedConstants.constants.enableValidation !== false
     });
-    
+
     await this.pluginGroupAggregate.initialize();
-    
+
     // Add plugin group methods to this instance
     const groupMethods = [
-      getMessage(getMessage('getplugingroupinfo')), getMessage(getMessage('getallplugingroups')), getMessage(getMessage('getplugingroupsbycategory')),
-      getMessage(getMessage('getallplugins')), getMessage(getMessage('getenabledplugins')), getMessage(getMessage('hasplugingroup')), getMessage(getMessage('getgroupstatistics')),
-      getMessage(getMessage('getdependencygraph')), getMessage(getMessage('validatesystem'))
+      'getPluginGroupInfo', 'getAllPluginGroups', 'getPluginGroupsByCategory',
+      'getAllPlugins', 'getEnabledPlugins', 'hasPluginGroup', 'getGroupStatistics',
+      'getDependencyGraph', 'validateSystem'
     ];
 
     for (const method of groupMethods) {
-      if (typeof this.pluginGroupAggregate[method] === getMessage(getMessage('function_1'))) {
+      if (typeof this.pluginGroupAggregate[method] === 'function') {
         this[method] = this.pluginGroupAggregate[method].bind(this.pluginGroupAggregate);
       }
     }
-    
+
     this.log(strings.getConsole('plugin_groups_initialized'), 'info');
   }
 
@@ -356,7 +326,7 @@ class ClassRegistryAggregate extends BaseClass {
         calculatedValues: Object.keys(this.processedConstants.constants || {})
       }
     };
-    
+
     return status;
   }
 }
