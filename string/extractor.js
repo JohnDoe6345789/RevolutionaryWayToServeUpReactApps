@@ -16,7 +16,7 @@ class StringExtractor {
       ...options
     };
     
-    this.codegenDataPath = path.resolve(__dirname, '../codegen-data.json');
+    this.codegenDataPath = path.resolve(__dirname, '../string/strings.json');
     this.backupDir = path.resolve(__dirname, '../.string-extractor-backups');
     this.changesLog = [];
     this.extractedStrings = new Map();
@@ -110,10 +110,10 @@ class StringExtractor {
         await this.processFile(file);
       }
       
-      // Update codegen-data.json if not dry run
+      // Update string/strings.json if not dry run
       if (!this.options.dryRun && this.extractedStrings.size > 0) {
         await this.updateCodegenData();
-        this.log(`Updated codegen-data.json with ${this.extractedStrings.size} new strings`);
+        this.log(`Updated string/strings.json with ${this.extractedStrings.size} new strings`);
       }
       
       // Generate report
@@ -515,13 +515,13 @@ class StringExtractor {
       }
       
     } catch (error) {
-      this.log(`Error loading codegen-data.json: ${error.message}`, 'error');
+      this.log(`Error loading string/strings.json: ${error.message}`, 'error');
       this.codegenData = { i18n: { en: {} } };
     }
   }
 
   /**
-   * Update codegen-data.json with extracted strings
+   * Update string/strings.json with extracted strings
    */
   async updateCodegenData() {
     for (const [key, info] of this.extractedStrings) {
@@ -677,7 +677,7 @@ async function main() {
         break;
       case '--help':
       case '-h':
-        console.log('\nString Extraction Automation Script\n\nUSAGE:\n  node scripts/string-extractor.js [options]\n\nOPTIONS:\n  --files <patterns>     Comma-separated file patterns to process\n  --project              Process all JavaScript files in project\n  --dry-run              Preview changes without modifying files\n  --no-backup            Do not create backups before modifying files\n  --verbose              Show detailed logging\n  --exclude <patterns>   Comma-separated patterns to exclude\n  --rollback             Rollback last extraction\n  --help, -h             Show this help message\n\nEXAMPLES:\n  # Extract from specific files\n  node scripts/string-extractor.js --files "src/**/*.js"\n  \n  # Extract from entire project\n  node scripts/string-extractor.js --project\n  \n  # Dry run to preview changes\n  node scripts/string-extractor.js --dry-run --files "revolutionary-codegen/**/*.js"\n  \n  # Exclude certain directories\n  node scripts/string-extractor.js --project --exclude "test/**,docs/**"\n        ');
+        console.log('\nString Extraction Automation Script\n\nUSAGE:\n  node string/extractor.js [options]\n\nOPTIONS:\n  --files <patterns>     Comma-separated file patterns to process\n  --project              Process all JavaScript files in project\n  --dry-run              Preview changes without modifying files\n  --no-backup            Do not create backups before modifying files\n  --verbose              Show detailed logging\n  --exclude <patterns>   Comma-separated patterns to exclude\n  --rollback             Rollback last extraction\n  --help, -h             Show this help message\n\nEXAMPLES:\n  # Extract from specific files\n  node string/extractor.js --files "src/**/*.js"\n  \n  # Extract from entire project\n  node string/extractor.js --project\n  \n  # Dry run to preview changes\n  node string/extractor.js --dry-run --files "revolutionary-codegen/**/*.js"\n  \n  # Exclude certain directories\n  node string/extractor.js --project --exclude "test/**,docs/**"\n        ');
         process.exit(0);
         break;
     }
