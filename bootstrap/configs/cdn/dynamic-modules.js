@@ -20,10 +20,18 @@ class DynamicModulesConfig {
    * @throws Error if configuration is invalid
    */
   validate() {
-    if (this.serviceRegistry && typeof this.serviceRegistry !== 'object') {
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "object"
+// File: ../bootstrap/configs/cdn/dynamic-modules.js:23
+// Replaced with: strings.getMessage('object_1')
+    if (this.serviceRegistry && typeof this.serviceRegistry !== getMessage('object_1')) {
       throw new Error(strings.getError('serviceregistry_must_be_an_object'));
     }
-    if (this.namespace && typeof this.namespace !== 'object') {
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "object"
+// File: ../bootstrap/configs/cdn/dynamic-modules.js:26
+// Replaced with: strings.getMessage('object_2')
+    if (this.namespace && typeof this.namespace !== getMessage('object_2')) {
       throw new Error(strings.getError('namespace_must_be_an_object'));
     }
   }

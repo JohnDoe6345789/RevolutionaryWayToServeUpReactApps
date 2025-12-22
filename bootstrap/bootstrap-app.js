@@ -10,6 +10,9 @@ const ServiceRegistryConfig = require("./configs/services/service-registry.js");
 const ConfigJsonParser = require("./configs/config-json-parser.js");
 const factoryRegistry = require("./registries/factory-registry-instance.js");
 const { registerAllFactoryLoaders } = require("./registries/comprehensive-factory-loaders.js");
+const { getStringService } = require('../../string/string-service');
+const strings = getStringService();
+
 
 /**
  * Encapsulates the bootstrap entrypoint wiring needed for both CommonJS and browser runtimes.
@@ -34,15 +37,31 @@ class BootstrapApp extends BaseBootstrapApp {
     
     // Create service registries using factories
     this.serviceRegistry = this.config.serviceRegistry || 
-      factoryRegistry.create('serviceRegistry', new ServiceRegistryConfig());
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "serviceRegistry"
+// File: ../bootstrap/bootstrap-app.js:37
+// Replaced with: strings.getMessage('serviceregistry')
+      factoryRegistry.create(getMessage('serviceregistry'), new ServiceRegistryConfig());
     this.controllerRegistry = this.config.controllerRegistry || 
-      factoryRegistry.create('controllerRegistry');
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "controllerRegistry"
+// File: ../bootstrap/bootstrap-app.js:39
+// Replaced with: strings.getMessage('controllerregistry')
+      factoryRegistry.create(getMessage('controllerregistry'));
     
     // Create network services using factories
-    this.networkProviderService = factoryRegistry.create('networkProviderService', 
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "networkProviderService"
+// File: ../bootstrap/bootstrap-app.js:42
+// Replaced with: strings.getMessage('networkproviderservice')
+    this.networkProviderService = factoryRegistry.create(getMessage('networkproviderservice'), 
       this.config.networkProviderServiceConfig || 
       new NetworkProviderServiceConfig(this.configParser.createNetworkProviderConfig()));
-    this.networkProbeService = factoryRegistry.create('networkProbeService', 
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "networkProbeService"
+// File: ../bootstrap/bootstrap-app.js:45
+// Replaced with: strings.getMessage('networkprobeservice')
+    this.networkProbeService = factoryRegistry.create(getMessage('networkprobeservice'), 
       this.config.networkProbeServiceConfig || new NetworkProbeServiceConfig());
     
     // Create logging service directly to avoid circular dependency issues
@@ -66,7 +85,11 @@ class BootstrapApp extends BaseBootstrapApp {
         serializeForLog: this.loggingService.serializeForLog,
         serviceRegistry: this.serviceRegistry,
       });
-    this.loggingManager = factoryRegistry.create('loggingManager', loggingManagerConfig);
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "loggingManager"
+// File: ../bootstrap/bootstrap-app.js:69
+// Replaced with: strings.getConsole('loggingmanager')
+    this.loggingManager = factoryRegistry.create(getConsole('loggingmanager'), loggingManagerConfig);
     
     // Create Bootstrapper using factory with proper config
     const bootstrapperConfig = this.config.bootstrapperConfig || 
@@ -76,7 +99,11 @@ class BootstrapApp extends BaseBootstrapApp {
         moduleLoader: this.moduleLoader,
         controllerRegistry: this.controllerRegistry,
       });
-    this.bootstrapper = factoryRegistry.create('bootstrapper', bootstrapperConfig);
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "bootstrapper"
+// File: ../bootstrap/bootstrap-app.js:79
+// Replaced with: strings.getMessage('bootstrapper')
+    this.bootstrapper = factoryRegistry.create(getMessage('bootstrapper'), bootstrapperConfig);
     
     // Initialize services
     await this.loggingService.initialize();
@@ -101,7 +128,11 @@ class BootstrapApp extends BaseBootstrapApp {
       this.configParser = new ConfigJsonParser(configJson);
       
       // Re-create network provider service with config.json settings
-      this.networkProviderService = factoryRegistry.create('networkProviderService', 
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "networkProviderService"
+// File: ../bootstrap/bootstrap-app.js:104
+// Replaced with: strings.getMessage('networkproviderservice_1')
+      this.networkProviderService = factoryRegistry.create(getMessage('networkproviderservice_1'), 
         new NetworkProviderServiceConfig(this.configParser.createNetworkProviderConfig()));
       
       return configJson;
@@ -139,7 +170,11 @@ class BootstrapApp extends BaseBootstrapApp {
   }
 
   /**
-   * Attaches the logging hooks to browsers that support `window`.
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "window"
+// File: ../bootstrap/bootstrap-app.js:142
+// Replaced with: strings.getConsole('window')
+   * Attaches the logging hooks to browsers that support getConsole('window').
    */
   installLogging(windowObj) {
     if (!BootstrapApp.isBrowser(windowObj)) {

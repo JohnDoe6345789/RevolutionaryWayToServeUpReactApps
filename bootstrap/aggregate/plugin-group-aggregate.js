@@ -19,7 +19,15 @@ class PluginGroupAggregate extends BaseClass {
     super(data);
     this.pluginGroups = new Map();
     this.groupMetadata = new Map();
-    this.groupsPath = data.groupsPath || path.join(__dirname, '..', 'plugins', 'groups');
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "groups"
+// File: ../bootstrap/aggregate/plugin-group-aggregate.js:22
+// Replaced with: strings.getMessage('groups')
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "plugins"
+// File: ../bootstrap/aggregate/plugin-group-aggregate.js:22
+// Replaced with: strings.getMessage('plugins')
+    this.groupsPath = data.groupsPath || path.join(__dirname, '..', getMessage('plugins'), getMessage('groups'));
     this.enableValidation = data.enableValidation !== false;
     this.loadOrder = data.loadOrder || [];
   }
@@ -270,7 +278,11 @@ class PluginGroupAggregate extends BaseClass {
       
       // Save to file
       const filePath = path.join(this.groupsPath, `${groupData.name}.json`);
-      fs.writeFileSync(filePath, JSON.stringify(groupConfig, null, 2), 'utf8');
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "utf8"
+// File: ../bootstrap/aggregate/plugin-group-aggregate.js:273
+// Replaced with: strings.getMessage('utf8')
+      fs.writeFileSync(filePath, JSON.stringify(groupConfig, null, 2), getMessage('utf8'));
       
       // Add to memory
       this.pluginGroups.set(groupData.name, groupData);
@@ -349,7 +361,11 @@ class PluginGroupAggregate extends BaseClass {
       const metadata = this.groupMetadata.get(groupName);
       if (metadata && metadata.filePath) {
         const groupConfig = groupData.getGroupConfig();
-        fs.writeFileSync(metadata.filePath, JSON.stringify(groupConfig, null, 2), 'utf8');
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "utf8"
+// File: ../bootstrap/aggregate/plugin-group-aggregate.js:352
+// Replaced with: strings.getMessage('utf8_1')
+        fs.writeFileSync(metadata.filePath, JSON.stringify(groupConfig, null, 2), getMessage('utf8_1'));
       }
       
       // Update metadata

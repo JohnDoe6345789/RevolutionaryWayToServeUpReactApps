@@ -1,4 +1,7 @@
 const GlobalRootHandler = require("./constants/global-root-handler.js");
+const { getStringService } = require('../../string/string-service');
+const strings = getStringService();
+
 
 /**
  * Provides the shared bootstrap scaffolding that other entrypoints rely upon.

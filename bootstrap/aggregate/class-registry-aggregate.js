@@ -101,7 +101,11 @@ class ClassRegistryAggregate extends BaseClass {
     // Process constant references
     if (constants.constants) {
       for (const [key, value] of Object.entries(constants.constants)) {
-        if (typeof value === 'string' && value.startsWith('${function:')) {
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "string"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:104
+// Replaced with: strings.getMessage('string')
+        if (typeof value === getMessage('string') && value.startsWith('${function:')) {
           // Functions already processed above
           continue;
         }
@@ -110,7 +114,7 @@ class ClassRegistryAggregate extends BaseClass {
         this.replaceFunctionReferences(processed, `\${constants.${key}}`, value);
       }
     }
-    
+
     return processed;
   }
 
@@ -127,6 +131,44 @@ class ClassRegistryAggregate extends BaseClass {
       } else if (Array.isArray(val)) {
         return val.map(processValue);
       } else if (typeof val === 'object' && val !== null) {
+        const result = {};
+        for (const [k, v] of Object.entries(val)) {
+          result[k] = processValue(v);
+        }
+        return result;
+      }
+      return val;
+    };
+
+    return processValue(obj);
+  }
+      }
+    }
+    
+    return processed;
+  }
+
+  /**
+   * Replaces function references throughout an object
+   * @param {Object} obj - Object to process
+   * @param {string} reference - Reference to replace
+   * @param {*} value - Value to substitute
+   */
+  replaceFunctionReferences(obj, reference, value) {
+    const processValue = (val) => {
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "string"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:125
+// Replaced with: strings.getMessage('string_1')
+      if (typeof val === getMessage('string_1')) {
+        return val.replace(new RegExp(reference.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), value);
+      } else if (Array.isArray(val)) {
+        return val.map(processValue);
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "object"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:129
+// Replaced with: strings.getMessage('object')
+      } else if (typeof val === getMessage('object') && val !== null) {
         const result = {};
         for (const [k, v] of Object.entries(val)) {
           result[k] = processValue(v);
@@ -240,12 +282,48 @@ class ClassRegistryAggregate extends BaseClass {
     
     // Add nested aggregate methods to this instance
     const nestedMethods = [
-      'getAggregateInfo', 'getRootAggregates', 'getChildren', 'getAllDescendants',
-      'getAggregateTree', 'getAggregatesAtLevel', 'validateHierarchy', 'getHierarchyStats'
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "getAllDescendants"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:243
+// Replaced with: strings.getMessage('getalldescendants')
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "getChildren"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:243
+// Replaced with: strings.getMessage('getchildren')
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "getRootAggregates"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:243
+// Replaced with: strings.getMessage('getrootaggregates')
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "getAggregateInfo"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:243
+// Replaced with: strings.getMessage('getaggregateinfo')
+      getMessage('getaggregateinfo'), getMessage('getrootaggregates'), getMessage('getchildren'), getMessage('getalldescendants'),
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "getHierarchyStats"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:244
+// Replaced with: strings.getMessage('gethierarchystats')
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "validateHierarchy"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:244
+// Replaced with: strings.getMessage('validatehierarchy')
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "getAggregatesAtLevel"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:244
+// Replaced with: strings.getMessage('getaggregatesatlevel')
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "getAggregateTree"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:244
+// Replaced with: strings.getMessage('getaggregatetree')
+      getMessage('getaggregatetree'), getMessage('getaggregatesatlevel'), getMessage('validatehierarchy'), getMessage('gethierarchystats')
     ];
     
     for (const method of nestedMethods) {
-      if (typeof this.nestedAggregate[method] === 'function') {
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "function"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:248
+// Replaced with: strings.getMessage('function')
+      if (typeof this.nestedAggregate[method] === getMessage('function')) {
         this[method] = this.nestedAggregate[method].bind(this.nestedAggregate);
       }
     }
@@ -269,13 +347,53 @@ class ClassRegistryAggregate extends BaseClass {
     
     // Add plugin group methods to this instance
     const groupMethods = [
-      'getPluginGroupInfo', 'getAllPluginGroups', 'getPluginGroupsByCategory',
-      'getAllPlugins', 'getEnabledPlugins', 'hasPluginGroup', 'getGroupStatistics',
-      'getDependencyGraph', 'validateSystem'
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "getPluginGroupsByCategory"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:272
+// Replaced with: strings.getMessage('getplugingroupsbycategory')
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "getAllPluginGroups"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:272
+// Replaced with: strings.getMessage('getallplugingroups')
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "getPluginGroupInfo"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:272
+// Replaced with: strings.getMessage('getplugingroupinfo')
+      getMessage('getplugingroupinfo'), getMessage('getallplugingroups'), getMessage('getplugingroupsbycategory'),
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "getGroupStatistics"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:273
+// Replaced with: strings.getMessage('getgroupstatistics')
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "hasPluginGroup"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:273
+// Replaced with: strings.getMessage('hasplugingroup')
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "getEnabledPlugins"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:273
+// Replaced with: strings.getMessage('getenabledplugins')
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "getAllPlugins"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:273
+// Replaced with: strings.getMessage('getallplugins')
+      getMessage('getallplugins'), getMessage('getenabledplugins'), getMessage('hasplugingroup'), getMessage('getgroupstatistics'),
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "validateSystem"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:274
+// Replaced with: strings.getMessage('validatesystem')
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "getDependencyGraph"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:274
+// Replaced with: strings.getMessage('getdependencygraph')
+      getMessage('getdependencygraph'), getMessage('validatesystem')
     ];
     
     for (const method of groupMethods) {
-      if (typeof this.pluginGroupAggregate[method] === 'function') {
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "function"
+// File: ../bootstrap/aggregate/class-registry-aggregate.js:278
+// Replaced with: strings.getMessage('function_1')
+      if (typeof this.pluginGroupAggregate[method] === getMessage('function_1')) {
         this[method] = this.pluginGroupAggregate[method].bind(this.pluginGroupAggregate);
       }
     }

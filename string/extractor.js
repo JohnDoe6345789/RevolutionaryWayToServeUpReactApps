@@ -151,16 +151,18 @@ class StringExtractor {
         await this.processFile(file);
       }
       
-      // Verify modifications if not dry run
-      if (!this.options.dryRun && this.changesLog.length > 0) {
+      // Verify modifications if not dry run and verification is enabled
+      if (!this.options.dryRun && this.changesLog.length > 0 && !this.options.skipVerification) {
         const verifier = new StringExtractorVerifier(this);
         const verificationResults = await verifier.verify();
-        
+
         if (!verificationResults.isValid) {
           this.log('Verification failed - rolling back changes', 'error');
           await this.rollback();
           throw new Error('String extraction verification failed. See verification report for details.');
         }
+      } else if (this.options.skipVerification) {
+        this.log('Skipping verification as requested', 'info');
       }
       
       // Update string/strings.json if not dry run
@@ -1508,6 +1510,9 @@ async function main() {
   }
   if (args.includes('--deduplicate')) {
     options.deduplicate = true;
+  }
+  if (args.includes('--skip-verification')) {
+    options.skipVerification = true;
   }
 
   try {
