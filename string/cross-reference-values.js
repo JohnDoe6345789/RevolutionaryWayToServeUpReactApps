@@ -185,14 +185,11 @@ if (hardcodedStrings.length > 0) {
 if (trulyUnused.length > 0) {
   console.log('🗑️  TRULY UNUSED KEYS:');
   console.log(`These ${trulyUnused.length} keys can be safely removed from strings.json`);
-  console.log('(Showing first 20 as example)');
-  trulyUnused.slice(0, 20).forEach(key => {
+  console.log('');
+  trulyUnused.forEach(key => {
     const value = getKeyValue(key);
-    console.log(`  - "${key}": "${value}"`);
+    console.log(`"${key}"`);
   });
-  if (trulyUnused.length > 20) {
-    console.log(`  ... and ${trulyUnused.length - 20} more`);
-  }
   console.log('');
 }
 
