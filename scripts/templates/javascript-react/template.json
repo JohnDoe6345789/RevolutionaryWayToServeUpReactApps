@@ -1,0 +1,73 @@
+{
+  "name": "javascript-react",
+  "description": "React application with JavaScript",
+  "category": "web",
+  "languages": ["javascript"],
+  "framework": "react",
+  "packageManager": "npm",
+  "author": "Developer",
+  "license": "MIT",
+  "recommended": true,
+  "features": [
+    "React components",
+    "Hot module replacement",
+    "Modern JavaScript",
+    "Webpack configuration",
+    "Babel transpilation"
+  ],
+  "dependencies": [
+    "react",
+    "react-dom",
+    "webpack",
+    "webpack-cli",
+    "babel-loader",
+    "@babel/core",
+    "@babel/preset-react"
+  ],
+  "structure": {
+    "src": {
+      "type": "directory",
+      "description": "Source code directory"
+    },
+    "public": {
+      "type": "directory", 
+      "description": "Static assets directory"
+    },
+    "src/App.js": {
+      "type": "file",
+      "description": "Main React application component",
+      "template": "src/App.js.template"
+    },
+    "src/index.js": {
+      "type": "file",
+      "description": "Application entry point",
+      "template": "src/index.js.template"
+    },
+    "package.json": {
+      "type": "file",
+      "description": "Package configuration",
+      "template": "package.json.template"
+    },
+    "webpack.config.js": {
+      "type": "file",
+      "description": "Webpack configuration",
+      "template": "webpack.config.js.template"
+    },
+    ".gitignore": {
+      "type": "file",
+      "description": "Git ignore file",
+      "template": ".gitignore.template"
+    },
+    "README.md": {
+      "type": "file",
+      "description": "Project documentation",
+      "template": "README.md.template"
+    }
+  },
+  "commands": [
+    "npm install",
+    "npm start",
+    "npm run build",
+    "npm test"
+  ]
+}

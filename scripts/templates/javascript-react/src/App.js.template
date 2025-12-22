@@ -1,0 +1,21 @@
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+
+function App() {
+  return (
+    <div className="App">
+      <header className="App-header">
+        <h1>{{PROJECT_NAME}}</h1>
+        <p>{{DESCRIPTION}}</p>
+      </header>
+      <main>
+        <h2>Welcome to {{PROJECT_NAME}}</h2>
+        <p>This is a React application created with the DEV CLI.</p>
+        <p>Get started by editing the source files in the <code>src</code> directory.</p>
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.render(<App />, document.getElementById('root'));

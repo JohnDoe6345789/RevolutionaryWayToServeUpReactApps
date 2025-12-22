@@ -7,7 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const BaseLanguagePlugin = require('../../lib/base-language-plugin');
+const BaseLanguagePlugin = require('../../../lib/base-language-plugin');
 
 class PythonLanguagePlugin extends BaseLanguagePlugin {
   constructor() {
