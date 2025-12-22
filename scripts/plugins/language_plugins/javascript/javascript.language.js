@@ -430,6 +430,130 @@ class JavaScriptLanguagePlugin extends BaseLanguagePlugin {
   }
 
   /**
+   * Sets up cross-language support for JavaScript/TypeScript
+   * @param {Object} context - Target language context
+   * @returns {Promise<void>}
+   */
+  async setupCrossLanguageSupport(context) {
+    await super.setupCrossLanguageSupport(context);
+    
+    // JavaScript-specific cross-language setup
+    this.crossLanguageMappings = {
+      // Map from other languages to JavaScript equivalents
+      'python': {
+        'import': 'require',
+        'def': 'function',
+        'class': 'class',
+        'if __name__ == "__main__":': 'if (require.main === module)'
+      },
+      'java': {
+        'import': 'import',
+        'public class': 'class',
+        'public static void main': 'function main'
+      },
+      'go': {
+        'import': 'require',
+        'func': 'function',
+        'package': 'module.exports'
+      },
+      'ruby': {
+        'require': 'require',
+        'def': 'function',
+        'class': 'class',
+        'if __FILE__ == $0': 'if (require.main === module)'
+      }
+    };
+
+    this.log(`JavaScript cross-language mappings configured for ${context.language}`, 'info');
+  }
+
+  /**
+   * Performs JavaScript-specific context validation
+   * @param {Object} context - Context to validate
+   * @returns {Promise<boolean>} - True if validation passes
+   */
+  async performLanguageSpecificValidation(context) {
+    // Check for Node.js compatibility when targeting JavaScript
+    if (context.language === this.language) {
+      const tools = await this.validateTools();
+      if (!tools.valid) {
+        this.log(`JavaScript validation failed: missing tools ${tools.missing.join(', ')}`, 'warn');
+        return false;
+      }
+    }
+
+    // Check for TypeScript compatibility
+    if (context.languageConfig?.typescript) {
+      const fs = require('fs');
+      const path = require('path');
+      const tsConfigPath = path.join(context.projectPath || '.', 'tsconfig.json');
+      
+      if (!fs.existsSync(tsConfigPath)) {
+        this.log('TypeScript configuration requested but tsconfig.json not found', 'warn');
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Translates patterns from other languages to JavaScript
+   * @param {string} sourceLanguage - Source language code
+   * @param {string} pattern - Pattern to translate
+   * @returns {string} - Translated pattern
+   */
+  translatePattern(sourceLanguage, pattern) {
+    if (!this.crossLanguageMappings || !this.crossLanguageMappings[sourceLanguage]) {
+      return pattern;
+    }
+
+    const mappings = this.crossLanguageMappings[sourceLanguage];
+    return mappings[pattern] || pattern;
+  }
+
+  /**
+   * Gets JavaScript-specific build targets for cross-language projects
+   * @param {Object} context - Language context
+   * @returns {Promise<Array>} - Array of build targets
+   */
+  async getCrossLanguageBuildTargets(context) {
+    const targets = [];
+
+    switch (context.language) {
+      case 'python':
+        targets.push({
+          name: 'python-to-js',
+          description: 'Build JavaScript bundle from Python project',
+          command: 'npm run build:python'
+        });
+        break;
+      case 'java':
+        targets.push({
+          name: 'java-to-js',
+          description: 'Build JavaScript bundle from Java project',
+          command: 'npm run build:java'
+        });
+        break;
+      case 'go':
+        targets.push({
+          name: 'go-to-js',
+          description: 'Build JavaScript bundle from Go project',
+          command: 'npm run build:go'
+        });
+        break;
+      case 'ruby':
+        targets.push({
+          name: 'ruby-to-js',
+          description: 'Build JavaScript bundle from Ruby project',
+          command: 'npm run build:ruby'
+        });
+        break;
+    }
+
+    return targets;
+  }
+
+  /**
    * Default command behavior
    * @param {Object} context - Language context
    * @returns {Promise<Object>} - Results
@@ -452,7 +576,24 @@ class JavaScriptLanguagePlugin extends BaseLanguagePlugin {
       console.log(context.colors.red + `❌ Missing: ${tools.missing.join(', ')}` + context.colors.reset);
     }
 
-    return { detected, tools };
+    // Show language context information if available
+    const currentContext = this.getLanguageContext();
+    if (currentContext) {
+      console.log(context.colors.cyan + `🔗 Language Context: ${currentContext.language} (${currentContext.timestamp})` + context.colors.reset);
+      
+      // Show cross-language build targets if applicable
+      if (currentContext.language !== this.language) {
+        const crossTargets = await this.getCrossLanguageBuildTargets(currentContext);
+        if (crossTargets.length > 0) {
+          console.log(context.colors.yellow + '🌐 Cross-language build targets:' + context.colors.reset);
+          for (const target of crossTargets) {
+            console.log(context.colors.white + `  ${target.name.padEnd(20)} ${target.description}` + context.colors.reset);
+          }
+        }
+      }
+    }
+
+    return { detected, tools, languageContext: currentContext };
   }
 
   /**

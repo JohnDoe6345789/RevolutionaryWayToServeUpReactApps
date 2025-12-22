@@ -326,6 +326,129 @@ class BaseLanguagePlugin extends BasePlugin {
   }
 
   /**
+   * Sets language context for cross-language operations
+   * @param {Object} context - Language context to set
+   * @returns {Promise<void>}
+   */
+  async setLanguageContext(context) {
+    if (!context) {
+      throw new Error('Language context is required');
+    }
+
+    // Validate context structure
+    if (!context.language) {
+      throw new Error('Language context must specify a language');
+    }
+
+    // Store the context for future operations
+    this.currentLanguageContext = {
+      ...context,
+      timestamp: new Date().toISOString(),
+      pluginName: this.name
+    };
+
+    // Initialize language-specific services if needed
+    await this.initializeLanguageServices(this.currentLanguageContext);
+
+    // Log context change
+    this.log(`Language context set for ${context.language}`, 'info');
+  }
+
+  /**
+   * Gets the current language context
+   * @returns {Object|null} - Current language context or null if not set
+   */
+  getLanguageContext() {
+    return this.currentLanguageContext || null;
+  }
+
+  /**
+   * Initializes language-specific services based on context
+   * @param {Object} context - Language context
+   * @returns {Promise<void>}
+   */
+  async initializeLanguageServices(context) {
+    // Override in subclasses for language-specific initialization
+    // This method is called when setLanguageContext() is invoked
+    if (this.language === context.language) {
+      // Same language - no special initialization needed
+      return;
+    }
+
+    // Cross-language scenario - perform additional setup
+    await this.setupCrossLanguageSupport(context);
+  }
+
+  /**
+   * Sets up cross-language support
+   * @param {Object} context - Target language context
+   * @returns {Promise<void>}
+   */
+  async setupCrossLanguageSupport(context) {
+    // Override in subclasses to handle cross-language scenarios
+    // Examples: setting up translators, adapters, or bridges
+    this.log(`Setting up cross-language support for ${this.language} → ${context.language}`, 'info');
+  }
+
+  /**
+   * Validates language context compatibility
+   * @param {Object} context - Context to validate
+   * @returns {Promise<boolean>} - True if context is compatible
+   */
+  async validateLanguageContext(context) {
+    if (!context || !context.language) {
+      return false;
+    }
+
+    // Check if language is supported
+    if (!this.fileExtensions || this.fileExtensions.length === 0) {
+      this.log(`No file extensions defined for language ${this.language}`, 'warn');
+      return false;
+    }
+
+    // Additional validation can be added by subclasses
+    return await this.performLanguageSpecificValidation(context);
+  }
+
+  /**
+   * Performs language-specific context validation
+   * @param {Object} context - Context to validate
+   * @returns {Promise<boolean>} - True if validation passes
+   */
+  async performLanguageSpecificValidation(context) {
+    // Override in subclasses for language-specific validation logic
+    return true;
+  }
+
+  /**
+   * Resets language context
+   * @returns {Promise<void>}
+   */
+  async resetLanguageContext() {
+    this.currentLanguageContext = null;
+    this.log('Language context reset', 'info');
+  }
+
+  /**
+   * Gets language context metadata
+   * @returns {Object} - Context metadata
+   */
+  getLanguageContextMetadata() {
+    return {
+      hasContext: !!this.currentLanguageContext,
+      contextTimestamp: this.currentLanguageContext?.timestamp,
+      contextLanguage: this.currentLanguageContext?.language,
+      pluginName: this.name,
+      supportedLanguages: [this.language],
+      capabilities: {
+        crossLanguageSupport: true,
+        contextValidation: true,
+        contextReset: true
+      }
+    };
+  }
+
+  /**
    * Main execution method - delegates to language-specific handlers
    * @param {Object} context - Execution context
    * @returns {Promise<Object>} - Execution results
