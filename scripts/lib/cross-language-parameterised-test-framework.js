@@ -1,18 +1,17 @@
 #!/usr/bin/env node
 
 /**
- * Cross-Language Parameterised Test Framework
- * Provides unified testing infrastructure for plugins across JavaScript, Java, Python, and C++
+ * Generic Parameterised Test Framework
+ * Provides unified testing infrastructure for plugins across any language context
  */
 
 const fs = require('fs');
 const path = require('path');
-const { execSync, spawn } = require('child_process');
-const LanguageRegistry = require('./language-registry');
+const LanguageContextRegistry = require('./language-context-registry');
 
-class CrossLanguageParameterisedTestFramework {
+class GenericParameterisedTestFramework {
   constructor() {
-    this.languageRegistry = new LanguageRegistry();
+    this.contextRegistry = new LanguageContextRegistry();
     this.testMatrix = {
       plugins: [
         'interface-coverage',
@@ -28,7 +27,7 @@ class CrossLanguageParameterisedTestFramework {
         'api-stubs',
         'coverage-report'
       ],
-      languages: ['javascript', 'java', 'python', 'cpp'],
+      languages: this.contextRegistry.getAvailableLanguages(),
       scenarios: [
         'basic-execution',
         'dependency-resolution',
@@ -43,32 +42,77 @@ class CrossLanguageParameterisedTestFramework {
     };
     
     this.testResults = new Map();
-    this.executionAdapters = new Map();
+    this.executionEngine = new GenericExecutionEngine(this.contextRegistry);
     this.testData = new Map();
     
-    this.initializeAdapters();
     this.initializeTestData();
   }
 
+
   /**
-   * Initialize language-specific execution adapters
+   * Initialize test data for all scenarios using language-aware generators
    */
-  initializeAdapters() {
-    this.executionAdapters.set('javascript', new JavaScriptExecutionAdapter());
-    this.executionAdapters.set('java', new JavaExecutionAdapter());
-    this.executionAdapters.set('python', new PythonExecutionAdapter());
-    this.executionAdapters.set('cpp', new CppExecutionAdapter());
+  initializeTestData() {
+    // Basic execution test data (language-agnostic)
+    this.testData.set('basic-execution', {
+      getTestData: (language) => this.generateBasicExecutionTestData(language)
+    });
+
+    // Dependency resolution test data (language-agnostic)
+    this.testData.set('dependency-resolution', {
+      getTestData: (language) => this.generateDependencyResolutionTestData(language)
+    });
+
+    // Error handling test data (language-agnostic)
+    this.testData.set('error-handling', {
+      getTestData: (language) => this.generateErrorHandlingTestData(language)
+    });
+
+    // Context validation test data (language-agnostic)
+    this.testData.set('context-validation', {
+      getTestData: (language) => this.generateContextValidationTestData(language)
+    });
+
+    // Command parsing test data (language-agnostic)
+    this.testData.set('command-parsing', {
+      getTestData: (language) => this.generateCommandParsingTestData(language)
+    });
+
+    // Metadata validation test data (language-agnostic)
+    this.testData.set('metadata-validation', {
+      getTestData: (language) => this.generateMetadataValidationTestData(language)
+    });
+
+    // Language detection test data (language-specific)
+    this.testData.set('language-detection', {
+      getTestData: (language) => this.generateLanguageDetectionTestData(language)
+    });
+
+    // File parsing test data (language-specific)
+    this.testData.set('file-parsing', {
+      getTestData: (language) => this.generateFileParsingTestData(language)
+    });
+
+    // Result generation test data (language-agnostic)
+    this.testData.set('result-generation', {
+      getTestData: (language) => this.generateResultGenerationTestData(language)
+    });
   }
 
   /**
-   * Initialize test data for all scenarios
+   * Generate basic execution test data for a language
    */
-  initializeTestData() {
-    // Basic execution test data
-    this.testData.set('basic-execution', {
+  generateBasicExecutionTestData(language) {
+    const testDataGenerator = this.contextRegistry.createTestDataGenerator(language);
+    
+    return {
       validContext: {
         bootstrapPath: process.cwd(),
-        options: {},
+        options: {
+          language: language,
+          'language-context': this.contextRegistry.getContext(language),
+          'test-scenario': 'basic-execution'
+        },
         colors: { reset: '', cyan: '', yellow: '', green: '', red: '' }
       },
       invalidContext: {
@@ -76,122 +120,236 @@ class CrossLanguageParameterisedTestFramework {
         options: null,
         colors: null
       },
+      mockProject: testDataGenerator ? testDataGenerator.generateMockProjectStructure() : null,
+      mockFiles: testDataGenerator ? [
+        testDataGenerator.generateMockFilePath('source'),
+        testDataGenerator.generateMockFilePath('test')
+      ] : [],
       expectedSuccess: ['interface-coverage', 'doc-coverage', 'dependency-analyzer'],
       expectedError: []
-    });
+    };
+  }
 
-    // Dependency resolution test data
-    this.testData.set('dependency-resolution', {
+  /**
+   * Generate dependency resolution test data for a language
+   */
+  generateDependencyResolutionTestData(language) {
+    const testDataGenerator = this.contextRegistry.createTestDataGenerator(language);
+    
+    return {
       validDependencies: [],
       missingDependencies: ['non-existent-plugin'],
       circularDependencies: [],
-      expectedBehavior: 'validate-dependencies'
-    });
+      expectedBehavior: 'validate-dependencies',
+      mockDependencies: testDataGenerator ? [
+        testDataGenerator.generateValidClassName(),
+        testDataGenerator.generateValidClassName()
+      ] : [],
+      mockProject: testDataGenerator ? testDataGenerator.generateMockProjectStructure() : null
+    };
+  }
 
-    // Error handling test data
-    this.testData.set('error-handling', {
+  /**
+   * Generate error handling test data for a language
+   */
+  generateErrorHandlingTestData(language) {
+    const testDataGenerator = this.contextRegistry.createTestDataGenerator(language);
+    
+    return {
       nullContext: null,
       undefinedContext: undefined,
-      emptyContext: {},
-      malformedOptions: { invalid: 'data' },
-      expectedGracefulFailure: true
-    });
-
-    // Context validation test data
-    this.testData.set('context-validation', {
-      validContext: {
+      emptyContext: {
         bootstrapPath: process.cwd(),
-        options: { 'project-root': process.cwd() },
+        options: { language: language },
         colors: { reset: '', cyan: '', yellow: '', green: '', red: '' }
       },
-      invalidPath: { bootstrapPath: '/non/existent/path' },
-      missingOptions: { bootstrapPath: process.cwd() },
-      expectedValidation: true
-    });
+      malformedOptions: { 
+        invalid: 'data',
+        language: language 
+      },
+      expectedGracefulFailure: true,
+      mockInvalidData: testDataGenerator ? testDataGenerator.generateInvalidClassName() : null
+    };
+  }
 
-    // Command parsing test data
-    this.testData.set('command-parsing', {
+  /**
+   * Generate context validation test data for a language
+   */
+  generateContextValidationTestData(language) {
+    const testDataGenerator = this.contextRegistry.createTestDataGenerator(language);
+    
+    return {
+      validContext: {
+        bootstrapPath: process.cwd(),
+        options: { 
+          'project-root': process.cwd(),
+          language: language,
+          'language-context': this.contextRegistry.getContext(language),
+          'validate-context': true
+        },
+        colors: { reset: '', cyan: '', yellow: '', green: '', red: '' }
+      },
+      invalidPath: { 
+        bootstrapPath: '/non/existent/path',
+        language: language 
+      },
+      missingOptions: { 
+        bootstrapPath: process.cwd(),
+        language: language 
+      },
+      expectedValidation: true,
+      mockValidPath: testDataGenerator ? testDataGenerator.generateMockFilePath('source') : null
+    };
+  }
+
+  /**
+   * Generate command parsing test data for a language
+   */
+  generateCommandParsingTestData(language) {
+    const testDataGenerator = this.contextRegistry.createTestDataGenerator(language);
+    
+    return {
       validCommands: [
-        { name: 'test-command', description: 'Test description' }
+        { 
+          name: 'test-command', 
+          description: 'Test description',
+          language: language 
+        }
       ],
       invalidCommands: [
-        { name: '', description: '' },
-        { name: null, description: null }
+        { name: '', description: '', language: language },
+        { name: null, description: null, language: language }
       ],
-      expectedParsing: true
-    });
+      expectedParsing: true,
+      mockCommandName: testDataGenerator ? testDataGenerator.generateValidMethodName() : null
+    };
+  }
 
-    // Metadata validation test data
-    this.testData.set('metadata-validation', {
+  /**
+   * Generate metadata validation test data for a language
+   */
+  generateMetadataValidationTestData(language) {
+    const testDataGenerator = this.contextRegistry.createTestDataGenerator(language);
+    
+    return {
       validMetadata: {
         name: 'test-plugin',
         version: '1.0.0',
         description: 'Test plugin',
         author: 'Test Author',
-        category: 'test'
+        category: 'test',
+        language: language
       },
       invalidMetadata: [
-        { name: '', version: '1.0.0' },
-        { name: 'test', version: 'invalid' },
-        { name: 'test', version: '1.0.0', description: '' }
+        { name: '', version: '1.0.0', language: language },
+        { name: 'test', version: 'invalid', language: language },
+        { name: 'test', version: '1.0.0', description: '', language: language }
       ],
-      expectedValidation: true
-    });
+      expectedValidation: true,
+      mockValidName: testDataGenerator ? testDataGenerator.generateValidClassName() : null
+    };
+  }
 
-    // Language detection test data
-    this.testData.set('language-detection', {
-      javascriptProject: {
-        files: ['package.json', 'app.js', 'index.html'],
-        expectedLanguage: 'javascript'
-      },
-      javaProject: {
-        files: ['pom.xml', 'src/main/java/App.java'],
-        expectedLanguage: 'java'
-      },
-      pythonProject: {
-        files: ['requirements.txt', 'app.py', 'setup.py'],
-        expectedLanguage: 'python'
-      },
-      cppProject: {
-        files: ['CMakeLists.txt', 'main.cpp', 'header.h'],
-        expectedLanguage: 'cpp'
+  /**
+   * Generate language detection test data for a language
+   */
+  generateLanguageDetectionTestData(language) {
+    const languageContext = this.contextRegistry.getContext(language);
+    
+    return {
+      language: language,
+      expectedLanguage: language,
+      context: languageContext,
+      projectFiles: languageContext ? languageContext.projectStructure : {},
+      analysisConfig: languageContext ? languageContext.analysis : {},
+      mockProject: {
+        files: this.generateLanguageSpecificFiles(language),
+        expectedLanguage: language
       }
-    });
+    };
+  }
 
-    // File parsing test data
-    this.testData.set('file-parsing', {
-      javascriptFile: {
-        content: 'const test = () => {}; module.exports = test;',
-        expectedStructure: { functions: 1, exports: 1 }
+  /**
+   * Generate file parsing test data for a language
+   */
+  generateFileParsingTestData(language) {
+    const languageContext = this.contextRegistry.getContext(language);
+    const testDataGenerator = this.contextRegistry.createTestDataGenerator(language);
+    
+    return {
+      language: language,
+      context: languageContext,
+      mockFile: {
+        content: this.generateLanguageSpecificCode(language),
+        expectedStructure: this.getExpectedStructureForLanguage(language)
       },
-      javaFile: {
-        content: 'public class Test { public void method() {} }',
-        expectedStructure: { classes: 1, methods: 1 }
-      },
-      pythonFile: {
-        content: 'def test_function(): pass\nclass TestClass: pass',
-        expectedStructure: { functions: 1, classes: 1 }
-      },
-      cppFile: {
-        content: 'void test_function() {} class TestClass {};',
-        expectedStructure: { functions: 1, classes: 1 }
-      }
-    });
+      mockFileName: testDataGenerator ? testDataGenerator.generateMockFilePath('source') : null,
+      analyzer: languageContext ? this.contextRegistry.createAnalyzer(language) : null
+    };
+  }
 
-    // Result generation test data
-    this.testData.set('result-generation', {
+  /**
+   * Generate result generation test data for a language
+   */
+  generateResultGenerationTestData(language) {
+    const languageContext = this.contextRegistry.getContext(language);
+    
+    return {
+      language: language,
+      context: languageContext,
       successResult: {
         success: true,
-        data: { test: 'data' },
-        message: 'Operation completed successfully'
+        data: { test: 'data', language: language },
+        message: 'Operation completed successfully',
+        language: language
       },
       errorResult: {
         success: false,
         error: 'Test error message',
-        message: 'Operation failed'
+        message: 'Operation failed',
+        language: language
       },
       expectedFormat: 'structured-result'
-    });
+    };
+  }
+
+  /**
+   * Generate language-specific file list for detection tests
+   */
+  generateLanguageSpecificFiles(language) {
+    const fileMaps = {
+      javascript: ['package.json', 'app.js', 'index.html'],
+      java: ['pom.xml', 'src/main/java/App.java'],
+      python: ['requirements.txt', 'app.py', 'setup.py'],
+      cpp: ['CMakeLists.txt', 'main.cpp', 'header.h']
+    };
+    return fileMaps[language] || fileMaps.javascript;
+  }
+
+  /**
+   * Generate language-specific code for parsing tests
+   */
+  generateLanguageSpecificCode(language) {
+    const codeMaps = {
+      javascript: 'const test = () => {}; module.exports = test;',
+      java: 'public class Test { public void method() {} }',
+      python: 'def test_function(): pass\nclass TestClass: pass',
+      cpp: 'void test_function() {} class TestClass {};'
+    };
+    return codeMaps[language] || codeMaps.javascript;
+  }
+
+  /**
+   * Get expected structure for language parsing tests
+   */
+  getExpectedStructureForLanguage(language) {
+    const structureMaps = {
+      javascript: { functions: 1, exports: 1 },
+      java: { classes: 1, methods: 1 },
+      python: { functions: 1, classes: 1 },
+      cpp: { functions: 1, classes: 1 }
+    };
+    return structureMaps[language] || structureMaps.javascript;
   }
 
   /**
@@ -219,8 +377,7 @@ class CrossLanguageParameterisedTestFramework {
 
     const startTime = Date.now();
 
-    // Initialize language registry
-    await this.languageRegistry.discoverLanguages();
+    // Language contexts are already initialized in constructor
 
     // Execute test matrix
     for (const pluginName of this.testMatrix.plugins) {
@@ -285,7 +442,7 @@ class CrossLanguageParameterisedTestFramework {
 
   /**
    * Execute a single test case
-   * @param {string} pluginName - Name of the plugin to test
+   * @param {string} pluginName - Name of plugin to test
    * @param {string} language - Target language for execution
    * @param {string} scenario - Test scenario to execute
    * @returns {Promise<Object>} - Test result
@@ -294,20 +451,14 @@ class CrossLanguageParameterisedTestFramework {
     const startTime = Date.now();
     
     try {
-      // Get execution adapter for the language
-      const adapter = this.executionAdapters.get(language);
-      if (!adapter) {
-        throw new Error(`No execution adapter found for language: ${language}`);
-      }
-
-      // Get test data for the scenario
+      // Get test data for scenario
       const testData = this.testData.get(scenario);
       if (!testData) {
         throw new Error(`No test data found for scenario: ${scenario}`);
       }
 
-      // Execute the test
-      const result = await adapter.executePluginTest(pluginName, scenario, testData);
+      // Execute the test using generic execution engine
+      const result = await this.executionEngine.executePluginTest(pluginName, language, scenario, testData);
       
       return {
         status: result.success ? 'passed' : 'failed',
@@ -442,10 +593,23 @@ class CrossLanguageParameterisedTestFramework {
 }
 
 /**
- * JavaScript Execution Adapter
+ * Generic Execution Engine
+ * Handles plugin execution across all language contexts using a unified approach
  */
-class JavaScriptExecutionAdapter {
-  async executePluginTest(pluginName, scenario, testData) {
+class GenericExecutionEngine {
+  constructor(contextRegistry) {
+    this.contextRegistry = contextRegistry;
+  }
+
+  /**
+   * Execute a plugin test with language context
+   * @param {string} pluginName - Name of the plugin
+   * @param {string} language - Target language context
+   * @param {string} scenario - Test scenario
+   * @param {Object} testData - Test data for the scenario
+   * @returns {Promise<Object>} - Test result
+   */
+  async executePluginTest(pluginName, language, scenario, testData) {
     try {
       // Load the plugin
       const pluginPath = path.join(process.cwd(), 'scripts', 'plugins', `${pluginName}.plugin.js`);
@@ -454,21 +618,30 @@ class JavaScriptExecutionAdapter {
         throw new Error(`Plugin not found: ${pluginPath}`);
       }
 
+      // Clear require cache to ensure fresh plugin loading
+      delete require.cache[require.resolve(pluginPath)];
       const PluginClass = require(pluginPath);
       const plugin = new PluginClass();
 
-      // Create test context based on scenario
-      const context = this.createTestContext(scenario, testData);
+      // Get language context
+      const languageContext = this.contextRegistry.getContext(language);
+      if (!languageContext) {
+        throw new Error(`Language context not found: ${language}`);
+      }
 
-      // Execute plugin
-      const result = await plugin.execute(context);
+      // Create context-aware test environment
+      const testContext = this.createContextualTestEnvironment(scenario, testData, languageContext, language);
+
+      // Execute plugin with language context
+      const result = await this.executeWithContext(plugin, testContext, languageContext, language, scenario);
 
       return {
         success: true,
         result: result,
         plugin: pluginName,
-        language: 'javascript',
-        scenario: scenario
+        language: language,
+        scenario: scenario,
+        context: languageContext.displayName
       };
 
     } catch (error) {
@@ -476,141 +649,134 @@ class JavaScriptExecutionAdapter {
         success: false,
         error: error.message,
         plugin: pluginName,
-        language: 'javascript',
-        scenario: scenario
+        language: language,
+        scenario: scenario,
+        context: this.contextRegistry.getContext(language)?.displayName || language
       };
     }
   }
 
-  createTestContext(scenario, testData) {
+  /**
+   * Create context-aware test environment
+   * @param {string} scenario - Test scenario
+   * @param {Object} testData - Test data
+   * @param {Object} languageContext - Language context
+   * @param {string} language - Language name
+   * @returns {Object} - Contextual test environment
+   */
+  createContextualTestEnvironment(scenario, testData, languageContext, language) {
     const baseContext = {
       bootstrapPath: process.cwd(),
       options: {},
-      colors: { reset: '', cyan: '', yellow: '', green: '', red: '' }
+      colors: { reset: '', cyan: '', yellow: '', green: '', red: '' },
+      languageContext: languageContext,
+      language: language
     };
 
+    // Create test data generator for this language
+    const testDataGenerator = this.contextRegistry.createTestDataGenerator(language);
+
+    // Get language-specific test data if available
+    const languageSpecificTestData = typeof testData.getTestData === 'function' 
+      ? testData.getTestData(language) 
+      : testData;
+
+    // Merge scenario-specific test data with language context
+    const contextualData = {
+      ...languageSpecificTestData,
+      languageContext: languageContext,
+      language: language,
+      testDataGenerator: testDataGenerator
+    };
+
+    // Build scenario-specific context
+    let scenarioContext = {
+      ...baseContext,
+      ...contextualData,
+      options: {
+        ...baseContext.options,
+        language: language,
+        'language-context': languageContext
+      }
+    };
+
+    // Add scenario-specific options
     switch (scenario) {
       case 'basic-execution':
-        return testData.validContext || baseContext;
+        scenarioContext.options['test-scenario'] = 'basic-execution';
+        break;
       
       case 'error-handling':
-        return testData.nullContext || baseContext;
+        scenarioContext.options['force-error'] = true;
+        scenarioContext.options['test-scenario'] = 'error-handling';
+        break;
       
       case 'context-validation':
-        return testData.validContext || baseContext;
+        scenarioContext.options['validate-context'] = true;
+        scenarioContext.options['test-scenario'] = 'context-validation';
+        break;
+      
+      case 'language-detection':
+        scenarioContext.options['test-detection'] = true;
+        scenarioContext.options['test-scenario'] = 'language-detection';
+        break;
+      
+      case 'file-parsing':
+        scenarioContext.options['test-parsing'] = true;
+        scenarioContext.options['test-scenario'] = 'file-parsing';
+        break;
+      
+      case 'command-parsing':
+        scenarioContext.options['test-scenario'] = 'command-parsing';
+        break;
+      
+      case 'metadata-validation':
+        scenarioContext.options['test-scenario'] = 'metadata-validation';
+        break;
+      
+      case 'dependency-resolution':
+        scenarioContext.options['test-scenario'] = 'dependency-resolution';
+        break;
+      
+      case 'result-generation':
+        scenarioContext.options['test-scenario'] = 'result-generation';
+        break;
       
       default:
-        return baseContext;
+        scenarioContext.options['test-scenario'] = scenario;
+        break;
     }
+
+    return scenarioContext;
+  }
+
+  /**
+   * Execute plugin with language context
+   * @param {Object} plugin - Plugin instance
+   * @param {Object} context - Test context
+   * @param {Object} languageContext - Language context
+   * @param {string} language - Language name
+   * @param {string} scenario - Test scenario
+   * @returns {Promise<Object>} - Plugin execution result
+   */
+  async executeWithContext(plugin, context, languageContext, language, scenario) {
+    // Check if plugin supports language contexts
+    if (typeof plugin.setLanguageContext === 'function') {
+      plugin.setLanguageContext(languageContext);
+    }
+
+    // Execute the plugin
+    const result = await plugin.execute(context);
+
+    // Enhance result with language-specific information
+    if (result && typeof result === 'object') {
+      result.language = language;
+      result.languageContext = languageContext.displayName;
+      result.scenario = scenario;
+    }
+
+    return result;
   }
 }
 
-/**
- * Java Execution Adapter
- */
-class JavaExecutionAdapter {
-  async executePluginTest(pluginName, scenario, testData) {
-    try {
-      // For now, simulate Java execution
-      // In a real implementation, this would use GraalVM or process spawning
-      console.log(`    🔄 Simulating Java execution for ${pluginName}`);
-      
-      // Simulate test execution time
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      // Simulate test result
-      const success = Math.random() > 0.2; // 80% success rate for simulation
-
-      return {
-        success: success,
-        result: success ? { message: 'Java execution simulated successfully' } : null,
-        plugin: pluginName,
-        language: 'java',
-        scenario: scenario
-      };
-
-    } catch (error) {
-      return {
-        success: false,
-        error: error.message,
-        plugin: pluginName,
-        language: 'java',
-        scenario: scenario
-      };
-    }
-  }
-}
-
-/**
- * Python Execution Adapter
- */
-class PythonExecutionAdapter {
-  async executePluginTest(pluginName, scenario, testData) {
-    try {
-      // For now, simulate Python execution
-      // In a real implementation, this would use Pyodide or process spawning
-      console.log(`    🔄 Simulating Python execution for ${pluginName}`);
-      
-      // Simulate test execution time
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      // Simulate test result
-      const success = Math.random() > 0.2; // 80% success rate for simulation
-
-      return {
-        success: success,
-        result: success ? { message: 'Python execution simulated successfully' } : null,
-        plugin: pluginName,
-        language: 'python',
-        scenario: scenario
-      };
-
-    } catch (error) {
-      return {
-        success: false,
-        error: error.message,
-        plugin: pluginName,
-        language: 'python',
-        scenario: scenario
-      };
-    }
-  }
-}
-
-/**
- * C++ Execution Adapter
- */
-class CppExecutionAdapter {
-  async executePluginTest(pluginName, scenario, testData) {
-    try {
-      // For now, simulate C++ execution
-      // In a real implementation, this would use Node-API or process spawning
-      console.log(`    🔄 Simulating C++ execution for ${pluginName}`);
-      
-      // Simulate test execution time
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      // Simulate test result
-      const success = Math.random() > 0.2; // 80% success rate for simulation
-
-      return {
-        success: success,
-        result: success ? { message: 'C++ execution simulated successfully' } : null,
-        plugin: pluginName,
-        language: 'cpp',
-        scenario: scenario
-      };
-
-    } catch (error) {
-      return {
-        success: false,
-        error: error.message,
-        plugin: pluginName,
-        language: 'cpp',
-        scenario: scenario
-      };
-    }
-  }
-}
-
-module.exports = CrossLanguageParameterisedTestFramework;
+module.exports = GenericParameterisedTestFramework;

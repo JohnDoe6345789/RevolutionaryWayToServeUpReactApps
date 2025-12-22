@@ -15,6 +15,7 @@ class BasePlugin {
     this.file = metadata.file || 'unknown';
     this.loaded = false;
     this.context = null;
+    this.languageContext = null;
   }
 
   /**
@@ -110,6 +111,290 @@ class BasePlugin {
     
     const colors = this.context.colors;
     return `${color}${text}${colors.reset}`;
+  }
+
+  /**
+   * Sets the language context for the plugin
+   * @param {Object} languageContext - Language context configuration
+   */
+  setLanguageContext(languageContext) {
+    this.languageContext = languageContext;
+  }
+
+  /**
+   * Gets the current language context
+   * @returns {Object|null} - Current language context or null
+   */
+  getLanguageContext() {
+    return this.languageContext || (this.context ? this.context.languageContext : null);
+  }
+
+  /**
+   * Creates a language-aware analyzer for the current context
+   * @returns {Object|null} - Language-aware analyzer or null
+   */
+  createAnalyzer() {
+    const context = this.getLanguageContext();
+    if (!context) {
+      this.log('No language context available', 'warn');
+      return null;
+    }
+
+    // Create analyzer with common methods that plugins can use
+    return {
+      context: context,
+      
+      /**
+       * Validate class name according to language rules
+       */
+      validateClassName(name) {
+        return context.validation.classNameRegex.test(name);
+      },
+
+      /**
+       * Validate method name according to language rules
+       */
+      validateMethodName(name) {
+        return context.validation.methodNameRegex.test(name);
+      },
+
+      /**
+       * Validate file name according to language rules
+       */
+      validateFileName(name) {
+        return context.validation.fileNameRegex.test(name.replace(/\.[^/.]+$/, ''));
+      },
+
+      /**
+       * Check if file should be ignored
+       */
+      shouldIgnoreFile(filePath) {
+        return context.analysis.ignorePatterns.some(pattern => 
+          filePath.includes(pattern)
+        );
+      },
+
+      /**
+       * Get expected file extensions for this language
+       */
+      getFileExtensions() {
+        return context.fileExtensions;
+      },
+
+      /**
+       * Get source directories for this language
+       */
+      getSourceDirectories() {
+        return context.projectStructure.source;
+      },
+
+      /**
+       * Get test directories for this language
+       */
+      getTestDirectories() {
+        return context.projectStructure.test;
+      },
+
+      /**
+       * Extract patterns from content using language-specific regex
+       */
+      extractPatterns(content) {
+        const patterns = context.patterns;
+        const result = {};
+
+        // Extract classes
+        if (patterns.classDeclaration) {
+          const classes = [];
+          let match;
+          const regex = new RegExp(patterns.classDeclaration);
+          while ((match = regex.exec(content)) !== null) {
+            classes.push(match[1]);
+          }
+          result.classes = classes;
+        }
+
+        // Extract methods
+        if (patterns.methodDeclaration) {
+          const methods = [];
+          let match;
+          const regex = new RegExp(patterns.methodDeclaration);
+          while ((match = regex.exec(content)) !== null) {
+            methods.push(match[1]);
+          }
+          result.methods = methods;
+        }
+
+        // Extract imports
+        if (patterns.importStatement) {
+          const imports = [];
+          let match;
+          const regex = new RegExp(patterns.importStatement);
+          while ((match = regex.exec(content)) !== null) {
+            imports.push({
+              name: match[1],
+              path: this.extractImportPath(content, match.index)
+            });
+          }
+          result.imports = imports;
+        }
+
+        // Extract exports
+        if (patterns.exportStatement) {
+          const exports = [];
+          let match;
+          const regex = new RegExp(patterns.exportStatement);
+          while ((match = regex.exec(content)) !== null) {
+            exports.push({
+              name: match[1] || match[2],
+              line: content.substring(0, match.index).split('\n').length
+            });
+          }
+          result.exports = exports;
+        }
+
+        return result;
+      },
+
+      /**
+       * Extract import path from content
+       */
+      extractImportPath(content, index) {
+        const requireMatch = content.substring(index).match(/require\s*\(['"]([^'"]+)['"]\)/);
+        return requireMatch ? requireMatch[1] : null;
+      }
+    };
+  }
+
+  /**
+   * Creates language-aware test data generator
+   * @returns {Object|null} - Test data generator or null
+   */
+  createTestDataGenerator() {
+    const context = this.getLanguageContext();
+    if (!context) {
+      this.log('No language context available for test data generation', 'warn');
+      return null;
+    }
+
+    return {
+      context,
+      
+      /**
+       * Generate valid class name for this language
+       */
+      generateValidClassName() {
+        const names = {
+          'PascalCase': ['TestClass', 'UserService', 'DataProcessor', 'ApiClient'],
+          'camelCase': ['testClass', 'userService', 'dataProcessor', 'apiClient'],
+          'snake_case': ['test_class', 'user_service', 'data_processor', 'api_client']
+        };
+        const namingStyle = context.naming.classCase;
+        const nameList = names[namingStyle] || names['PascalCase'];
+        return nameList[Math.floor(Math.random() * nameList.length)];
+      },
+
+      /**
+       * Generate valid method name for this language
+       */
+      generateValidMethodName() {
+        const names = {
+          'camelCase': ['processData', 'getUser', 'calculateResult', 'validateInput'],
+          'snake_case': ['process_data', 'get_user', 'calculate_result', 'validate_input']
+        };
+        const namingStyle = context.naming.methodCase;
+        const nameList = names[namingStyle] || names['camelCase'];
+        return nameList[Math.floor(Math.random() * nameList.length)];
+      },
+
+      /**
+       * Generate invalid class name
+       */
+      generateInvalidClassName() {
+        const invalidNames = ['invalid@Name', '123Name', 'name-with-dash', ''];
+        return invalidNames[Math.floor(Math.random() * invalidNames.length)];
+      },
+
+      /**
+       * Generate mock file path for this language
+       */
+      generateMockFilePath(type = 'source') {
+        const directories = type === 'test' ? context.projectStructure.test : context.projectStructure.source;
+        const dir = directories[Math.floor(Math.random() * directories.length)];
+        const className = this.generateValidClassName();
+        const fileName = context.naming.fileCase === 'PascalCase' 
+          ? `${className}.js` 
+          : `${className.toLowerCase().replace(/([A-Z])/g, '_$1').substring(1)}.js`;
+        return `${dir}/${fileName}`;
+      }
+    };
+  }
+
+  /**
+   * Applies language-specific rules to analysis results
+   * @param {Object} results - Analysis results
+   * @returns {Object} - Results with language-specific enhancements
+   */
+  applyLanguageRules(results) {
+    const context = this.getLanguageContext();
+    if (!context) {
+      return results;
+    }
+
+    // Apply validation rules
+    if (results.classes) {
+      results.classValidation = results.classes.map(className => ({
+        name: className,
+        valid: this.validateClassName(className),
+        issues: this.validateClassName(className) ? [] : ['Invalid class name for language']
+      }));
+    }
+
+    if (results.methods) {
+      results.methodValidation = results.methods.map(methodName => ({
+        name: methodName,
+        valid: this.validateMethodName(methodName),
+        issues: this.validateMethodName(methodName) ? [] : ['Invalid method name for language']
+      }));
+    }
+
+    // Apply language-specific insights
+    results.languageInsights = {
+      naming: context.naming,
+      displayName: context.displayName,
+      validation: context.validation
+    };
+
+    return results;
+  }
+
+  /**
+   * Validates a class name using current language context
+   * @param {string} name - Class name to validate
+   * @returns {boolean} - True if valid for current language
+   */
+  validateClassName(name) {
+    const analyzer = this.createAnalyzer();
+    return analyzer ? analyzer.validateClassName(name) : true; // Fallback to true if no analyzer
+  }
+
+  /**
+   * Validates a method name using current language context
+   * @param {string} name - Method name to validate
+   * @returns {boolean} - True if valid for current language
+   */
+  validateMethodName(name) {
+    const analyzer = this.createAnalyzer();
+    return analyzer ? analyzer.validateMethodName(name) : true; // Fallback to true if no analyzer
+  }
+
+  /**
+   * Validates a file name using current language context
+   * @param {string} name - File name to validate
+   * @returns {boolean} - True if valid for current language
+   */
+  validateFileName(name) {
+    const analyzer = this.createAnalyzer();
+    return analyzer ? analyzer.validateFileName(name) : true; // Fallback to true if no analyzer
   }
 }
 
