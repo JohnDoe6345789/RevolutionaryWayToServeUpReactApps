@@ -777,15 +777,20 @@ class StringExtractor {
     fs.mkdirSync(this.backupDir, { recursive: true });
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2), 'utf8');
     
-    // Display summary
-    console.log('\n📊 Extraction Summary:');
-    console.log(`  Total strings extracted: ${report.summary.totalStrings}`);
-    console.log(`  Files modified: ${report.summary.filesModified}`);
-    console.log('  By category:');
-    for (const [category, count] of Object.entries(report.summary.categories)) {
-      console.log(`    ${category}: ${count}`);
-    }
-    console.log(`\n📄 Detailed report saved to: ${reportPath}`);
+    // Display summary as JSON
+    const summaryLog = {
+      timestamp: new Date().toISOString(),
+      component: 'StringExtractor',
+      level: 'info',
+      event: 'extraction_summary',
+      data: {
+        totalStrings: report.summary.totalStrings,
+        filesModified: report.summary.filesModified,
+        categories: report.summary.categories,
+        reportPath: reportPath
+      }
+    };
+    console.log(JSON.stringify(summaryLog));
   }
 
   /**
@@ -812,23 +817,15 @@ class StringExtractor {
    */
   log(message, level = 'info') {
     if (!this.options.verbose && level === 'info') return;
-    
-    const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
-    const prefix = `[${timestamp}] [StringExtractor]`;
-    
-    switch (level) {
-      case 'error':
-        console.error(`\x1b[31m${prefix} ✗ ${message}\x1b[0m`);
-        break;
-      case 'warn':
-        console.warn(`\x1b[33m${prefix} ⚠ ${message}\x1b[0m`);
-        break;
-      case 'success':
-        console.log(`\x1b[32m${prefix} ✓ ${message}\x1b[0m`);
-        break;
-      default:
-        console.log(`${prefix} ${message}`);
-    }
+
+    const logEntry = {
+      timestamp: new Date().toISOString(),
+      component: 'StringExtractor',
+      level: level,
+      message: message
+    };
+
+    console.log(JSON.stringify(logEntry));
   }
 }
 
@@ -851,7 +848,14 @@ class StringExtractorVerifier {
    * Run comprehensive verification
    */
   async verify() {
-    console.log('🔍 Starting verification process...');
+    const startLog = {
+      timestamp: new Date().toISOString(),
+      component: 'StringExtractorVerifier',
+      level: 'info',
+      event: 'verification_start',
+      message: 'Starting verification process'
+    };
+    console.log(JSON.stringify(startLog));
 
     try {
       await this.verifyBackups();
@@ -861,12 +865,30 @@ class StringExtractorVerifier {
       // Determine overall validity
       this.verificationResults.isValid = this.verificationResults.failed.length === 0;
 
-      console.log(`✅ Verification completed: ${this.verificationResults.passed.length} passed, ${this.verificationResults.failed.length} failed, ${this.verificationResults.warnings.length} warnings`);
+      const completionLog = {
+        timestamp: new Date().toISOString(),
+        component: 'StringExtractorVerifier',
+        level: 'info',
+        event: 'verification_complete',
+        data: {
+          passed: this.verificationResults.passed.length,
+          failed: this.verificationResults.failed.length,
+          warnings: this.verificationResults.warnings.length
+        }
+      };
+      console.log(JSON.stringify(completionLog));
 
       return this.verificationResults;
 
     } catch (error) {
-      console.error('❌ Verification failed:', error.message);
+      const errorLog = {
+        timestamp: new Date().toISOString(),
+        component: 'StringExtractorVerifier',
+        level: 'error',
+        event: 'verification_failed',
+        message: error.message
+      };
+      console.log(JSON.stringify(errorLog));
       this.verificationResults.isValid = false;
       return this.verificationResults;
     }
@@ -1096,20 +1118,27 @@ class StringExtractorVerifier {
  * @returns {Promise<Object>} Detailed analysis results
  */
 async function analyzeStrings(options = {}) {
-  console.log('🔍 Starting Passive String Analysis (Read-Only Mode)\n');
-  
+  const startLog = {
+    timestamp: new Date().toISOString(),
+    component: 'analyzeStrings',
+    level: 'info',
+    event: 'analysis_start',
+    mode: 'READ_ONLY_ANALYSIS'
+  };
+  console.log(JSON.stringify(startLog));
+
   const analysisOptions = {
     ...options,
     dryRun: true,
     verbose: options.verbose || false,
     maxFiles: options.maxFiles || 50
   };
-  
+
   const extractor = new StringExtractor(analysisOptions);
-  
+
   try {
     await extractor.extract();
-    
+
     const analysis = {
       timestamp: new Date().toISOString(),
       mode: 'READ_ONLY_ANALYSIS',
@@ -1132,21 +1161,21 @@ async function analyzeStrings(options = {}) {
       recommendations: [],
       warnings: []
     };
-    
+
     // Categorize extracted strings and assess impact
     for (const [key, info] of Object.entries(extractor.extractedStrings)) {
       if (!analysis.summary.categories[info.category]) {
         analysis.summary.categories[info.category] = 0;
       }
       analysis.summary.categories[info.category]++;
-      
+
       // Assess impact based on category and usage
       let impact = 'low';
       if (info.category === 'errors') impact = 'high';
       else if (info.category === 'messages' || info.category === 'console') impact = 'medium';
-      
+
       analysis.summary.impact[`${impact}Impact`]++;
-      
+
       analysis.details[key] = {
         content: info.content,
         category: info.category,
@@ -1155,22 +1184,38 @@ async function analyzeStrings(options = {}) {
         recommendations: generateRecommendations(info)
       };
     }
-    
+
     // Generate overall recommendations
     analysis.recommendations = generateOverallRecommendations(analysis);
-    
+
     // Add safety warnings
     if (extractor.changesLog.length >= analysisOptions.maxFiles) {
       analysis.warnings.push(`⚠️  File limit reached (${analysisOptions.maxFiles}). Consider increasing limit or using more specific patterns.`);
     }
-    
-    console.log('✅ Analysis Complete - No Files Modified\n');
-    console.log(`📊 Analysis Summary: ${analysis.summary.totalStrings} strings found in ${analysis.summary.filesAnalyzed} files`);
-    
+
+    const completionLog = {
+      timestamp: new Date().toISOString(),
+      component: 'analyzeStrings',
+      level: 'info',
+      event: 'analysis_complete',
+      data: {
+        totalStrings: analysis.summary.totalStrings,
+        filesAnalyzed: analysis.summary.filesAnalyzed
+      }
+    };
+    console.log(JSON.stringify(completionLog));
+
     return analysis;
-    
+
   } catch (error) {
-    console.error('❌ Analysis failed:', error.message);
+    const errorLog = {
+      timestamp: new Date().toISOString(),
+      component: 'analyzeStrings',
+      level: 'error',
+      event: 'analysis_failed',
+      message: error.message
+    };
+    console.log(JSON.stringify(errorLog));
     throw error;
   }
 }
@@ -1181,20 +1226,27 @@ async function analyzeStrings(options = {}) {
  * @returns {Promise<Object>} Detailed preview with proposed changes
  */
 async function previewExtraction(options = {}) {
-  console.log('👁️  Starting Extraction Preview (Dry Run Mode)\n');
-  
+  const startLog = {
+    timestamp: new Date().toISOString(),
+    component: 'previewExtraction',
+    level: 'info',
+    event: 'preview_start',
+    mode: 'DRY_RUN'
+  };
+  console.log(JSON.stringify(startLog));
+
   const previewOptions = {
     ...options,
     dryRun: true,
     verbose: true,
     maxFiles: options.maxFiles || 50
   };
-  
+
   const extractor = new StringExtractor(previewOptions);
-  
+
   try {
     await extractor.extract();
-    
+
     const preview = {
       timestamp: new Date().toISOString(),
       mode: 'PREVIEW_CHANGES',
@@ -1213,19 +1265,19 @@ async function previewExtraction(options = {}) {
       risks: [],
       benefits: []
     };
-    
+
     // Calculate proposed changes
     for (const [key, info] of extractor.extractedStrings) {
       for (const source of info.sources) {
         const [filePath, lineNumber] = source.split(':');
-        
+
         if (!preview.proposedChanges[filePath]) {
           preview.proposedChanges[filePath] = {
             modifications: [],
             complexity: 'low'
           };
         }
-        
+
         preview.proposedChanges[filePath].modifications.push({
           line: parseInt(lineNumber),
           original: info.content,
@@ -1235,22 +1287,38 @@ async function previewExtraction(options = {}) {
         });
       }
     }
-    
+
     // Calculate impact metrics
     preview.impact.linesAdded = Object.values(preview.proposedChanges)
       .reduce((total, file) => total + file.modifications.length * 2, 0); // 2 lines per change (comment + code)
-    
+
     // Generate risks and benefits
     preview.risks = generateExtractionRisks(preview);
     preview.benefits = generateExtractionBenefits(preview);
-    
-    console.log('👁️  Preview Complete - No Files Modified\n');
-    console.log(`📊 Proposed Changes: ${preview.impact.filesModified} files, ${preview.impact.stringsExtracted} strings`);
-    
+
+    const completionLog = {
+      timestamp: new Date().toISOString(),
+      component: 'previewExtraction',
+      level: 'info',
+      event: 'preview_complete',
+      data: {
+        filesModified: preview.impact.filesModified,
+        stringsExtracted: preview.impact.stringsExtracted
+      }
+    };
+    console.log(JSON.stringify(completionLog));
+
     return preview;
-    
+
   } catch (error) {
-    console.error('❌ Preview failed:', error.message);
+    const errorLog = {
+      timestamp: new Date().toISOString(),
+      component: 'previewExtraction',
+      level: 'error',
+      event: 'preview_failed',
+      message: error.message
+    };
+    console.log(JSON.stringify(errorLog));
     throw error;
   }
 }
@@ -1261,24 +1329,31 @@ async function previewExtraction(options = {}) {
  * @returns {Promise<Object>} Extraction results with comprehensive logging
  */
 async function extractStrings(options = {}) {
-  console.log('🔧 Starting String Extraction with Full Verification\n');
-  
+  const startLog = {
+    timestamp: new Date().toISOString(),
+    component: 'extractStrings',
+    level: 'info',
+    event: 'extraction_start',
+    mode: 'FULL_EXTRACTION'
+  };
+  console.log(JSON.stringify(startLog));
+
   const extractionOptions = {
     ...options,
     dryRun: false,
     verbose: true,
     maxFiles: options.maxFiles || 50
   };
-  
+
   const extractor = new StringExtractor(extractionOptions);
-  
+
   try {
     await extractor.extract();
-    
+
     // Run verification
     const verifier = new StringExtractorVerifier(extractor);
     const verificationResults = await verifier.verify();
-    
+
     const results = {
       timestamp: new Date().toISOString(),
       mode: 'FULL_EXTRACTION',
@@ -1296,16 +1371,34 @@ async function extractStrings(options = {}) {
       success: verificationResults.isValid,
       nextSteps: []
     };
-    
+
     // Generate next steps
     results.nextSteps = generateNextSteps(results);
-    
-    console.log(`🔧 Extraction Complete - Status: ${results.success ? '✅ SUCCESS' : '❌ FAILED'}\n`);
-    
+
+    const completionLog = {
+      timestamp: new Date().toISOString(),
+      component: 'extractStrings',
+      level: 'info',
+      event: 'extraction_complete',
+      data: {
+        success: results.success,
+        filesModified: results.extraction.filesModified,
+        totalStrings: results.extraction.totalStrings
+      }
+    };
+    console.log(JSON.stringify(completionLog));
+
     return results;
-    
+
   } catch (error) {
-    console.error('❌ Extraction failed:', error.message);
+    const errorLog = {
+      timestamp: new Date().toISOString(),
+      component: 'extractStrings',
+      level: 'error',
+      event: 'extraction_failed',
+      message: error.message
+    };
+    console.log(JSON.stringify(errorLog));
     await extractor.rollback();
     throw error;
   }
@@ -1317,10 +1410,16 @@ async function extractStrings(options = {}) {
  * @returns {Promise<Object>} Comprehensive AI analysis report
  */
 async function getAnalysisReport(options = {}) {
-  console.log('📊 Generating AI-Friendly Analysis Report\n');
-  
+  const startLog = {
+    timestamp: new Date().toISOString(),
+    component: 'getAnalysisReport',
+    level: 'info',
+    event: 'report_generation_start'
+  };
+  console.log(JSON.stringify(startLog));
+
   const analysis = await analyzeStrings(options);
-  
+
   const report = {
     executiveSummary: {
       totalStrings: analysis.summary.totalStrings,
@@ -1345,8 +1444,19 @@ async function getAnalysisReport(options = {}) {
       processingMode: analysis.mode
     }
   };
-  
-  console.log('📊 AI Analysis Report Generated\n');
+
+  const completionLog = {
+    timestamp: new Date().toISOString(),
+    component: 'getAnalysisReport',
+    level: 'info',
+    event: 'report_generation_complete',
+    data: {
+      totalStrings: analysis.summary.totalStrings,
+      filesAnalyzed: analysis.summary.filesAnalyzed
+    }
+  };
+  console.log(JSON.stringify(completionLog));
+
   return report;
 }
 
@@ -1504,26 +1614,86 @@ async function main() {
 
   try {
     if (options.deduplicate) {
-      console.log('Running deduplication mode...');
+      const dedupeStartLog = {
+        timestamp: new Date().toISOString(),
+        component: 'main',
+        level: 'info',
+        event: 'deduplication_start'
+      };
+      console.log(JSON.stringify(dedupeStartLog));
+
       const extractor = new StringExtractor({ dryRun: true });
       extractor.loadCodegenData();
       const deduplicatedData = extractor.deduplicateStrings();
-      console.log(JSON.stringify(deduplicatedData, null, 2));
-      console.log('Deduplication completed successfully');
+
+      const dedupeDataLog = {
+        timestamp: new Date().toISOString(),
+        component: 'main',
+        level: 'info',
+        event: 'deduplication_data_output',
+        data: deduplicatedData
+      };
+      console.log(JSON.stringify(dedupeDataLog));
+
+      const dedupeCompleteLog = {
+        timestamp: new Date().toISOString(),
+        component: 'main',
+        level: 'info',
+        event: 'deduplication_complete'
+      };
+      console.log(JSON.stringify(dedupeCompleteLog));
+
       return deduplicatedData;
     } else if (options.dryRun) {
-      console.log('Running in dry-run mode...');
+      const dryRunStartLog = {
+        timestamp: new Date().toISOString(),
+        component: 'main',
+        level: 'info',
+        event: 'dry_run_start'
+      };
+      console.log(JSON.stringify(dryRunStartLog));
+
       const result = await previewExtraction(options);
-      console.log('Dry run completed successfully');
+
+      const dryRunCompleteLog = {
+        timestamp: new Date().toISOString(),
+        component: 'main',
+        level: 'info',
+        event: 'dry_run_complete'
+      };
+      console.log(JSON.stringify(dryRunCompleteLog));
+
       return result;
     } else {
-      console.log('Running full extraction...');
+      const extractionStartLog = {
+        timestamp: new Date().toISOString(),
+        component: 'main',
+        level: 'info',
+        event: 'extraction_start'
+      };
+      console.log(JSON.stringify(extractionStartLog));
+
       const result = await extractStrings(options);
-      console.log('Extraction completed successfully');
+
+      const extractionCompleteLog = {
+        timestamp: new Date().toISOString(),
+        component: 'main',
+        level: 'info',
+        event: 'extraction_complete'
+      };
+      console.log(JSON.stringify(extractionCompleteLog));
+
       return result;
     }
   } catch (error) {
-    console.error('Error:', error.message);
+    const errorLog = {
+      timestamp: new Date().toISOString(),
+      component: 'main',
+      level: 'error',
+      event: 'execution_failed',
+      message: error.message
+    };
+    console.log(JSON.stringify(errorLog));
     process.exit(1);
   }
 }
