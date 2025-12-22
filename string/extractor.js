@@ -4,13 +4,13 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 /**
- * String Extractor - Memory-Based JSON Output
+ * String Extractor - JSON Output with Todo List
  *
- * Extracts strings from source files, stores results in memory, and returns as JSON.
- * No file modifications or rollback functionality.
+ * Extracts strings from source files and outputs JSON with a todoList array
+ * containing tasks to add new strings and fix phantom references.
  *
  * @author String Extractor
- * @version 3.0.0 - Memory Only
+ * @version 3.0.0 - JSON with Todo Array
  */
 
 class StringExtractor {
@@ -171,7 +171,7 @@ class StringExtractor {
   }
 
   /**
-   * Main extraction method - stores results in memory and returns as JSON
+   * Main extraction method - returns JSON results with todo list included
    */
   async extract() {
     this.results.timestamp = new Date().toISOString();
@@ -222,15 +222,59 @@ class StringExtractor {
         }
       }
 
-      this.results.success = true;
+      // Success is false if any files with issues (new strings or phantom references) were found
+      this.results.success = filteredFiles.length === 0;
+
+      // Build simple todo list array
+      const todoList = [];
+
+      const filesWithNewStrings = Array.from(this.filesWithNewStrings);
+      const filesWithPhantomRefs = Array.from(this.filesWithPhantomReferences);
+
+      // Add new string tasks
+      for (const filePath of filesWithNewStrings) {
+        // Find strings from this file
+        for (const [key, info] of this.extractedStrings) {
+          const sourcesFromFile = info.sources.filter(source => source.startsWith(filePath + ':'));
+          if (sourcesFromFile.length > 0) {
+            todoList.push({
+              type: 'add_string',
+              file: filePath,
+              content: info.content,
+              key: key,
+              category: info.category,
+              sources: sourcesFromFile
+            });
+          }
+        }
+      }
+
+      // Add phantom reference tasks
+      for (const filePath of filesWithPhantomRefs) {
+        // Find phantom references for this file
+        const phantomRefs = this.findPhantomReferencesInFile(filePath);
+        for (const phantom of phantomRefs) {
+          todoList.push({
+            type: 'fix_phantom_reference',
+            file: filePath,
+            method: phantom.method,
+            key: phantom.key,
+            line: phantom.line
+          });
+        }
+      }
+
+      // Add todo list to the results
+      this.results.todoList = todoList;
+
+      return this.results;
 
     } catch (error) {
       this.results.success = false;
       this.results.error = error.message;
-      throw error;
+      this.results.todoList = []; // Empty array for errors
+      return this.results;
     }
-
-    return this.results;
   }
 
   /**
@@ -526,6 +570,19 @@ class StringExtractor {
     }
 
     return phantomReferences;
+  }
+
+  /**
+   * Find phantom references in a specific file (used for todo list generation)
+   */
+  findPhantomReferencesInFile(filePath) {
+    try {
+      const content = fs.readFileSync(path.resolve(process.cwd(), filePath), 'utf8');
+      return this.findPhantomReferences(content, path.resolve(process.cwd(), filePath));
+    } catch (error) {
+      this.log(`Error reading file ${filePath} for phantom references: ${error.message}`, 'error');
+      return [];
+    }
   }
 
   /**

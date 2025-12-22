@@ -1,5 +1,5 @@
 // run_extractor.js
-const { extractStrings } = require('./string/extractor.js');
+const { extractStrings } = require('./extractor.js');
 
 async function run() {
   try {
