@@ -1,7 +1,10 @@
 const BaseClass = require('../base/base-class.js');
 const AggregateData = require('../data/aggregate-data.js');
+const { getStringService } = require('../../string/string-service.js');
 const fs = require('fs');
 const path = require('path');
+
+const strings = getStringService();
 
 /**
  * NestedAggregate - Handles hierarchical class loading and management
@@ -62,7 +65,7 @@ class NestedAggregate extends BaseClass {
       
       return aggregates;
     } catch (error) {
-      throw new Error(`Failed to load aggregate hierarchy: ${error.message}`);
+      throw new Error(strings.getError('failed_to_load_aggregate_hierarchy_error_message', { error }));
     }
   }
 
@@ -126,7 +129,7 @@ class NestedAggregate extends BaseClass {
         try {
           // Check nesting level limit
           if (aggregate.nestingLevel > this.maxNestingLevel) {
-            throw new Error(`Nesting level ${aggregate.nestingLevel} exceeds maximum ${this.maxNestingLevel}`);
+            throw new Error(strings.getError('nesting_level_aggregate_nestinglevel_exceeds_maxim', { aggregate, maxNestingLevel: this.maxNestingLevel }));
           }
           
           // Dynamically require the factory
@@ -141,7 +144,7 @@ class NestedAggregate extends BaseClass {
           await factory.initialize();
           return await factory.create(config);
         } catch (error) {
-          throw new Error(`Failed to create ${aggregate.name}: ${error.message}`);
+          throw new Error(strings.getError('failed_to_create_aggregate_name_error_message', { aggregate, error }));
         }
       };
     }
@@ -251,7 +254,7 @@ class NestedAggregate extends BaseClass {
     
     const checkCircular = (aggregateName) => {
       if (recursionStack.has(aggregateName)) {
-        issues.push(`Circular reference detected: ${aggregateName}`);
+        issues.push(strings.getMessage('circular_reference_detected_aggregatename', { aggregateName }));
         return;
       }
       
@@ -289,7 +292,7 @@ class NestedAggregate extends BaseClass {
     
     for (const [name] of this.aggregateMap) {
       if (!allReferenced.has(name) && !this.aggregateMap.get(name).isRoot()) {
-        issues.push(`Orphaned aggregate detected: ${name}`);
+        issues.push(strings.getMessage('orphaned_aggregate_detected_name', { name }));
       }
     }
     
