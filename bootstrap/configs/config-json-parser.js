@@ -53,10 +53,10 @@ class ConfigJsonParser {
    */
   createNetworkProviderConfig() {
     const { providers, fallbackProviders } = this.configJson;
-    
+
     return {
-      defaultProvider: providers?.default || 'https://unpkg.com',
-      fallbackProviders: fallbackProviders || ['https://cdn.skypack.dev/', 'https://jspm.dev/'],
+      defaultProvider: providers?.default || strings.getMessage('https_unpkg_com_1'),
+      fallbackProviders: fallbackProviders || [strings.getMessage('https_cdn_skypack_dev_1'), strings.getMessage('https_jspm_dev_1')],
       providerAliases: providers?.aliases || {},
       enableCaching: true,
       cacheTimeout: 3600000, // 1 hour
@@ -121,13 +121,13 @@ class ConfigJsonParser {
    */
   createServerConfig() {
     const { server = {} } = this.configJson;
-    
+
     return {
-      host: server.host || '0.0.0.0',
+      host: server.host || strings.getMessage('0_0_0_0'),
       port: server.port || 4173,
-      logFile: server.logFile || 'server.log',
-      jsonLimit: server.jsonLimit || '1mb',
-      cacheControl: server.cacheControl || 'no-store, no-cache, must-revalidate',
+      logFile: server.logFile || strings.getMessage('server_log'),
+      jsonLimit: server.jsonLimit || strings.getMessage('1mb'),
+      cacheControl: server.cacheControl || strings.getLabel('no_store_no_cache_must_revalidate'),
       paths: server.paths || {},
       logTruncateLength: server.logTruncateLength || 4000,
     };
@@ -138,13 +138,13 @@ class ConfigJsonParser {
    */
   createRenderConfig() {
     const { render = {} } = this.configJson;
-    
+
     return {
-      rootId: render.rootId || 'root',
-      domModule: render.domModule || 'react-dom/client',
-      reactModule: render.reactModule || 'react',
-      createRoot: render.createRoot || 'createRoot',
-      renderMethod: render.renderMethod || 'render',
+      rootId: render.rootId || strings.getMessage('root'),
+      domModule: render.domModule || strings.getMessage('react_dom_client'),
+      reactModule: render.reactModule || strings.getMessage('react'),
+      createRoot: render.createRoot || strings.getMessage('createroot'),
+      renderMethod: render.renderMethod || strings.getMessage('render'),
     };
   }
 

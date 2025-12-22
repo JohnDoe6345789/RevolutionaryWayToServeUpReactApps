@@ -1,6 +1,10 @@
-const GlobalRootHandler = require("../constants/global-root-handler.js");
-const BaseController = require("../interfaces/base-controller.js");
-const BootstrapperConfig = require("../configs/core/bootstrapper.js");
+const { getStringService } = require('../../string/string-service.js');
+
+const strings = getStringService();
+
+const GlobalRootHandler = require('../constants/global-root-handler.js');
+const BaseController = require('../interfaces/base-controller.js');
+const BootstrapperConfig = require('../configs/core/bootstrapper.js');
 
 const rootHandler = new GlobalRootHandler();
 const hasDocument = rootHandler.hasDocument();
@@ -38,9 +42,9 @@ class Bootstrapper extends BaseController {
     this._markInitialized();
 
     // Register this controller in the registry after initialization
-    this.register("bootstrapper", {
-      folder: "controllers",
-      domain: "core",
+    this.register(strings.getMessage('bootstrapper'), {
+      folder: strings.getMessage('controllers'),
+      domain: strings.getMessage('core'),
     }, []);
   }
 
@@ -62,8 +66,8 @@ class Bootstrapper extends BaseController {
     this._ensureInitialized();
     const config = await this.loadConfig();
     this._configureProviders(config);
-    const entryFile = config.entry || "main.tsx";
-    const scssFile = config.styles || "styles.scss";
+    const entryFile = config.entry || strings.getMessage('main_tsx');
+    const scssFile = config.styles || strings.getMessage('styles_scss');
 
     await this._prepareAssets(scssFile, config.tools);
     const { registry, entryDir, requireFn } = await this._prepareModules(
@@ -111,7 +115,7 @@ class Bootstrapper extends BaseController {
   ) {
     const App = await this.moduleLoader.compileTSX(entryFile, requireFn, entryDir);
     this.moduleLoader.frameworkRender(config, registry, App);
-    this.logClient("bootstrap:success", { entryFile, scssFile });
+    this.logClient(strings.getMessage('bootstrap_success'), { entryFile, scssFile });
   }
 
   /**
@@ -188,12 +192,12 @@ class Bootstrapper extends BaseController {
    */
   async _fetchConfig() {
     if (!this.fetchImpl) {
-      throw new Error("Fetch is unavailable when loading config.json");
+      throw new Error(strings.getError('fetch_is_unavailable_when_loading_config_json'));
     }
-    const url = this.config.configUrl ?? "config.json";
-    const response = await this.fetchImpl(url, { cache: "no-store" });
+    const url = this.config.configUrl ?? strings.getMessage('config_json');
+    const response = await this.fetchImpl(url, { cache: strings.getLabel('no_store') });
     if (!response.ok) {
-      throw new Error("Failed to load config.json");
+      throw new Error(strings.getError('failed_to_load_config_json'));
     }
     return response.json();
   }
@@ -204,7 +208,7 @@ class Bootstrapper extends BaseController {
   _enableCiLogging(config) {
     this.setCiLoggingEnabled(this.detectCiLogging(config));
     if (this.isCiLoggingEnabled()) {
-      this.logClient("ci:enabled", {
+      this.logClient(strings.getConsole('ci_enabled'), {
         config: !!config,
         href: this._windowHref(),
       });
@@ -225,10 +229,10 @@ class Bootstrapper extends BaseController {
    * Performs the internal determine entry dir step for Bootstrapper.
    */
   _determineEntryDir(entryFile) {
-    if (!entryFile.includes("/")) {
+    if (!entryFile.includes(strings.getMessage('string_1b'))) {
       return "";
     }
-    return entryFile.slice(0, entryFile.lastIndexOf("/"));
+    return entryFile.slice(0, entryFile.lastIndexOf(strings.getMessage('string_1b')));
   }
 
   /**
@@ -236,7 +240,7 @@ class Bootstrapper extends BaseController {
    */
   _handleBootstrapError(err) {
     console.error(err);
-    this.logClient("bootstrap:error", {
+    this.logClient(strings.getError('bootstrap_error'), {
       message: err && err.message ? err.message : String(err),
       stack: err && err.stack ? err.stack : undefined,
     });
@@ -250,7 +254,7 @@ class Bootstrapper extends BaseController {
     if (!hasDocument) {
       return;
     }
-    const root = document.getElementById("root");
+    const root = document.getElementById(strings.getMessage('root'));
     if (!root) {
       return;
     }

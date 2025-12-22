@@ -1,9 +1,13 @@
+const { getStringService } = require('../../../string/string-service.js');
+
+const strings = getStringService();
+
 /**
  * Configuration class for BootstrapApp
  */
 class BootstrapAppConfig {
   constructor({
-    logEndpoint = '/__client-log',
+    logEndpoint = strings.getConsole('client_log'),
     enableConsole = true,
     serviceRegistry,
     controllerRegistry,
