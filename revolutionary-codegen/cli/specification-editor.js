@@ -369,15 +369,16 @@ class SpecificationEditor extends BaseCodegen {
    * @returns {void}
    */
   displayWelcome() {
-    console.log('\n🚀 REVOLUTIONARY SPECIFICATION EDITOR 🚀');
-    console.log('=====================================\n');
-    
+    const strings = this.strings;
+    console.log(strings.getConsole('revolutionary_specification_editor_welcome'));
+    console.log(strings.getConsole('specification_editor_separator'));
+
     if (this.currentPath) {
       console.log(`📂 Current file: ${this.currentPath}`);
     } else {
-      console.log('📄 Working on new specification');
+      console.log(strings.getConsole('working_on_new_specification'));
     }
-    
+
     console.log(`📋 Project: ${this.specification.project.name}`);
     console.log(`📦 Version: ${this.specification.project.version}\n`);
   }
@@ -387,18 +388,19 @@ class SpecificationEditor extends BaseCodegen {
    * @returns {void}
    */
   displayMainMenu() {
-    console.log('\n📋 MAIN MENU:');
-    console.log('  help        - Show available commands');
-    console.log('  status      - Display current specification status');
-    console.log('  tree        - Display specification tree view');
-    console.log('  edit <path> - Edit specification section');
-    console.log('  validate    - Validate current specification');
-    console.log('  template <name> - Apply a template');
-    console.log('  save [file] - Save specification');
-    console.log('  export [file] - Export specification');
-    console.log('  import <file> - Import specification');
-    console.log('  new         - Create new specification');
-    console.log('  quit/exit  - Exit editor');
+    const strings = this.strings;
+    console.log(strings.getConsole('main_menu'));
+    console.log(strings.getConsole('help_command'));
+    console.log(strings.getConsole('status_command'));
+    console.log(strings.getConsole('tree_command'));
+    console.log(strings.getConsole('edit_command'));
+    console.log(strings.getConsole('validate_command'));
+    console.log(strings.getConsole('template_command'));
+    console.log(strings.getConsole('save_command'));
+    console.log(strings.getConsole('export_command'));
+    console.log(strings.getConsole('import_command'));
+    console.log(strings.getConsole('new_command'));
+    console.log(strings.getConsole('quit_command'));
   }
 
   /**
