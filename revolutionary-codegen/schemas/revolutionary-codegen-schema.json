@@ -8,6 +8,22 @@
       "type": "object",
       "description": "Meta-system configuration for self-generating the codegen system",
       "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier (auto-generated UUID if not provided)",
+          "default": "${function:generateId}"
+        },
+        "searchTags": {
+          "type": "array",
+          "description": "Tags for search ranking boosts",
+          "items": { "type": "string" },
+          "default": []
+        },
+        "searchBoost": {
+          "type": "number",
+          "description": "Search priority boost multiplier",
+          "default": 1.0
+        },
         "name": {
           "type": "string",
           "description": "Name of the meta-codegen system",
@@ -90,6 +106,22 @@
       "items": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier (auto-generated UUID if not provided)",
+            "default": "${function:generateId}"
+          },
+          "searchTags": {
+            "type": "array",
+            "description": "Tags for search ranking boosts",
+            "items": { "type": "string" },
+            "default": []
+          },
+          "searchBoost": {
+            "type": "number",
+            "description": "Search priority boost multiplier",
+            "default": 1.0
+          },
           "name": {
             "type": "string",
             "description": "Unique name of the language provider",
@@ -199,6 +231,22 @@
           "type": "object",
           "description": "Multi-language code generator configuration",
           "properties": {
+            "id": {
+              "type": "string",
+              "description": "Unique identifier (auto-generated UUID if not provided)",
+              "default": "${function:generateId}"
+            },
+            "searchTags": {
+              "type": "array",
+              "description": "Tags for search ranking boosts",
+              "items": { "type": "string" },
+              "default": []
+            },
+            "searchBoost": {
+              "type": "number",
+              "description": "Search priority boost multiplier",
+              "default": 1.0
+            },
             "name": {
               "type": "string",
               "description": "Name of the multi-language generator",
@@ -262,6 +310,22 @@
             "type": "object",
             "description": "Business logic code generator configuration",
             "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique identifier (auto-generated UUID if not provided)",
+                "default": "${function:generateId}"
+              },
+              "searchTags": {
+                "type": "array",
+                "description": "Tags for search ranking boosts",
+                "items": { "type": "string" },
+                "default": []
+              },
+              "searchBoost": {
+                "type": "number",
+                "description": "Search priority boost multiplier",
+                "default": 1.0
+              },
               "name": {
                 "type": "string",
                 "description": "Name of the business logic generator",
@@ -324,6 +388,22 @@
               "type": "object",
               "description": "Project structure generator configuration",
               "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier (auto-generated UUID if not provided)",
+                  "default": "${function:generateId}"
+                },
+                "searchTags": {
+                  "type": "array",
+                  "description": "Tags for search ranking boosts",
+                  "items": { "type": "string" },
+                  "default": []
+                },
+                "searchBoost": {
+                  "type": "number",
+                  "description": "Search priority boost multiplier",
+                  "default": 1.0
+                },
                 "name": {
                   "type": "string",
                   "description": "Name of the project structure generator",
@@ -355,6 +435,22 @@
                   "type": "object",
                   "description": "Entry point pattern generator configuration",
                   "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Unique identifier (auto-generated UUID if not provided)",
+                      "default": "${function:generateId}"
+                    },
+                    "searchTags": {
+                      "type": "array",
+                      "description": "Tags for search ranking boosts",
+                      "items": { "type": "string" },
+                      "default": []
+                    },
+                    "searchBoost": {
+                      "type": "number",
+                      "description": "Search priority boost multiplier",
+                      "default": 1.0
+                    },
                     "name": {
                       "type": "string",
                       "description": "Name of the entry point generator",
@@ -380,6 +476,22 @@
                     "type": "object",
                     "description": "Class registry pattern generator configuration",
                     "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Unique identifier (auto-generated UUID if not provided)",
+                        "default": "${function:generateId}"
+                      },
+                      "searchTags": {
+                        "type": "array",
+                        "description": "Tags for search ranking boosts",
+                        "items": { "type": "string" },
+                        "default": []
+                      },
+                      "searchBoost": {
+                        "type": "number",
+                        "description": "Search priority boost multiplier",
+                        "default": 1.0
+                      },
                       "name": {
                         "type": "string",
                         "description": "Name of the class registry generator",
@@ -406,6 +518,22 @@
                     "type": "object",
                     "description": "Factory pattern generator configuration",
                     "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Unique identifier (auto-generated UUID if not provided)",
+                        "default": "${function:generateId}"
+                      },
+                      "searchTags": {
+                        "type": "array",
+                        "description": "Tags for search ranking boosts",
+                        "items": { "type": "string" },
+                        "default": []
+                      },
+                      "searchBoost": {
+                        "type": "number",
+                        "description": "Search priority boost multiplier",
+                        "default": 1.0
+                      },
                       "name": {
                         "type": "string",
                         "description": "Name of the factory generator",
@@ -432,6 +560,22 @@
                     "type": "object",
                     "description": "Builder pattern generator configuration",
                     "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Unique identifier (auto-generated UUID if not provided)",
+                        "default": "${function:generateId}"
+                      },
+                      "searchTags": {
+                        "type": "array",
+                        "description": "Tags for search ranking boosts",
+                        "items": { "type": "string" },
+                        "default": []
+                      },
+                      "searchBoost": {
+                        "type": "number",
+                        "description": "Search priority boost multiplier",
+                        "default": 1.0
+                      },
                       "name": {
                         "type": "string",
                         "description": "Name of the builder generator",
@@ -454,314 +598,410 @@
                       }
                     }
                   }
-                },
-                "required": ["name", "class", "file"]
-              }
-            },
-            "required": ["multiLanguage", "businessLogic", "projectStructure", "patterns"]
-          }
-        },
-        "required": ["generators"]
-      },
-    "templates": {
-      "type": "object",
-      "description": "Template system configuration for code generation",
-      "properties": {
-        "language": {
-          "type": "object",
-          "description": "Language-specific template configuration",
-          "properties": {
-            "class": {
-              "type": "string",
-              "description": "Class template for the language",
-              "default": "templates/class-template.${lang}.hbs"
-            },
-            "interface": {
-              "type": "string",
-              "description": "Interface template for the language",
-              "default": "templates/interface-template.${lang}.hbs"
-            },
-            "enum": {
-              "type": "string",
-              "description": "Enum template for the language",
-              "default": "templates/enum-template.${lang}.hbs"
-            },
-            "function": {
-              "type": "string",
-              "description": "Function template for the language",
-              "default": "templates/function-template.${lang}.hbs"
-            },
-            "entryPoint": {
-              "type": "string",
-              "description": "Entry point template for the language",
-              "default": "templates/entry-point-template.${lang}.hbs"
-            },
-            "factory": {
-              "type": "string",
-              "description": "Factory template for the language",
-              "default": "templates/factory-template.${lang}.hbs"
-            },
-            "builder": {
-              "type": "string",
-              "description": "Builder template for the language",
-              "default": "templates/builder-template.${lang}.hbs"
-            },
-            "registry": {
-              "type": "string",
-              "description": "Registry template for the language",
-              "default": "templates/registry-template.${lang}.hbs"
+                }
+              },
+              "required": ["name", "class", "file"]
             }
           },
-          "required": ["class"]
+          "required": ["multiLanguage", "businessLogic", "projectStructure", "patterns"]
         },
-        "global": {
+        "templates": {
           "type": "object",
-          "description": "Global template configurations",
+          "description": "Template system configuration for code generation",
           "properties": {
-            "readme": {
-              "type": "string",
-              "description": "README template",
-              "default": "templates/readme-template.hbs"
-            },
-            "license": {
-              "type": "string",
-              "description": "License template",
-              "default": "templates/license-template.hbs"
-            },
-            "changelog": {
-              "type": "string",
-              "description": "Changelog template",
-              "default": "templates/changelog-template.hbs"
-            },
-            "contributing": {
-              "type": "string",
-              "description": "Contributing guidelines template",
-              "default": "templates/contributing-template.hbs"
-            }
-          }
-        },
-        "required": ["language", "global"]
-      }
-    },
-    "bootstrap": {
-      "type": "object",
-      "description": "Bootstrap generation configuration for self-bootstrapping the codegen system",
-      "properties": {
-        "selfGenerating": {
-          "type": "object",
-          "description": "Configuration for self-generating the codegen system",
-          "properties": {
-            "enabled": {
-              "type": "boolean",
-              "description": "Enable self-generation capabilities",
-              "default": true
-            },
-            "maxRecursion": {
-              "type": "integer",
-              "description": "Maximum recursion depth for self-generation",
-              "default": 2
-            },
-            "outputPattern": {
-              "type": "string",
-              "description": "Output pattern for self-generated codegen systems",
-              "default": "self-generated-{version}"
-            },
-            "includeTests": {
-              "type": "boolean",
-              "description": "Include tests in self-generation",
-              "default": true
-            },
-            "includeDocumentation": {
-              "type": "boolean",
-              "description": "Include documentation in self-generation",
-              "default": true
-            },
-            "metaSchema": {
+            "language": {
               "type": "object",
-              "description": "Meta-schema for self-generated codegen systems",
+              "description": "Language-specific template configuration",
               "properties": {
-                "enabled": {
-                  "type": "boolean",
-                  "description": "Include meta-schema in self-generation",
-                  "default": true
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier (auto-generated UUID if not provided)",
+                  "default": "${function:generateId}"
                 },
-                "validation": {
-                  "type": "boolean",
-                  "description": "Validate generated codegen systems against meta-schema",
-                  "default": true
+                "searchTags": {
+                  "type": "array",
+                  "description": "Tags for search ranking boosts",
+                  "items": { "type": "string" },
+                  "default": []
+                },
+                "searchBoost": {
+                  "type": "number",
+                  "description": "Search priority boost multiplier",
+                  "default": 1.0
+                },
+                "class": {
+                  "type": "string",
+                  "description": "Class template for the language",
+                  "default": "templates/class-template.${lang}.hbs"
+                },
+                "interface": {
+                  "type": "string",
+                  "description": "Interface template for the language",
+                  "default": "templates/interface-template.${lang}.hbs"
+                },
+                "enum": {
+                  "type": "string",
+                  "description": "Enum template for the language",
+                  "default": "templates/enum-template.${lang}.hbs"
+                },
+                "function": {
+                  "type": "string",
+                  "description": "Function template for the language",
+                  "default": "templates/function-template.${lang}.hbs"
+                },
+                "entryPoint": {
+                  "type": "string",
+                  "description": "Entry point template for the language",
+                  "default": "templates/entry-point-template.${lang}.hbs"
+                },
+                "factory": {
+                  "type": "string",
+                  "description": "Factory template for the language",
+                  "default": "templates/factory-template.${lang}.hbs"
+                },
+                "builder": {
+                  "type": "string",
+                  "description": "Builder template for the language",
+                  "default": "templates/builder-template.${lang}.hbs"
+                },
+                "registry": {
+                  "type": "string",
+                  "description": "Registry template for the language",
+                  "default": "templates/registry-template.${lang}.hbs"
+                }
+              },
+              "required": ["class"]
+            },
+            "global": {
+              "type": "object",
+              "description": "Global template configurations",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier (auto-generated UUID if not provided)",
+                  "default": "${function:generateId}"
+                },
+                "searchTags": {
+                  "type": "array",
+                  "description": "Tags for search ranking boosts",
+                  "items": { "type": "string" },
+                  "default": []
+                },
+                "searchBoost": {
+                  "type": "number",
+                  "description": "Search priority boost multiplier",
+                  "default": 1.0
+                },
+                "readme": {
+                  "type": "string",
+                  "description": "README template",
+                  "default": "templates/readme-template.hbs"
+                },
+                "license": {
+                  "type": "string",
+                  "description": "License template",
+                  "default": "templates/license-template.hbs"
+                },
+                "changelog": {
+                  "type": "string",
+                  "description": "Changelog template",
+                  "default": "templates/changelog-template.hbs"
+                },
+                "contributing": {
+                  "type": "string",
+                  "description": "Contributing guidelines template",
+                  "default": "templates/contributing-template.hbs"
                 }
               }
             }
-          }
+          },
+          "required": ["language", "global"]
         },
-        "required": ["selfGenerating"]
-      }
-    },
-    "innovation": {
-      "type": "object",
-      "description": "Innovation and gamification features",
-      "properties": {
-        "achievements": {
+        "bootstrap": {
           "type": "object",
-          "description": "Achievement system configuration",
+          "description": "Bootstrap generation configuration for self-bootstrapping the codegen system",
           "properties": {
-            "enabled": {
-              "type": "boolean",
-              "description": "Enable achievement system",
-              "default": true
-            },
-            "categories": {
-              "type": "array",
-              "description": "Achievement categories",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "description": "Achievement category name"
-                  },
-                  "thresholds": {
-                    "type": "array",
-                    "description": "Threshold values for achievements",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "description": "Achievement name"
-                        },
-                        "threshold": {
-                          "type": "integer",
-                          "description": "Threshold value"
-                        },
-                        "icon": {
-                          "type": "string",
-                          "description": "Achievement icon"
+            "selfGenerating": {
+              "type": "object",
+              "description": "Configuration for self-generating the codegen system",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier (auto-generated UUID if not provided)",
+                  "default": "${function:generateId}"
+                },
+                "searchTags": {
+                  "type": "array",
+                  "description": "Tags for search ranking boosts",
+                  "items": { "type": "string" },
+                  "default": []
+                },
+                "searchBoost": {
+                  "type": "number",
+                  "description": "Search priority boost multiplier",
+                  "default": 1.0
+                },
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Enable self-generation capabilities",
+                  "default": true
+                },
+                "maxRecursion": {
+                  "type": "integer",
+                  "description": "Maximum recursion depth for self-generation",
+                  "default": 2
+                },
+                "outputPattern": {
+                  "type": "string",
+                  "description": "Output pattern for self-generated codegen systems",
+                  "default": "self-generated-{version}"
+                },
+                "includeTests": {
+                  "type": "boolean",
+                  "description": "Include tests in self-generation",
+                  "default": true
+                },
+                "includeDocumentation": {
+                  "type": "boolean",
+                  "description": "Include documentation in self-generation",
+                  "default": true
+                },
+                "metaSchema": {
+                  "type": "object",
+                  "description": "Meta-schema for self-generated codegen systems",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Include meta-schema in self-generation",
+                      "default": true
+                    },
+                    "validation": {
+                      "type": "boolean",
+                      "description": "Validate generated codegen systems against meta-schema",
+                      "default": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": ["selfGenerating"]
+        },
+        "innovation": {
+          "type": "object",
+          "description": "Innovation and gamification features",
+          "properties": {
+            "achievements": {
+              "type": "object",
+              "description": "Achievement system configuration",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier (auto-generated UUID if not provided)",
+                  "default": "${function:generateId}"
+                },
+                "searchTags": {
+                  "type": "array",
+                  "description": "Tags for search ranking boosts",
+                  "items": { "type": "string" },
+                  "default": []
+                },
+                "searchBoost": {
+                  "type": "number",
+                  "description": "Search priority boost multiplier",
+                  "default": 1.0
+                },
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Enable achievement system",
+                  "default": true
+                },
+                "categories": {
+                  "type": "array",
+                  "description": "Achievement categories",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Achievement category name"
+                      },
+                      "thresholds": {
+                        "type": "array",
+                        "description": "Threshold values for achievements",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "description": "Achievement name"
+                            },
+                            "threshold": {
+                              "type": "integer",
+                              "description": "Threshold value"
+                            },
+                            "icon": {
+                              "type": "string",
+                              "description": "Achievement icon"
+                            }
+                          }
                         }
                       }
                     }
                   }
                 }
               }
-            }
-          }
-        },
-        "easterEggs": {
-          "type": "object",
-          "description": "Easter egg system configuration",
-          "properties": {
-            "enabled": {
-              "type": "boolean",
-              "description": "Enable easter eggs",
-              "default": true
             },
-            "frequency": {
-              "type": "string",
-              "description": "Frequency of easter egg appearance",
-              "enum": ["rare", "uncommon", "common"],
-              "default": "uncommon"
-            },
-            "categories": {
-              "type": "array",
-              "description": "Easter egg categories",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "description": "Easter egg category name"
-                  },
-                  "messages": {
-                    "type": "array",
-                    "description": "Easter egg messages",
-                    "items": { "type": "string" }
-                  },
-                  "triggers": {
-                    "type": "array",
-                    "description": "Triggers for easter egg activation",
-                    "items": { "type": "object" }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "gamification": {
-          "type": "object",
-          "description": "Gamification features",
-          "properties": {
-            "points": {
+            "easterEggs": {
               "type": "object",
-              "description": "Points system configuration",
+              "description": "Easter egg system configuration",
               "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier (auto-generated UUID if not provided)",
+                  "default": "${function:generateId}"
+                },
+                "searchTags": {
+                  "type": "array",
+                  "description": "Tags for search ranking boosts",
+                  "items": { "type": "string" },
+                  "default": []
+                },
+                "searchBoost": {
+                  "type": "number",
+                  "description": "Search priority boost multiplier",
+                  "default": 1.0
+                },
                 "enabled": {
                   "type": "boolean",
-                  "description": "Enable points system",
+                  "description": "Enable easter eggs",
                   "default": true
                 },
-                "multipliers": {
-                  "type": "object",
-                  "description": "Point multipliers for different actions",
-                  "properties": {
-                    "codeGeneration": {
-                      "type": "number",
-                      "description": "Points multiplier for code generation",
-                      "default": 10
-                    },
-                    "selfGeneration": {
-                      "type": "number",
-                      "description": "Points multiplier for self-generation",
-                      "default": 50
-                    },
-                    "patternCreation": {
-                      "type": "number",
-                      "description": "Points multiplier for pattern creation",
-                      "default": 5
+                "frequency": {
+                  "type": "string",
+                  "description": "Frequency of easter egg appearance",
+                  "enum": ["rare", "uncommon", "common"],
+                  "default": "uncommon"
+                },
+                "categories": {
+                  "type": "array",
+                  "description": "Easter egg categories",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Easter egg category name"
+                      },
+                      "messages": {
+                        "type": "array",
+                        "description": "Easter egg messages",
+                        "items": { "type": "string" }
+                      },
+                      "triggers": {
+                        "type": "array",
+                        "description": "Triggers for easter egg activation",
+                        "items": { "type": "object" }
+                      }
                     }
                   }
                 }
               }
             },
-            "levels": {
+            "gamification": {
               "type": "object",
-              "description": "Level progression system",
+              "description": "Gamification features",
               "properties": {
-                "enabled": {
-                  "type": "boolean",
-                  "description": "Enable level system",
-                  "default": true
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier (auto-generated UUID if not provided)",
+                  "default": "${function:generateId}"
                 },
-                "thresholds": {
+                "searchTags": {
                   "type": "array",
-                  "description": "Level thresholds",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "level": {
-                        "type": "integer",
-                        "description": "Level number"
-                      },
-                      "requiredPoints": {
-                        "type": "integer",
-                        "description": "Points required for level"
-                      },
-                      "rewards": {
-                        "type": "array",
-                        "description": "Rewards for reaching level",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "name": {
-                              "type": "string",
-                              "description": "Reward name"
-                            },
-                            "description": {
-                              "type": "string",
-                              "description": "Reward description"
-                            },
-                            "icon": {
-                              "type": "string",
-                              "description": "Reward icon"
+                  "description": "Tags for search ranking boosts",
+                  "items": { "type": "string" },
+                  "default": []
+                },
+                "searchBoost": {
+                  "type": "number",
+                  "description": "Search priority boost multiplier",
+                  "default": 1.0
+                },
+                "points": {
+                  "type": "object",
+                  "description": "Points system configuration",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enable points system",
+                      "default": true
+                    },
+                    "multipliers": {
+                      "type": "object",
+                      "description": "Point multipliers for different actions",
+                      "properties": {
+                        "codeGeneration": {
+                          "type": "number",
+                          "description": "Points multiplier for code generation",
+                          "default": 10
+                        },
+                        "selfGeneration": {
+                          "type": "number",
+                          "description": "Points multiplier for self-generation",
+                          "default": 50
+                        },
+                        "patternCreation": {
+                          "type": "number",
+                          "description": "Points multiplier for pattern creation",
+                          "default": 5
+                        }
+                      }
+                    }
+                  }
+                },
+                "levels": {
+                  "type": "object",
+                  "description": "Level progression system",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enable level system",
+                      "default": true
+                    },
+                    "thresholds": {
+                      "type": "array",
+                      "description": "Level thresholds",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "level": {
+                            "type": "integer",
+                            "description": "Level number"
+                          },
+                          "requiredPoints": {
+                            "type": "integer",
+                            "description": "Points required for level"
+                          },
+                          "rewards": {
+                            "type": "array",
+                            "description": "Rewards for reaching level",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "description": "Reward name"
+                                },
+                                "description": {
+                                  "type": "string",
+                                  "description": "Reward description"
+                                },
+                                "icon": {
+                                  "type": "string",
+                                  "description": "Reward icon"
+                                }
+                              }
                             }
                           }
                         }
@@ -771,11 +1011,13 @@
                 }
               }
             }
-          }
+          },
+          "required": ["achievements", "easterEggs", "gamification"]
         }
       },
-      "required": ["achievements", "easterEggs", "gamification"]
+      "required": ["metaSystem", "languageProviders", "generators", "templates", "bootstrap", "innovation"]
     }
   },
-  "required": ["metaSystem", "languageProviders", "generators", "templates", "bootstrap", "innovation"]
+  "required": ["metaSystem", "languageProviders", "generators", "templates", "bootstrap", "innovation"],
+  "additionalProperties": false
 }

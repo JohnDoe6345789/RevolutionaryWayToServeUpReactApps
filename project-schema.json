@@ -7,6 +7,22 @@
     "project": {
       "type": "object",
       "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier (auto-generated UUID if not provided)",
+          "default": "${function:generateId}"
+        },
+        "searchTags": {
+          "type": "array",
+          "description": "Tags for search ranking boosts",
+          "items": { "type": "string" },
+          "default": []
+        },
+        "searchBoost": {
+          "type": "number",
+          "description": "Search priority boost multiplier",
+          "default": 1.0
+        },
         "name": {
           "type": "string",
           "description": "Project name",
@@ -57,6 +73,22 @@
           "items": {
             "type": "object",
             "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique identifier (auto-generated UUID if not provided)",
+                "default": "${function:generateId}"
+              },
+              "searchTags": {
+                "type": "array",
+                "description": "Tags for search ranking boosts",
+                "items": { "type": "string" },
+                "default": []
+              },
+              "searchBoost": {
+                "type": "number",
+                "description": "Search priority boost multiplier",
+                "default": 1.0
+              },
               "name": {
                 "type": "string",
                 "description": "Folder name"
@@ -88,6 +120,22 @@
           "items": {
             "type": "object",
             "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique identifier (auto-generated UUID if not provided)",
+                "default": "${function:generateId}"
+              },
+              "searchTags": {
+                "type": "array",
+                "description": "Tags for search ranking boosts",
+                "items": { "type": "string" },
+                "default": []
+              },
+              "searchBoost": {
+                "type": "number",
+                "description": "Search priority boost multiplier",
+                "default": 1.0
+              },
               "name": {
                 "type": "string",
                 "description": "File name"
@@ -126,6 +174,22 @@
           "items": {
             "type": "object",
             "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique identifier (auto-generated UUID if not provided)",
+                "default": "${function:generateId}"
+              },
+              "searchTags": {
+                "type": "array",
+                "description": "Tags for search ranking boosts",
+                "items": { "type": "string" },
+                "default": []
+              },
+              "searchBoost": {
+                "type": "number",
+                "description": "Search priority boost multiplier",
+                "default": 1.0
+              },
               "name": {
                 "type": "string",
                 "description": "Class name"
@@ -185,6 +249,22 @@
           "items": {
             "type": "object",
             "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique identifier (auto-generated UUID if not provided)",
+                "default": "${function:generateId}"
+              },
+              "searchTags": {
+                "type": "array",
+                "description": "Tags for search ranking boosts",
+                "items": { "type": "string" },
+                "default": []
+              },
+              "searchBoost": {
+                "type": "number",
+                "description": "Search priority boost multiplier",
+                "default": 1.0
+              },
               "name": {
                 "type": "string",
                 "description": "Aggregate name"
@@ -255,6 +335,22 @@
           "items": {
             "type": "object",
             "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique identifier (auto-generated UUID if not provided)",
+                "default": "${function:generateId}"
+              },
+              "searchTags": {
+                "type": "array",
+                "description": "Tags for search ranking boosts",
+                "items": { "type": "string" },
+                "default": []
+              },
+              "searchBoost": {
+                "type": "number",
+                "description": "Search priority boost multiplier",
+                "default": 1.0
+              },
               "name": {
                 "type": "string",
                 "description": "Factory name"
@@ -307,6 +403,22 @@
           "items": {
             "type": "object",
             "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique identifier (auto-generated UUID if not provided)",
+                "default": "${function:generateId}"
+              },
+              "searchTags": {
+                "type": "array",
+                "description": "Tags for search ranking boosts",
+                "items": { "type": "string" },
+                "default": []
+              },
+              "searchBoost": {
+                "type": "number",
+                "description": "Search priority boost multiplier",
+                "default": 1.0
+              },
               "name": {
                 "type": "string",
                 "description": "Data class name"
@@ -372,6 +484,22 @@
           "items": {
             "type": "object",
             "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique identifier (auto-generated UUID if not provided)",
+                "default": "${function:generateId}"
+              },
+              "searchTags": {
+                "type": "array",
+                "description": "Tags for search ranking boosts",
+                "items": { "type": "string" },
+                "default": []
+              },
+              "searchBoost": {
+                "type": "number",
+                "description": "Search priority boost multiplier",
+                "default": 1.0
+              },
               "name": {
                 "type": "string",
                 "description": "Group name"
@@ -391,6 +519,22 @@
                 "items": {
                   "type": "object",
                   "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Unique identifier (auto-generated UUID if not provided)",
+                      "default": "${function:generateId}"
+                    },
+                    "searchTags": {
+                      "type": "array",
+                      "description": "Tags for search ranking boosts",
+                      "items": { "type": "string" },
+                      "default": []
+                    },
+                    "searchBoost": {
+                      "type": "number",
+                      "description": "Search priority boost multiplier",
+                      "default": 1.0
+                    },
                     "name": {
                       "type": "string",
                       "description": "Plugin name"
@@ -428,6 +572,22 @@
           "type": "object",
           "description": "Codegen plugin configuration",
           "properties": {
+            "id": {
+              "type": "string",
+              "description": "Unique identifier (auto-generated UUID if not provided)",
+              "default": "${function:generateId}"
+            },
+            "searchTags": {
+              "type": "array",
+              "description": "Tags for search ranking boosts",
+              "items": { "type": "string" },
+              "default": []
+            },
+            "searchBoost": {
+              "type": "number",
+              "description": "Search priority boost multiplier",
+              "default": 1.0
+            },
             "name": {
               "type": "string",
               "description": "Codegen plugin name",
@@ -443,6 +603,22 @@
               "items": {
                 "type": "object",
                 "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Unique identifier (auto-generated UUID if not provided)",
+                    "default": "${function:generateId}"
+                  },
+                  "searchTags": {
+                    "type": "array",
+                    "description": "Tags for search ranking boosts",
+                    "items": { "type": "string" },
+                    "default": []
+                  },
+                  "searchBoost": {
+                    "type": "number",
+                    "description": "Search priority boost multiplier",
+                    "default": 1.0
+                  },
                   "name": {
                     "type": "string",
                     "description": "Generator name"
@@ -610,6 +786,22 @@
           "items": {
             "type": "object",
             "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique identifier (auto-generated UUID if not provided)",
+                "default": "${function:generateId}"
+              },
+              "searchTags": {
+                "type": "array",
+                "description": "Tags for search ranking boosts",
+                "items": { "type": "string" },
+                "default": []
+              },
+              "searchBoost": {
+                "type": "number",
+                "description": "Search priority boost multiplier",
+                "default": 1.0
+              },
               "name": {
                 "type": "string",
                 "description": "Constant name"
@@ -667,6 +859,22 @@
           "items": {
             "type": "object",
             "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique identifier (auto-generated UUID if not provided)",
+                "default": "${function:generateId}"
+              },
+              "searchTags": {
+                "type": "array",
+                "description": "Tags for search ranking boosts",
+                "items": { "type": "string" },
+                "default": []
+              },
+              "searchBoost": {
+                "type": "number",
+                "description": "Search priority boost multiplier",
+                "default": 1.0
+              },
               "name": {
                 "type": "string",
                 "description": "Environment variable name"

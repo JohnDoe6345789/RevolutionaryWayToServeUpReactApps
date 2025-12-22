@@ -6,6 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 const MetadataLoader = require('../metadata-loader');
+const SearchEngine = require('../search/search-engine');
 
 class PluginDiscovery {
   constructor() {
@@ -16,6 +17,7 @@ class PluginDiscovery {
     ];
     this.discoveredPlugins = new Map();
     this.metadataLoader = new MetadataLoader();
+    this.searchEngine = new SearchEngine();
   }
 
   /**
@@ -54,6 +56,14 @@ class PluginDiscovery {
       } catch (error) {
         console.warn(`Warning: Failed to load metadata for ${pluginDir}: ${error.message}`);
       }
+    }
+
+    // Index all plugins in search engine
+    for (const [pluginDir, info] of this.discoveredPlugins) {
+      this.searchEngine.indexObject({
+        ...info.metadata,
+        type: 'plugin'
+      }, pluginDir);
     }
 
     return pluginDirs;
@@ -197,6 +207,32 @@ class PluginDiscovery {
   }
 
   /**
+   * Enhanced search using the search engine with tag-based ranking
+   * @param {string} query - Search query
+   * @param {Object} options - Search options
+   * @returns {Array} - Ranked search results
+   */
+  searchPluginsEnhanced(query, options = {}) {
+    return this.searchEngine.search(query, {
+      ...options,
+      types: ['plugin']
+    });
+  }
+
+  /**
+   * Search for plugins by specific tags using enhanced search
+   * @param {Array} tags - Tags to search for
+   * @param {Object} options - Search options
+   * @returns {Array} - Objects with matching tags
+   */
+  searchPluginsByTags(tags, options = {}) {
+    return this.searchEngine.searchByTags(tags, {
+      ...options,
+      types: ['plugin']
+    });
+  }
+
+  /**
    * Gets information about discovered plugins
    * @returns {Object} - Plugin discovery information
    */
@@ -211,7 +247,8 @@ class PluginDiscovery {
       categories,
       languages,
       discoveredPlugins: plugins,
-      legacyPlugins: this.discoverLegacyPlugins()
+      legacyPlugins: this.discoverLegacyPlugins(),
+      searchStats: this.searchEngine.getSearchStats()
     };
   }
 
@@ -257,11 +294,12 @@ class PluginDiscovery {
   }
 
   /**
-   * Clears the discovery cache
+   * Clears the discovery cache and search index
    */
   clearCache() {
     this.discoveredPlugins.clear();
     this.metadataLoader.clearCache();
+    this.searchEngine.clearIndex();
   }
 
   /**
