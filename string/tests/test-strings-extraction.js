@@ -100,7 +100,7 @@ console.log(`📊 Interpolation tests: ${interpolationTestsPassed}/${interpolati
 
 // Test CLI help
 console.log('📖 Testing CLI help display...');
-const codegen = require('./revolutionary-codegen/revolutionary-codegen');
+const codegen = require('../../revolutionary-codegen/revolutionary-codegen.js');
 
 // Capture console output
 const originalLog = console.log;

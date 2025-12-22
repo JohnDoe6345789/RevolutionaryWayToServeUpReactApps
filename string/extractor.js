@@ -138,6 +138,18 @@ class StringExtractor {
         await this.processFile(file);
       }
       
+      // Verify modifications if not dry run
+      if (!this.options.dryRun && this.changesLog.length > 0) {
+        const verifier = new StringExtractorVerifier(this);
+        const verificationResults = await verifier.verify();
+        
+        if (!verificationResults.isValid) {
+          this.log('Verification failed - rolling back changes', 'error');
+          await this.rollback();
+          throw new Error('String extraction verification failed. See verification report for details.');
+        }
+      }
+      
       // Update string/strings.json if not dry run
       if (!this.options.dryRun && this.extractedStrings.size > 0) {
         await this.updateCodegenData();
@@ -803,8 +815,599 @@ async function main() {
   }
 }
 
+/**
+ * String Extractor Verifier - Validates extraction results and prevents corruption
+ */
+class StringExtractorVerifier {
+  constructor(extractor) {
+    this.extractor = extractor;
+    this.verificationResults = {
+      isValid: true,
+      passed: [],
+      failed: [],
+      warnings: [],
+      todoItems: []
+    };
+  }
+
+  /**
+   * Run comprehensive verification
+   */
+  async verify() {
+    this.verificationResults = {
+      isValid: true,
+      passed: [],
+      failed: [],
+      warnings: [],
+      todoItems: []
+    };
+
+    console.log('\n🔍 Running String Extraction Verification...\n');
+
+    // 1. Verify syntax of modified files
+    await this.verifyFileSyntax();
+    
+    // 2. Verify class structures
+    await this.verifyClassStructures();
+    
+    // 3. Verify imports and string service usage
+    await this.verifyImportsAndStringService();
+    
+    // 4. Verify backup integrity
+    await this.verifyBackupIntegrity();
+    
+    // 5. Verify string service calls
+    await this.verifyStringServiceCalls();
+    
+    // 6. Verify overall project integrity
+    await this.verifyProjectIntegrity();
+
+    // Generate numbered todo list output
+    this.generateTodoListOutput();
+
+    return this.verificationResults;
+  }
+
+  /**
+   * Verify syntax of all modified files
+   */
+  async verifyFileSyntax() {
+    const modifiedFiles = this.extractor.changesLog.map(log => log.file);
+    
+    for (const filePath of modifiedFiles) {
+      try {
+        const content = fs.readFileSync(filePath, 'utf8');
+        
+        // Basic syntax check using Node.js
+        const module = {
+          exports: {}
+        };
+        const originalRequire = require;
+        
+        // Create a sandbox environment for syntax checking
+        const sandbox = {
+          console: { log: () => {}, error: () => {} },
+          require: originalRequire,
+          module,
+          exports: module.exports,
+          __filename: filePath,
+          __dirname: path.dirname(filePath)
+        };
+
+        // Try to evaluate the code (syntax check only)
+        new Function('console', 'require', 'module', 'exports', '__filename', '__dirname', content)
+          .call(sandbox, sandbox.console, sandbox.require, sandbox.module, sandbox.exports, sandbox.__filename, sandbox.__dirname);
+        
+        this.verificationResults.passed.push({
+          type: 'syntax',
+          file: filePath,
+          message: '✅ Syntax validation passed'
+        });
+        
+      } catch (error) {
+        this.verificationResults.isValid = false;
+        this.verificationResults.failed.push({
+          type: 'syntax',
+          file: filePath,
+          message: `❌ Syntax error: ${error.message}`,
+          line: error.lineNumber || 'unknown',
+          column: error.columnNumber || 'unknown'
+        });
+        
+        this.verificationResults.todoItems.push({
+          number: this.verificationResults.todoItems.length + 1,
+          priority: 'HIGH',
+          action: 'Fix Syntax Error',
+          file: filePath,
+          details: `Line ${error.lineNumber || 'unknown'}: ${error.message}`,
+          suggestion: 'Check for malformed string replacements or missing quotes'
+        });
+      }
+    }
+  }
+
+  /**
+   * Verify class structures are intact
+   */
+  async verifyClassStructures() {
+    const modifiedFiles = this.extractor.changesLog.map(log => log.file);
+    
+    for (const filePath of modifiedFiles) {
+      try {
+        const content = fs.readFileSync(filePath, 'utf8');
+        const lines = content.split('\n');
+        
+        // Find class declarations
+        const classMatches = content.match(/^class\s+\w+/gm) || [];
+        
+        for (const classMatch of classMatches) {
+          const className = classMatch.replace('class ', '').trim();
+          
+          // Check if class has proper structure
+          const classStart = content.indexOf(classMatch);
+          const classContent = content.substring(classStart);
+          
+          // Basic class structure checks
+          const hasConstructor = classContent.includes('constructor(');
+          const hasMethods = /(\w+\s*\([^)]*\)\s*{)/.test(classContent);
+          const hasBraces = classContent.includes('{') && classContent.includes('}');
+          
+          if (!hasBraces) {
+            this.verificationResults.isValid = false;
+            this.verificationResults.failed.push({
+              type: 'class_structure',
+              file: filePath,
+              message: `❌ Class ${className} has missing braces`,
+              class: className
+            });
+            
+            this.verificationResults.todoItems.push({
+              number: this.verificationResults.todoItems.length + 1,
+              priority: 'HIGH',
+              action: 'Fix Class Structure',
+              file: filePath,
+              details: `Class ${className} is missing proper braces`,
+              suggestion: 'Ensure class has opening and closing braces'
+            });
+          } else {
+            this.verificationResults.passed.push({
+              type: 'class_structure',
+              file: filePath,
+              message: `✅ Class ${className} structure is valid`
+            });
+          }
+          
+          // Check for broken method signatures
+          const methodMatches = classContent.match(/^\s*\w+\s*\([^)]*\)\s*{/gm) || [];
+          for (const methodMatch of methodMatches) {
+            if (methodMatch.includes('strings.') && !methodMatch.includes('getError') && 
+                !methodMatch.includes('getMessage') && !methodMatch.includes('getLabel') && 
+                !methodMatch.includes('getConsole')) {
+              this.verificationResults.warnings.push({
+                type: 'method_signature',
+                file: filePath,
+                message: `⚠️  Suspicious method signature: ${methodMatch.trim()}`
+              });
+            }
+          }
+        }
+        
+      } catch (error) {
+        this.verificationResults.warnings.push({
+          type: 'class_structure',
+          file: filePath,
+          message: `⚠️  Could not verify class structures: ${error.message}`
+        });
+      }
+    }
+  }
+
+  /**
+   * Verify imports and string service usage
+   */
+  async verifyImportsAndStringService() {
+    const modifiedFiles = this.extractor.changesLog.map(log => log.file);
+    
+    for (const filePath of modifiedFiles) {
+      try {
+        const content = fs.readFileSync(filePath, 'utf8');
+        
+        // Check if string service import exists when needed
+        const hasStringServiceUsage = content.includes('strings.');
+        const hasStringServiceImport = content.includes('getStringService') || 
+                                      content.includes('require.*string-service') ||
+                                      content.includes('from.*string-service');
+        
+        if (hasStringServiceUsage && !hasStringServiceImport) {
+          this.verificationResults.isValid = false;
+          this.verificationResults.failed.push({
+            type: 'import',
+            file: filePath,
+            message: '❌ Missing string service import'
+          });
+          
+          this.verificationResults.todoItems.push({
+            number: this.verificationResults.todoItems.length + 1,
+            priority: 'HIGH',
+            action: 'Add Missing Import',
+            file: filePath,
+            details: 'String service is used but not imported',
+            suggestion: 'Add: const { getStringService } = require("../bootstrap/services/string-service");'
+          });
+        } else if (hasStringServiceImport && !content.includes('const strings = getStringService();')) {
+          this.verificationResults.warnings.push({
+            type: 'import',
+            file: filePath,
+            message: '⚠️  String service imported but not initialized'
+          });
+          
+          this.verificationResults.todoItems.push({
+            number: this.verificationResults.todoItems.length + 1,
+            priority: 'MEDIUM',
+            action: 'Initialize String Service',
+            file: filePath,
+            details: 'String service is imported but not initialized',
+            suggestion: 'Add: const strings = getStringService();'
+          });
+        } else {
+          this.verificationResults.passed.push({
+            type: 'import',
+            file: filePath,
+            message: '✅ String service imports are valid'
+          });
+        }
+        
+        // Check import order and placement
+        const lines = content.split('\n');
+        const importLines = lines.filter((line, index) => 
+          (line.trim().startsWith('import ') || 
+           (line.trim().startsWith('const ') && line.includes('require'))) &&
+          index < 20 // Imports should be near the top
+        );
+        
+        if (importLines.length === 0 && hasStringServiceUsage) {
+          this.verificationResults.warnings.push({
+            type: 'import_placement',
+            file: filePath,
+            message: '⚠️  String service usage found but no imports detected in expected locations'
+          });
+        }
+        
+      } catch (error) {
+        this.verificationResults.warnings.push({
+          type: 'import',
+          file: filePath,
+          message: `⚠️  Could not verify imports: ${error.message}`
+        });
+      }
+    }
+  }
+
+  /**
+   * Verify backup integrity
+   */
+  async verifyBackupIntegrity() {
+    const modifiedFiles = this.extractor.changesLog.map(log => log.file);
+    
+    for (const filePath of modifiedFiles) {
+      try {
+        // Check if backup exists
+        const relativePath = path.relative(process.cwd(), filePath);
+        const backupDir = path.join(this.extractor.backupDir, relativePath);
+        
+        if (!fs.existsSync(backupDir)) {
+          this.verificationResults.warnings.push({
+            type: 'backup',
+            file: filePath,
+            message: '⚠️  No backup directory found'
+          });
+          
+          this.verificationResults.todoItems.push({
+            number: this.verificationResults.todoItems.length + 1,
+            priority: 'LOW',
+            action: 'Check Backup Directory',
+            file: filePath,
+            details: 'Backup directory does not exist',
+            suggestion: 'Verify backup creation is enabled and permissions are correct'
+          });
+          continue;
+        }
+        
+        const backupFiles = fs.readdirSync(backupDir).filter(f => f.startsWith('.backup.'));
+        
+        if (backupFiles.length === 0) {
+          this.verificationResults.warnings.push({
+            type: 'backup',
+            file: filePath,
+            message: '⚠️  No backup files found'
+          });
+        } else {
+          // Verify most recent backup
+          const latestBackup = backupFiles.sort().pop();
+          const backupPath = path.join(backupDir, latestBackup);
+          
+          try {
+            const backupContent = fs.readFileSync(backupPath, 'utf8');
+            const originalContent = this.extractor.originalFiles.get(filePath);
+            
+            if (backupContent !== originalContent) {
+              this.verificationResults.failed.push({
+                type: 'backup',
+                file: filePath,
+                message: '❌ Backup content does not match original'
+              });
+              
+              this.verificationResults.todoItems.push({
+                number: this.verificationResults.todoItems.length + 1,
+                priority: 'HIGH',
+                action: 'Fix Backup Integrity',
+                file: filePath,
+                details: 'Backup file content mismatch',
+                suggestion: 'Recreate backup manually or check backup creation process'
+              });
+            } else {
+              this.verificationResults.passed.push({
+                type: 'backup',
+                file: filePath,
+                message: '✅ Backup integrity verified'
+              });
+            }
+          } catch (backupError) {
+            this.verificationResults.failed.push({
+              type: 'backup',
+              file: filePath,
+              message: `❌ Cannot read backup file: ${backupError.message}`
+            });
+          }
+        }
+        
+      } catch (error) {
+        this.verificationResults.warnings.push({
+          type: 'backup',
+          file: filePath,
+          message: `⚠️  Could not verify backup: ${error.message}`
+        });
+      }
+    }
+  }
+
+  /**
+   * Verify string service calls are properly formed
+   */
+  async verifyStringServiceCalls() {
+    const modifiedFiles = this.extractor.changesLog.map(log => log.file);
+    
+    for (const filePath of modifiedFiles) {
+      try {
+        const content = fs.readFileSync(filePath, 'utf8');
+        const lines = content.split('\n');
+        
+        // Find all string service calls
+        const stringServiceCallRegex = /strings\.(getError|getMessage|getLabel|getConsole)\s*\(\s*['"`]([^'"`]+)['"`]/g;
+        let match;
+        
+        while ((match = stringServiceCallRegex.exec(content)) !== null) {
+          const method = match[1];
+          const key = match[2];
+          const fullMatch = match[0];
+          
+          // Check if key exists in strings.json
+          const category = method.replace('get', '').toLowerCase();
+          const keyExists = this.extractor.codegenData?.i18n?.en?.[category]?.[key];
+          
+          if (!keyExists) {
+            this.verificationResults.failed.push({
+              type: 'string_service_call',
+              file: filePath,
+              message: `❌ String key not found: ${category}.${key}`
+            });
+            
+            this.verificationResults.todoItems.push({
+              number: this.verificationResults.todoItems.length + 1,
+              priority: 'HIGH',
+              action: 'Add Missing String Key',
+              file: filePath,
+              details: `String key "${category}.${key}" not found in strings.json`,
+              suggestion: `Add the missing key to string/strings.json or check for typos`
+            });
+          } else {
+            this.verificationResults.passed.push({
+              type: 'string_service_call',
+              file: filePath,
+              message: `✅ String service call valid: ${method}('${key}')`
+            });
+          }
+          
+          // Check for malformed calls
+          if (!fullMatch.endsWith(')')) {
+            this.verificationResults.failed.push({
+              type: 'string_service_call',
+              file: filePath,
+              message: `❌ Malformed string service call: ${fullMatch}`
+            });
+            
+            this.verificationResults.todoItems.push({
+              number: this.verificationResults.todoItems.length + 1,
+              priority: 'HIGH',
+              action: 'Fix Malformed Call',
+              file: filePath,
+              details: `Incomplete string service call: ${fullMatch}`,
+              suggestion: 'Ensure all string service calls are properly closed'
+            });
+          }
+        }
+        
+      } catch (error) {
+        this.verificationResults.warnings.push({
+          type: 'string_service_call',
+          file: filePath,
+          message: `⚠️  Could not verify string service calls: ${error.message}`
+        });
+      }
+    }
+  }
+
+  /**
+   * Verify overall project integrity
+   */
+  async verifyProjectIntegrity() {
+    try {
+      // Check if strings.json is valid JSON
+      const stringsContent = fs.readFileSync(this.extractor.codegenDataPath, 'utf8');
+      JSON.parse(stringsContent);
+      
+      this.verificationResults.passed.push({
+        type: 'project_integrity',
+        file: this.extractor.codegenDataPath,
+        message: '✅ strings.json is valid JSON'
+      });
+      
+      // Check for duplicate keys
+      const keys = new Set();
+      const duplicates = [];
+      
+      for (const category of Object.keys(this.extractor.codegenData.i18n.en)) {
+        for (const key of Object.keys(this.extractor.codegenData.i18n.en[category])) {
+          const fullKey = `${category}.${key}`;
+          if (keys.has(fullKey)) {
+            duplicates.push(fullKey);
+          } else {
+            keys.add(fullKey);
+          }
+        }
+      }
+      
+      if (duplicates.length > 0) {
+        this.verificationResults.warnings.push({
+          type: 'project_integrity',
+          file: this.extractor.codegenDataPath,
+          message: `⚠️  Duplicate string keys found: ${duplicates.join(', ')}`
+        });
+        
+        this.verificationResults.todoItems.push({
+          number: this.verificationResults.todoItems.length + 1,
+          priority: 'MEDIUM',
+          action: 'Resolve Duplicate Keys',
+          file: this.extractor.codegenDataPath,
+          details: `Duplicate keys: ${duplicates.join(', ')}`,
+          suggestion: 'Rename or merge duplicate string keys'
+        });
+      }
+      
+    } catch (error) {
+      this.verificationResults.isValid = false;
+      this.verificationResults.failed.push({
+        type: 'project_integrity',
+        file: this.extractor.codegenDataPath,
+        message: `❌ Invalid JSON in strings.json: ${error.message}`
+      });
+      
+      this.verificationResults.todoItems.push({
+        number: this.verificationResults.todoItems.length + 1,
+        priority: 'HIGH',
+        action: 'Fix JSON Syntax',
+        file: this.extractor.codegenDataPath,
+        details: `JSON parsing error: ${error.message}`,
+        suggestion: 'Check for missing commas, quotes, or brackets'
+      });
+    }
+  }
+
+  /**
+   * Generate numbered todo list output
+   */
+  generateTodoListOutput() {
+    console.log('\n📋 VERIFICATION RESULTS - NUMBERED TODO LIST\n');
+    console.log('=' .repeat(60));
+    
+    if (this.verificationResults.todoItems.length === 0) {
+      console.log('🎉 No issues found! All files passed verification.\n');
+      return;
+    }
+    
+    // Sort by priority (HIGH first) then by number
+    const sortedItems = this.verificationResults.todoItems.sort((a, b) => {
+      const priorityOrder = { HIGH: 0, MEDIUM: 1, LOW: 2 };
+      if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+        return priorityOrder[a.priority] - priorityOrder[b.priority];
+      }
+      return a.number - b.number;
+    });
+    
+    console.log(`📊 Summary: ${this.verificationResults.passed.length} passed, ${this.verificationResults.failed.length} failed, ${this.verificationResults.warnings.length} warnings\n`);
+    
+    // Group by priority
+    const grouped = {
+      HIGH: sortedItems.filter(item => item.priority === 'HIGH'),
+      MEDIUM: sortedItems.filter(item => item.priority === 'MEDIUM'),
+      LOW: sortedItems.filter(item => item.priority === 'LOW')
+    };
+    
+    // Display HIGH priority items
+    if (grouped.HIGH.length > 0) {
+      console.log('🚨 HIGH PRIORITY (Must Fix):\n');
+      grouped.HIGH.forEach(item => {
+        console.log(`${item.number}. [HIGH] ${item.action}`);
+        console.log(`   📁 File: ${item.file}`);
+        console.log(`   🔍 Details: ${item.details}`);
+        console.log(`   💡 Suggestion: ${item.suggestion}`);
+        console.log('');
+      });
+    }
+    
+    // Display MEDIUM priority items
+    if (grouped.MEDIUM.length > 0) {
+      console.log('⚠️  MEDIUM PRIORITY (Should Fix):\n');
+      grouped.MEDIUM.forEach(item => {
+        console.log(`${item.number}. [MEDIUM] ${item.action}`);
+        console.log(`    📁 File: ${item.file}`);
+        console.log(`    🔍 Details: ${item.details}`);
+        console.log(`    💡 Suggestion: ${item.suggestion}`);
+        console.log('');
+      });
+    }
+    
+    // Display LOW priority items
+    if (grouped.LOW.length > 0) {
+      console.log('💡 LOW PRIORITY (Nice to Fix):\n');
+      grouped.LOW.forEach(item => {
+        console.log(`${item.number}. [LOW] ${item.action}`);
+        console.log(`     📁 File: ${item.file}`);
+        console.log(`     🔍 Details: ${item.details}`);
+        console.log(`     💡 Suggestion: ${item.suggestion}`);
+        console.log('');
+      });
+    }
+    
+    console.log('=' .repeat(60));
+    
+    // Show failed verification details
+    if (this.verificationResults.failed.length > 0) {
+      console.log('\n❌ FAILED VERIFICATIONS:\n');
+      this.verificationResults.failed.forEach(failure => {
+        console.log(`   📁 ${failure.file}: ${failure.message}`);
+      });
+    }
+    
+    // Show warnings
+    if (this.verificationResults.warnings.length > 0) {
+      console.log('\n⚠️  WARNINGS:\n');
+      this.verificationResults.warnings.forEach(warning => {
+        console.log(`   📁 ${warning.file}: ${warning.message}`);
+      });
+    }
+    
+    console.log('\n' + '=' .repeat(60));
+    console.log(`🎯 Overall Status: ${this.verificationResults.isValid ? '✅ PASSED' : '❌ FAILED'}`);
+    console.log('=' .repeat(60) + '\n');
+  }
+}
+
 // Export for testing
-module.exports = StringExtractor;
+module.exports = {
+  StringExtractor,
+  StringExtractorVerifier
+};
 
 // Run if called directly
 if (require.main === module) {
