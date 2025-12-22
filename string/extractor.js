@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
@@ -26,7 +27,7 @@ class StringExtractor {
       dryRun: options.dryRun || false,
       verbose: options.verbose || false,
       exclude: options.exclude || ['node_modules/**', '.git/**', 'coverage/**', 'dist/**', 'build/**'],
-      maxFiles: options.maxFiles || 50, // Add 50 file limit
+      maxFiles: options.maxFiles || 500, // Add 500 file limit
       ...options
     };
 
