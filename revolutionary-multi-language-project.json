@@ -1,0 +1,58 @@
+{
+  "project": {
+    "name": "RevolutionaryMultiLanguageDemo",
+    "version": "1.0.0",
+    "description": "A revolutionary multi-language project demonstrating Python, Java, C++, and JavaScript code generation with entry points, class registries, factory patterns, and builder patterns",
+    "author": "Revolutionary Developer",
+    "license": "MIT",
+    "generated": "2025-12-22T11:32:48Z",
+    "mainClass": "MultiLanguageApplication"
+  },
+  "classes": {
+    "businessLogic": [
+      {
+        "name": "UserService",
+        "description": "Multi-language user management service",
+        "module": "business",
+        "extends": "BaseService",
+        "dataClass": "UserData",
+        "factory": "UserServiceFactory",
+        "config": {
+          "maxUsers": 1000,
+          "enableCaching": true,
+          "supportMultiLanguage": true
+        },
+        "dependencies": ["BaseService", "UserData"]
+      },
+      {
+        "name": "DataService",
+        "description": "Multi-language data persistence service",
+        "module": "business",
+        "extends": "BaseService",
+        "dataClass": "ConfigData",
+        "factory": "DataServiceFactory",
+        "config": {
+          "databaseUrl": "multi-lang-data.db",
+          "enableTransactions": true
+        },
+        "dependencies": ["BaseService", "ConfigData"]
+      }
+    ],
+    "aggregates": [],
+    "factories": [],
+    "dataClasses": []
+  },
+  "codegen": {
+    "languages": ["python", "java", "cpp", "javascript"],
+    "patterns": {
+      "entryPoint": true,
+      "classRegistry": true,
+      "factory": true,
+      "builder": true
+    }
+  },
+  "constants": {
+    "maxNestingLevel": 5,
+    "defaultLanguage": "javascript"
+  }
+}
