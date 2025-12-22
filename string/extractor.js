@@ -16,7 +16,7 @@ class StringExtractor {
       ...options
     };
     
-    this.codegenDataPath = path.resolve(__dirname, '../string/strings.json');
+    this.codegenDataPath = path.resolve(__dirname, 'strings.json');
     this.backupDir = path.resolve(__dirname, '../.string-extractor-backups');
     this.changesLog = [];
     this.extractedStrings = new Map();
@@ -87,7 +87,35 @@ class StringExtractor {
       // Very short strings (likely identifiers)
       /^.{1,2}$/,
       // Numbers and boolean strings
-      /^(true|false|null|undefined|\d+)$/
+      /^(true|false|null|undefined|\d+)$/,
+      // Log levels and common identifiers
+      /^(info|error|success|warning|debug|log|warn)$/,
+      // File extensions and paths
+      /^(\.js|\.ts|\.mjs|\.cjs|\.json|\.d\.ts|\/|\\)$/,
+      // Empty strings and whitespace
+      /^(\s*)$/,
+      // Template literal fragments
+      /^(\$\{|[^{}]*\}|\$\{[^}]*\})$/,
+      // Common programming terms
+      /^(initialize|execute|reset|ready|validation|data|name|class|type|id)$/,
+      // Template placeholders
+      /^\$\{[a-zA-Z_][a-zA-Z0-9_]*\}$/,
+      // Common UI/log levels
+      /^(console|log|info|warn|error|debug|success|warning|reset)$/,
+      // Module and file references
+      /^(module|exports|require|import|from|default|return|new|this|that)$/,
+      // Template literal content with placeholders
+      /^\s*\$\{[^}]+\}\s*$/,
+      // File paths and extensions
+      /^(\.\/|\.js|\.ts|\.mjs|\.cjs|\.json|\.d\.ts|\/|\\|\$\{.*\}\/.*\$\{.*\})$/,
+      // Code generation template fragments
+      /^(\s*;?\s*|\\n|\\t|,\s*|\/|\\\$\{|\\\})$/,
+      // Test descriptions and common test strings
+      /^(should|test|describe|it|expect|assert|beforeEach|afterEach)$/,
+      // Template literal content that's actually code
+      /^\s*(\$\{.*\}|\\n|\\t|;\s*|,\s*|\/|\\\$\{|\\\})\s*$/,
+      // Code generation template fragments with placeholders
+      /(\$\{.*\}|\.js|\.ts|\/|\\n|module\.exports|className|classConfig)/
     ];
   }
 
@@ -137,18 +165,30 @@ class StringExtractor {
     if (this.options.files.length > 0) {
       // Process specified files
       const files = [];
+      const projectRoot = path.resolve(__dirname, '..');
+      
       for (const pattern of this.options.files) {
-        try {
-          const result = execSync(`find . -name "${pattern}" -type f`, { 
-            encoding: 'utf8',
-            cwd: path.resolve(__dirname, '..')
-          });
-          files.push(...result.trim().split('\n').filter(f => f));
-        } catch (error) {
-          this.log(`Warning: Could not find files matching pattern: ${pattern}`, 'warn');
+        // Handle glob patterns
+        if (pattern.includes('*') || pattern.includes('?')) {
+          try {
+            const result = execSync(`find "${projectRoot}" -path "${pattern}" -type f`, { 
+              encoding: 'utf8'
+            });
+            files.push(...result.trim().split('\n').filter(f => f));
+          } catch (error) {
+            this.log(`Warning: Could not find files matching pattern: ${pattern}`, 'warn');
+          }
+        } else {
+          // Handle direct file paths
+          const fullPath = path.resolve(projectRoot, pattern);
+          if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
+            files.push(fullPath);
+          } else {
+            this.log(`Warning: File not found: ${pattern}`, 'warn');
+          }
         }
       }
-      return files.map(f => path.resolve(__dirname, '..', f));
+      return files;
     }
     
     if (this.options.project) {
@@ -420,6 +460,71 @@ class StringExtractor {
         lines[lineIndex] = `${markingComment}\n${line}`;
       }
     }
+    
+    modifiedContent = lines.join('\n');
+    
+    // Add string service import if needed
+    if (extractedStrings.length > 0 && !this.hasStringServiceImport(modifiedContent)) {
+      modifiedContent = this.addStringServiceImport(modifiedContent, filePath);
+    }
+    
+    return modifiedContent;
+  }
+
+  /**
+   * Check if file already has string service import
+   */
+  hasStringServiceImport(content) {
+    return content.includes('getStringService') || 
+           content.includes('require.*string-service') ||
+           content.includes('from.*string-service');
+  }
+
+  /**
+   * Add string service import to file
+   */
+  addStringServiceImport(content, filePath) {
+    const lines = content.split('\n');
+    const isTypeScript = filePath.endsWith('.ts') || filePath.endsWith('.tsx');
+    
+    // Find the last import/require statement
+    let lastImportIndex = -1;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (line.startsWith('const ') && line.includes('require')) {
+        lastImportIndex = i;
+      } else if (line.startsWith('import ')) {
+        lastImportIndex = i;
+      }
+    }
+    
+    const importStatement = isTypeScript 
+      ? "import { getStringService } from '../bootstrap/services/string-service';"
+      : "const { getStringService } = require('../bootstrap/services/string-service');";
+    
+    let insertIndex = 0;
+    
+    // Add import after the last existing import
+    if (lastImportIndex >= 0) {
+      insertIndex = lastImportIndex + 1;
+    } else {
+      // Add at the beginning after any shebang or comments
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line.startsWith('#!') || line.startsWith('/*') || line.startsWith('//')) {
+          insertIndex = i + 1;
+        } else {
+          break;
+        }
+      }
+    }
+    
+    lines.splice(insertIndex, 0, importStatement);
+    
+    // Add strings initialization after imports
+    const stringsInit = "const strings = getStringService();";
+    lines.splice(insertIndex + 1, 0, stringsInit);
+    lines.splice(insertIndex + 2, 0, '');
     
     return lines.join('\n');
   }

@@ -53,7 +53,11 @@ class BusinessLogicGenerator extends BaseCodegen {
     this.validateClasses();
     
     // Set project name in options for template processing
-    this.options.projectName = this.specification.project?.name || 'GeneratedProject';
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "GeneratedProject"
+// File: revolutionary-codegen/generators/business-logic-generator.js:56
+// Replaced with: strings.getMessage('generatedproject')
+    this.options.projectName = this.specification.project?.name || getMessage('generatedproject');
     
     return this;
   }
@@ -68,7 +72,11 @@ class BusinessLogicGenerator extends BaseCodegen {
     
     try {
       if (this.classesConfig.length === 0) {
-        this.log('⚠️  No business logic classes specified', 'warning');
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "⚠️  No business logic classes specified"
+// File: revolutionary-codegen/generators/business-logic-generator.js:71
+// Replaced with: strings.getConsole('no_business_logic_classes_specified')
+        this.log(getConsole('no_business_logic_classes_specified'), 'warning');
         return;
       }
       
@@ -425,7 +433,11 @@ module.exports = ${classConfig.name};
    */
   reset() {
     this.state = 'reset';
-    this.log('Class state reset', 'info');
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "Class state reset"
+// File: revolutionary-codegen/generators/business-logic-generator.js:428
+// Replaced with: strings.getConsole('class_state_reset')
+    this.log(getConsole('class_state_reset'), 'info');
   }
 
   /**
@@ -749,6 +761,9 @@ declare class ${dataClassName} {
     
     return `const ${classConfig.name} = require('../src/${classConfig.module || 'business'}/${classConfig.name}.js');
 const ${dataClassName} = require('../src/data/${dataClassName}.js');
+const { getStringService } = require('../bootstrap/services/string-service');
+const strings = getStringService();
+
 
 describe('${classConfig.name}', () => {
   let instance;
@@ -769,7 +784,11 @@ describe('${classConfig.name}', () => {
   });
 
   describe('initialize', () => {
-    it('should initialize successfully', async () => {
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "should initialize successfully"
+// File: revolutionary-codegen/generators/business-logic-generator.js:772
+// Replaced with: strings.getMessage('should_initialize_successfully')
+    it(getMessage('should_initialize_successfully'), async () => {
       const result = await instance.initialize();
       
       expect(result).toBe(instance);
@@ -778,7 +797,11 @@ describe('${classConfig.name}', () => {
   });
 
   describe('execute', () => {
-    it('should execute business logic', async () => {
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "should execute business logic"
+// File: revolutionary-codegen/generators/business-logic-generator.js:781
+// Replaced with: strings.getConsole('should_execute_business_logic')
+    it(getConsole('should_execute_business_logic'), async () => {
       const result = await instance.execute('test-data');
       
       expect(result).toBeDefined();
@@ -788,7 +811,11 @@ describe('${classConfig.name}', () => {
   });
 
   describe('validation', () => {
-    it('should validate required properties', () => {
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "should validate required properties"
+// File: revolutionary-codegen/generators/business-logic-generator.js:791
+// Replaced with: strings.getError('should_validate_required_properties')
+    it(getError('should_validate_required_properties'), () => {
       expect(() => {
         new ${classConfig.name}(null);
       }).toThrow();
@@ -842,7 +869,11 @@ describe('${classConfig.name}', () => {
    */
   validateClasses() {
     if (!Array.isArray(this.classesConfig)) {
-      throw new Error('Business logic classes must be an array');
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "Business logic classes must be an array"
+// File: revolutionary-codegen/generators/business-logic-generator.js:845
+// Replaced with: strings.getError('business_logic_classes_must_be_an_array')
+      throw new Error(getError('business_logic_classes_must_be_an_array'));
     }
     
     for (const classConfig of this.classesConfig) {
@@ -857,15 +888,27 @@ describe('${classConfig.name}', () => {
    */
   validateClassConfig(classConfig) {
     if (!classConfig.name) {
-      throw new Error('Class name is required');
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "Class name is required"
+// File: revolutionary-codegen/generators/business-logic-generator.js:860
+// Replaced with: strings.getError('class_name_is_required')
+      throw new Error(getError('class_name_is_required'));
     }
     
     if (!classConfig.description) {
-      throw new Error('Class description is required');
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "Class description is required"
+// File: revolutionary-codegen/generators/business-logic-generator.js:864
+// Replaced with: strings.getError('class_description_is_required')
+      throw new Error(getError('class_description_is_required'));
     }
     
     if (!classConfig.module) {
-      throw new Error('Class module path is required');
+// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
+// Original: "Class module path is required"
+// File: revolutionary-codegen/generators/business-logic-generator.js:868
+// Replaced with: strings.getError('class_module_path_is_required')
+      throw new Error(getError('class_module_path_is_required'));
     }
     
     // Validate naming conventions

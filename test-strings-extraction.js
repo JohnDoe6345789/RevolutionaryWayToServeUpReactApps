@@ -4,7 +4,26 @@
  * Test script to validate string extraction and replacement
  */
 
-const { getStringService } = require('./bootstrap/services/string-service');
+// Handle both CommonJS and ES modules
+let getStringService;
+try {
+  getStringService = require('../string/string-service');
+} catch (error) {
+  // Fallback for ES modules
+  console.log('Using ES module import...');
+  import('../string/string-service.js').then(module => {
+    getStringService = module.getStringService;
+    runTests();
+  }).catch(err => {
+    console.error('Failed to load string service:', err);
+    process.exit(1);
+  });
+  process.exit(0);
+}
+
+async function runTests() {
+
+async function runTests() {
 
 console.log('🧪 Testing String Service and String Extraction...\n');
 
@@ -126,3 +145,7 @@ console.log('1. Review the enhanced codegen-data.json file for all extracted str
 console.log('2. Test the revolutionary-codegen.js file to ensure all hard-coded strings use the string service');
 console.log('3. Run the test script: node test-strings-extraction.js');
 console.log('\n✅ All string extraction tests passed! The system is working correctly.');
+}
+
+// Call the test function
+runTests();
