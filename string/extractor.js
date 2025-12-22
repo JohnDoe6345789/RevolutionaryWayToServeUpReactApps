@@ -1,8 +1,22 @@
-#!/usr/bin/env node
-
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+
+/**
+ * Passive String Extractor - AI-Friendly Analysis Utility
+ * 
+ * This module provides string extraction and analysis capabilities without automatic execution.
+ * Designed for LLM intelligence gathering and controlled programmatic usage.
+ * 
+ * @author Passive String Extractor
+ * @version 2.0.0 - AI Enhanced
+ * 
+ * Safety Features:
+ * - 50 file limit to prevent system overload
+ * - Read-only analysis modes
+ * - Detailed structured output for AI processing
+ * - Comprehensive progress tracking
+ */
 
 class StringExtractor {
   constructor(options = {}) {
@@ -778,351 +792,351 @@ class StringExtractor {
   }
 }
 
-// CLI interface
-async function main() {
-  const args = process.argv.slice(2);
-  const options = {};
+/**
+ * Passive Interface Functions for AI and Programmatic Usage
+ * 
+ * These functions provide controlled access to string extraction capabilities
+ * without automatic execution or CLI behavior.
+ */
+
+/**
+ * Analyze strings in files without modifying them (read-only)
+ * @param {Object} options - Analysis options
+ * @param {string[]} options.files - File patterns to analyze
+ * @param {boolean} options.project - Analyze entire project
+ * @param {string[]} options.exclude - Patterns to exclude
+ * @param {number} options.maxFiles - Maximum files to process (default: 50)
+ * @param {boolean} options.verbose - Enable detailed logging
+ * @returns {Promise<Object>} Detailed analysis results
+ */
+async function analyzeStrings(options = {}) {
+  console.log('🔍 Starting Passive String Analysis (Read-Only Mode)\n');
   
-  // Parse command line arguments
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    
-    switch (arg) {
-      case '--files':
-        options.files = (args[++i] || '').split(',').map(f => f.trim());
-        break;
-      case '--project':
-        options.project = true;
-        break;
-      case '--dry-run':
-        options.dryRun = true;
-        break;
-      case '--no-backup':
-        options.backup = false;
-        break;
-      case '--verbose':
-        options.verbose = true;
-        break;
-      case '--rollback':
-        options.rollback = true;
-        break;
-      case '--exclude':
-        options.exclude = (args[++i] || '').split(',').map(f => f.trim());
-        break;
-      case '--help':
-      case '-h':
-        console.log('\nString Extraction Automation Script\n\nUSAGE:\n  node string/extractor.js [options]\n\nOPTIONS:\n  --files <patterns>     Comma-separated file patterns to process\n  --project              Process all JavaScript files in project\n  --dry-run              Preview changes without modifying files\n  --no-backup            Do not create backups before modifying files\n  --verbose              Show detailed logging\n  --exclude <patterns>   Comma-separated patterns to exclude\n  --rollback             Rollback last extraction\n  --help, -h             Show this help message\n\nEXAMPLES:\n  # Extract from specific files\n  node string/extractor.js --files "src/**/*.js"\n  \n  # Extract from entire project\n  node string/extractor.js --project\n  \n  # Dry run to preview changes\n  node string/extractor.js --dry-run --files "revolutionary-codegen/**/*.js"\n  \n  # Exclude certain directories\n  node string/extractor.js --project --exclude "test/**,docs/**"\n        ');
-        process.exit(0);
-        break;
-    }
-  }
+  const analysisOptions = {
+    ...options,
+    dryRun: true,
+    verbose: options.verbose || false,
+    maxFiles: options.maxFiles || 50
+  };
   
-  if (options.rollback) {
-    // Rollback functionality would need to read from backup metadata
-    console.log('Rollback functionality requires backup metadata - not implemented yet');
-    process.exit(1);
-  }
+  const extractor = new StringExtractor(analysisOptions);
   
   try {
-    const extractor = new StringExtractor(options);
     await extractor.extract();
+    
+    const analysis = {
+      timestamp: new Date().toISOString(),
+      mode: 'READ_ONLY_ANALYSIS',
+      safety: {
+        fileLimit: analysisOptions.maxFiles,
+        filesProcessed: extractor.changesLog.length,
+        readOnly: true
+      },
+      summary: {
+        totalStrings: extractor.extractedStrings.size,
+        filesAnalyzed: extractor.changesLog.length,
+        categories: {},
+        impact: {
+          highImpact: 0,
+          mediumImpact: 0,
+          lowImpact: 0
+        }
+      },
+      details: {},
+      recommendations: [],
+      warnings: []
+    };
+    
+    // Categorize extracted strings and assess impact
+    for (const [key, info] of Object.entries(extractor.extractedStrings)) {
+      if (!analysis.summary.categories[info.category]) {
+        analysis.summary.categories[info.category] = 0;
+      }
+      analysis.summary.categories[info.category]++;
+      
+      // Assess impact based on category and usage
+      let impact = 'low';
+      if (info.category === 'errors') impact = 'high';
+      else if (info.category === 'messages' || info.category === 'console') impact = 'medium';
+      
+      analysis.summary.impact[`${impact}Impact`]++;
+      
+      analysis.details[key] = {
+        content: info.content,
+        category: info.category,
+        impact,
+        sources: info.sources,
+        recommendations: generateRecommendations(info)
+      };
+    }
+    
+    // Generate overall recommendations
+    analysis.recommendations = generateOverallRecommendations(analysis);
+    
+    // Add safety warnings
+    if (extractor.changesLog.length >= analysisOptions.maxFiles) {
+      analysis.warnings.push(`⚠️  File limit reached (${analysisOptions.maxFiles}). Consider increasing limit or using more specific patterns.`);
+    }
+    
+    console.log('✅ Analysis Complete - No Files Modified\n');
+    console.log(`📊 Analysis Summary: ${analysis.summary.totalStrings} strings found in ${analysis.summary.filesAnalyzed} files`);
+    
+    return analysis;
+    
   } catch (error) {
-    console.error('Extraction failed:', error.message);
-    process.exit(1);
+    console.error('❌ Analysis failed:', error.message);
+    throw error;
   }
 }
 
 /**
- * String Extractor Verifier - Validates extraction results and prevents corruption
+ * Preview extraction changes with detailed output
+ * @param {Object} options - Preview options
+ * @returns {Promise<Object>} Detailed preview with proposed changes
  */
-class StringExtractorVerifier {
-  constructor(extractor) {
-    this.extractor = extractor;
-    this.verificationResults = {
-      isValid: true,
-      passed: [],
-      failed: [],
-      warnings: [],
-      todoItems: []
+async function previewExtraction(options = {}) {
+  console.log('👁️  Starting Extraction Preview (Dry Run Mode)\n');
+  
+  const previewOptions = {
+    ...options,
+    dryRun: true,
+    verbose: true,
+    maxFiles: options.maxFiles || 50
+  };
+  
+  const extractor = new StringExtractor(previewOptions);
+  
+  try {
+    await extractor.extract();
+    
+    const preview = {
+      timestamp: new Date().toISOString(),
+      mode: 'PREVIEW_CHANGES',
+      safety: {
+        fileLimit: previewOptions.maxFiles,
+        filesToModify: extractor.changesLog.length,
+        dryRun: true
+      },
+      proposedChanges: {},
+      impact: {
+        filesModified: extractor.changesLog.length,
+        stringsExtracted: extractor.extractedStrings.size,
+        linesAdded: 0,
+        complexityChange: 'minimal'
+      },
+      risks: [],
+      benefits: []
     };
+    
+    // Calculate proposed changes
+    for (const [key, info] of extractor.extractedStrings) {
+      for (const source of info.sources) {
+        const [filePath, lineNumber] = source.split(':');
+        
+        if (!preview.proposedChanges[filePath]) {
+          preview.proposedChanges[filePath] = {
+            modifications: [],
+            complexity: 'low'
+          };
+        }
+        
+        preview.proposedChanges[filePath].modifications.push({
+          line: parseInt(lineNumber),
+          original: info.content,
+          replacement: `strings.${extractor.getStringServiceMethod(info.category, '')}('${key}')`,
+          category: info.category,
+          risk: assessChangeRisk(info)
+        });
+      }
+    }
+    
+    // Calculate impact metrics
+    preview.impact.linesAdded = Object.values(preview.proposedChanges)
+      .reduce((total, file) => total + file.modifications.length * 2, 0); // 2 lines per change (comment + code)
+    
+    // Generate risks and benefits
+    preview.risks = generateExtractionRisks(preview);
+    preview.benefits = generateExtractionBenefits(preview);
+    
+    console.log('👁️  Preview Complete - No Files Modified\n');
+    console.log(`📊 Proposed Changes: ${preview.impact.filesModified} files, ${preview.impact.stringsExtracted} strings`);
+    
+    return preview;
+    
+  } catch (error) {
+    console.error('❌ Preview failed:', error.message);
+    throw error;
   }
+}
 
-  /**
-   * Run comprehensive verification
-   */
-  async verify() {
-    this.verificationResults = {
-      isValid: true,
-      passed: [],
-      failed: [],
-      warnings: [],
-      todoItems: []
+/**
+ * Extract strings with full logging and verification
+ * @param {Object} options - Extraction options
+ * @returns {Promise<Object>} Extraction results with comprehensive logging
+ */
+async function extractStrings(options = {}) {
+  console.log('🔧 Starting String Extraction with Full Verification\n');
+  
+  const extractionOptions = {
+    ...options,
+    dryRun: false,
+    verbose: true,
+    maxFiles: options.maxFiles || 50
+  };
+  
+  const extractor = new StringExtractor(extractionOptions);
+  
+  try {
+    await extractor.extract();
+    
+    // Run verification
+    const verifier = new StringExtractorVerifier(extractor);
+    const verificationResults = await verifier.verify();
+    
+    const results = {
+      timestamp: new Date().toISOString(),
+      mode: 'FULL_EXTRACTION',
+      safety: {
+        fileLimit: extractionOptions.maxFiles,
+        filesModified: extractor.changesLog.length,
+        backupsCreated: extractionOptions.backup
+      },
+      extraction: {
+        totalStrings: extractor.extractedStrings.size,
+        filesModified: extractor.changesLog.length,
+        changesLog: extractor.changesLog
+      },
+      verification: verificationResults,
+      success: verificationResults.isValid,
+      nextSteps: []
     };
-
-    console.log('\n🔍 Running String Extraction Verification...\n');
-
-    // 1. Verify syntax of modified files
-    await this.verifyFileSyntax();
     
-    // 2. Verify class structures
-    await this.verifyClassStructures();
+    // Generate next steps
+    results.nextSteps = generateNextSteps(results);
     
-    // 3. Verify imports and string service usage
-    await this.verifyImportsAndStringService();
+    console.log(`🔧 Extraction Complete - Status: ${results.success ? '✅ SUCCESS' : '❌ FAILED'}\n`);
     
-    // 4. Verify backup integrity
-    await this.verifyBackupIntegrity();
+    return results;
     
-    // 5. Verify string service calls
-    await this.verifyStringServiceCalls();
-    
-    // 6. Verify overall project integrity
-    await this.verifyProjectIntegrity();
-
-    // Generate numbered todo list output
-    this.generateTodoListOutput();
-
-    return this.verificationResults;
+  } catch (error) {
+    console.error('❌ Extraction failed:', error.message);
+    await extractor.rollback();
+    throw error;
   }
+}
 
-  /**
-   * Verify syntax of all modified files
-   */
-  async verifyFileSyntax() {
-    const modifiedFiles = this.extractor.changesLog.map(log => log.file);
-    
-    for (const filePath of modifiedFiles) {
-      try {
-        const content = fs.readFileSync(filePath, 'utf8');
-        
-        // Basic syntax check using Node.js
-        const module = {
-          exports: {}
-        };
-        const originalRequire = require;
-        
-        // Create a sandbox environment for syntax checking
-        const sandbox = {
-          console: { log: () => {}, error: () => {} },
-          require: originalRequire,
-          module,
-          exports: module.exports,
-          __filename: filePath,
-          __dirname: path.dirname(filePath)
-        };
-
-        // Try to evaluate the code (syntax check only)
-        new Function('console', 'require', 'module', 'exports', '__filename', '__dirname', content)
-          .call(sandbox, sandbox.console, sandbox.require, sandbox.module, sandbox.exports, sandbox.__filename, sandbox.__dirname);
-        
-        this.verificationResults.passed.push({
-          type: 'syntax',
-          file: filePath,
-          message: '✅ Syntax validation passed'
-        });
-        
-      } catch (error) {
-        this.verificationResults.isValid = false;
-        this.verificationResults.failed.push({
-          type: 'syntax',
-          file: filePath,
-          message: `❌ Syntax error: ${error.message}`,
-          line: error.lineNumber || 'unknown',
-          column: error.columnNumber || 'unknown'
-        });
-        
-        this.verificationResults.todoItems.push({
-          number: this.verificationResults.todoItems.length + 1,
-          priority: 'HIGH',
-          action: 'Fix Syntax Error',
-          file: filePath,
-          details: `Line ${error.lineNumber || 'unknown'}: ${error.message}`,
-          suggestion: 'Check for malformed string replacements or missing quotes'
-        });
-      }
+/**
+ * Get AI-friendly analysis report
+ * @param {Object} options - Report options
+ * @returns {Promise<Object>} Comprehensive AI analysis report
+ */
+async function getAnalysisReport(options = {}) {
+  console.log('📊 Generating AI-Friendly Analysis Report\n');
+  
+  const analysis = await analyzeStrings(options);
+  
+  const report = {
+    executiveSummary: {
+      totalStrings: analysis.summary.totalStrings,
+      filesAnalyzed: analysis.summary.filesAnalyzed,
+      complexity: assessProjectComplexity(analysis),
+      recommendation: getTopRecommendation(analysis)
+    },
+    technicalDetails: {
+      categories: analysis.summary.categories,
+      impactAssessment: analysis.summary.impact,
+      fileBreakdown: analyzeFileDistribution(analysis),
+      stringPatterns: analyzeStringPatterns(analysis)
+    },
+    actionableInsights: {
+      immediateActions: getImmediateActions(analysis),
+      longTermImprovements: getLongTermImprovements(analysis),
+      riskMitigation: getRiskMitigationStrategies(analysis)
+    },
+    metadata: {
+      generatedAt: analysis.timestamp,
+      fileLimit: analysis.safety.fileLimit,
+      processingMode: analysis.mode
     }
-  }
+  };
+  
+  console.log('📊 AI Analysis Report Generated\n');
+  return report;
+}
 
-  /**
-   * Verify class structures are intact
-   */
-  async verifyClassStructures() {
-    const modifiedFiles = this.extractor.changesLog.map(log => log.file);
-    
-    for (const filePath of modifiedFiles) {
-      try {
-        const content = fs.readFileSync(filePath, 'utf8');
-        const lines = content.split('\n');
-        
-        // Find class declarations
-        const classMatches = content.match(/^class\s+\w+/gm) || [];
-        
-        for (const classMatch of classMatches) {
-          const className = classMatch.replace('class ', '').trim();
-          
-          // Check if class has proper structure
-          const classStart = content.indexOf(classMatch);
-          const classContent = content.substring(classStart);
-          
-          // Basic class structure checks
-          const hasConstructor = classContent.includes('constructor(');
-          const hasMethods = /(\w+\s*\([^)]*\)\s*{)/.test(classContent);
-          const hasBraces = classContent.includes('{') && classContent.includes('}');
-          
-          if (!hasBraces) {
-            this.verificationResults.isValid = false;
-            this.verificationResults.failed.push({
-              type: 'class_structure',
-              file: filePath,
-              message: `❌ Class ${className} has missing braces`,
-              class: className
-            });
-            
-            this.verificationResults.todoItems.push({
-              number: this.verificationResults.todoItems.length + 1,
-              priority: 'HIGH',
-              action: 'Fix Class Structure',
-              file: filePath,
-              details: `Class ${className} is missing proper braces`,
-              suggestion: 'Ensure class has opening and closing braces'
-            });
-          } else {
-            this.verificationResults.passed.push({
-              type: 'class_structure',
-              file: filePath,
-              message: `✅ Class ${className} structure is valid`
-            });
-          }
-          
-          // Check for broken method signatures
-          const methodMatches = classContent.match(/^\s*\w+\s*\([^)]*\)\s*{/gm) || [];
-          for (const methodMatch of methodMatches) {
-            if (methodMatch.includes('strings.') && !methodMatch.includes('getError') && 
-                !methodMatch.includes('getMessage') && !methodMatch.includes('getLabel') && 
-                !methodMatch.includes('getConsole')) {
-              this.verificationResults.warnings.push({
-                type: 'method_signature',
-                file: filePath,
-                message: `⚠️  Suspicious method signature: ${methodMatch.trim()}`
-              });
-            }
-          }
-        }
-        
-      } catch (error) {
-        this.verificationResults.warnings.push({
-          type: 'class_structure',
-          file: filePath,
-          message: `⚠️  Could not verify class structures: ${error.message}`
-        });
-      }
-    }
+// Helper functions for AI analysis
+function generateRecommendations(stringInfo) {
+  const recommendations = [];
+  
+  if (stringInfo.category === 'errors') {
+    recommendations.push('High priority: Error strings should be extracted first for consistent error handling');
   }
-
-  /**
-   * Verify imports and string service usage
-   */
-  async verifyImportsAndStringService() {
-    const modifiedFiles = this.extractor.changesLog.map(log => log.file);
-    
-    for (const filePath of modifiedFiles) {
-      try {
-        const content = fs.readFileSync(filePath, 'utf8');
-        
-        // Check if string service import exists when needed
-        const hasStringServiceUsage = content.includes('strings.');
-        const hasStringServiceImport = content.includes('getStringService') || 
-                                      content.includes('require.*string-service') ||
-                                      content.includes('from.*string-service');
-        
-        if (hasStringServiceUsage && !hasStringServiceImport) {
-          this.verificationResults.isValid = false;
-          this.verificationResults.failed.push({
-            type: 'import',
-            file: filePath,
-            message: '❌ Missing string service import'
-          });
-          
-          this.verificationResults.todoItems.push({
-            number: this.verificationResults.todoItems.length + 1,
-            priority: 'HIGH',
-            action: 'Add Missing Import',
-            file: filePath,
-            details: 'String service is used but not imported',
-            suggestion: 'Add: const { getStringService } = require("../bootstrap/services/string-service");'
-          });
-        } else if (hasStringServiceImport && !content.includes('const strings = getStringService();')) {
-          this.verificationResults.warnings.push({
-            type: 'import',
-            file: filePath,
-            message: '⚠️  String service imported but not initialized'
-          });
-          
-          this.verificationResults.todoItems.push({
-            number: this.verificationResults.todoItems.length + 1,
-            priority: 'MEDIUM',
-            action: 'Initialize String Service',
-            file: filePath,
-            details: 'String service is imported but not initialized',
-            suggestion: 'Add: const strings = getStringService();'
-          });
-        } else {
-          this.verificationResults.passed.push({
-            type: 'import',
-            file: filePath,
-            message: '✅ String service imports are valid'
-          });
-        }
-        
-        // Check import order and placement
-        const lines = content.split('\n');
-        const importLines = lines.filter((line, index) => 
-          (line.trim().startsWith('import ') || 
-           (line.trim().startsWith('const ') && line.includes('require'))) &&
-          index < 20 // Imports should be near the top
-        );
-        
-        if (importLines.length === 0 && hasStringServiceUsage) {
-          this.verificationResults.warnings.push({
-            type: 'import_placement',
-            file: filePath,
-            message: '⚠️  String service usage found but no imports detected in expected locations'
-          });
-        }
-        
-      } catch (error) {
-        this.verificationResults.warnings.push({
-          type: 'import',
-          file: filePath,
-          message: `⚠️  Could not verify imports: ${error.message}`
-        });
-      }
-    }
+  
+  if (stringInfo.sources.length > 3) {
+    recommendations.push('Consider consolidating: String used in multiple locations');
   }
+  
+  if (stringInfo.content.length > 100) {
+    recommendations.push('Long string: Consider breaking into smaller, reusable components');
+  }
+  
+  return recommendations;
+}
 
-  /**
-   * Verify backup integrity
-   */
-  async verifyBackupIntegrity() {
-    const modifiedFiles = this.extractor.changesLog.map(log => log.file);
-    
-    for (const filePath of modifiedFiles) {
-      try {
-        // Check if backup exists
-        const relativePath = path.relative(process.cwd(), filePath);
-        const backupDir = path.join(this.extractor.backupDir, relativePath);
-        
-        if (!fs.existsSync(backupDir)) {
-          this.verificationResults.warnings.push({
-            type: 'backup',
-            file: filePath,
-            message: '⚠️  No backup directory found'
-          });
-          
-          this.verificationResults.todoItems.push({
-            number: this.verificationResults.todoItems.length + 1,
-            priority: 'LOW',
-            action: 'Check Backup Directory',
+function generateOverallRecommendations(analysis) {
+  const recommendations = [];
+  
+  if (analysis.summary.impact.highImpact > 0) {
+    recommendations.push('Start with error strings for immediate benefit');
+  }
+  
+  if (analysis.summary.filesAnalyzed >= analysis.safety.fileLimit) {
+    recommendations.push('Consider processing files in batches due to limit');
+  }
+  
+  recommendations.push('Run preview extraction first to review changes');
+  recommendations.push('Always verify extraction results with comprehensive testing');
+  
+  return recommendations;
+}
+
+function assessChangeRisk(stringInfo) {
+  if (stringInfo.category === 'errors') return 'high';
+  if (stringInfo.sources.length > 2) return 'medium';
+  return 'low';
+}
+
+function generateExtractionRisks(preview) {
+  const risks = [];
+  
+  if (preview.impact.filesModified > 10) {
+    risks.push('High number of file modifications - consider batching');
+  }
+  
+  if (preview.impact.stringsExtracted > 50) {
+    risks.push('Large number of strings - potential for merge conflicts');
+  }
+  
+  return risks;
+}
+
+function generateExtractionBenefits(preview) {
+  const benefits = [
+    'Centralized string management',
+    'Improved internationalization support',
+    'Consistent error messaging',
+    'Better code maintainability'
+  ];
+  
+  return benefits;
+}
+
+function assessProjectComplexity(analysis) {
+  if (analysis.summary.totalStrings > 100) return 'high';
+  if (analysis.summary.totalStrings > 50) return 'medium';
+  return 'low';
+}
+
             file: filePath,
             details: 'Backup directory does not exist',
             suggestion: 'Verify backup creation is enabled and permissions are correct'
