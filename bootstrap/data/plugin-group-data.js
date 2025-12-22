@@ -1,4 +1,5 @@
 const BaseData = require('./base-data.js');
+const { getStringService } = require('../../string/string-service');
 
 /**
  * PluginGroupData - Data class for plugin group configurations
@@ -35,50 +36,51 @@ class PluginGroupData extends BaseData {
    * @throws {Error} If plugin group data is invalid
    */
   validate() {
+    const strings = getStringService();
     super.validate();
-    
+
     if (!this.name) {
-      throw new Error('Plugin group name is required');
+      throw new Error(strings.getError('plugin_group_name_is_required'));
     }
-    
+
     if (!this.description) {
-      throw new Error('Plugin group description is required');
+      throw new Error(strings.getError('plugin_group_description_is_required'));
     }
-    
+
     if (!this.category) {
-      throw new Error('Plugin group category is required');
+      throw new Error(strings.getError('plugin_group_category_is_required'));
     }
-    
+
     if (!Array.isArray(this.plugins)) {
-      throw new Error('Plugins must be an array');
+      throw new Error(strings.getError('plugins_must_be_an_array'));
     }
-    
+
     if (!Array.isArray(this.dependencies)) {
-      throw new Error('Dependencies must be an array');
+      throw new Error(strings.getError('dependencies_must_be_an_array'));
     }
-    
+
     if (!Array.isArray(this.loadOrder)) {
-      throw new Error('Load order must be an array');
+      throw new Error(strings.getError('load_order_must_be_an_array'));
     }
-    
+
     if (typeof this.config !== 'object') {
-      throw new Error('Config must be an object');
+      throw new Error(strings.getError('config_must_be_an_object_1'));
     }
-    
+
     // Validate plugin references
     for (const plugin of this.plugins) {
       if (!plugin.name || !plugin.version) {
-        throw new Error('Each plugin must have name and version');
+        throw new Error(strings.getError('each_plugin_must_have_name_and_version'));
       }
     }
-    
+
     // Validate load order references
     for (const pluginName of this.loadOrder) {
       if (!this.plugins.some(p => p.name === pluginName)) {
-        throw new Error(`Load order references unknown plugin: ${pluginName}`);
+        throw new Error(strings.getError('load_order_references_unknown_plugin_pluginname', { pluginName }));
       }
     }
-    
+
     return true;
   }
 
@@ -96,17 +98,19 @@ class PluginGroupData extends BaseData {
    * @param {Object} plugin - Plugin information
    */
   addPlugin(plugin) {
+    const strings = getStringService();
+
     if (!plugin.name || !plugin.version) {
-      throw new Error('Plugin must have name and version');
+      throw new Error(strings.getError('plugin_must_have_name_and_version'));
     }
-    
+
     // Check if plugin already exists
     if (this.getPlugin(plugin.name)) {
-      throw new Error(`Plugin ${plugin.name} already exists in group`);
+      throw new Error(strings.getError('plugin_plugin_name_already_exists_in_group', { plugin }));
     }
-    
+
     this.plugins.push(plugin);
-    
+
     // Add to load order if not present
     if (!this.loadOrder.includes(plugin.name)) {
       this.loadOrder.push(plugin.name);
@@ -225,11 +229,12 @@ class PluginGroupData extends BaseData {
    * @param {Object} newConfig - New configuration
    */
   updatePluginConfig(pluginName, newConfig) {
+    const strings = getStringService();
     const plugin = this.getPlugin(pluginName);
     if (!plugin) {
-      throw new Error(`Plugin ${pluginName} not found in group`);
+      throw new Error(strings.getError('plugin_pluginname_not_found_in_group', { pluginName }));
     }
-    
+
     plugin.config = { ...plugin.config, ...newConfig };
   }
 
@@ -239,11 +244,12 @@ class PluginGroupData extends BaseData {
    * @param {boolean} enabled - Enable state
    */
   setPluginEnabled(pluginName, enabled) {
+    const strings = getStringService();
     const plugin = this.getPlugin(pluginName);
     if (!plugin) {
-      throw new Error(`Plugin ${pluginName} not found in group`);
+      throw new Error(strings.getError('plugin_pluginname_not_found_in_group', { pluginName }));
     }
-    
+
     plugin.enabled = enabled !== false;
   }
 
