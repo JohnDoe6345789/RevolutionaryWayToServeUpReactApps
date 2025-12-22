@@ -57,6 +57,15 @@ const testFilePath = path.resolve(__dirname, '../test-extraction-target.js');
 
 async function runTests() {
   console.log('🧪 Testing String Extraction Automation Script\n');
+
+  // Test 0: Verify file limit is set to 100
+  console.log('📋 Test 0: Verify file limit is set to 100');
+  const extractorWithDefaultLimit = new StringExtractor({});
+  if (extractorWithDefaultLimit.options.maxFiles === 100) {
+    console.log('✅ File limit correctly set to 100');
+  } else {
+    console.log(`❌ File limit is ${extractorWithDefaultLimit.options.maxFiles}, expected 100`);
+  }
   
   try {
     // Create test file
