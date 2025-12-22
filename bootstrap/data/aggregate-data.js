@@ -1,4 +1,5 @@
 const BaseData = require('./base-data.js');
+const { getStringService } = require('../../string/string-service');
 
 /**
  * AggregateData - Data class for aggregate configurations
@@ -35,36 +36,37 @@ class AggregateData extends BaseData {
    * @throws {Error} If aggregate data is invalid
    */
   validate() {
+    const strings = getStringService();
     super.validate();
-    
+
     if (!this.name) {
-      throw new Error('Aggregate name is required');
+      throw new Error(strings.getError('aggregate_name_is_required'));
     }
-    
+
     if (!this.factory) {
-      throw new Error('Factory is required');
+      throw new Error(strings.getError('factory_is_required'));
     }
-    
+
     if (!this.dataClass) {
-      throw new Error('Data class is required');
+      throw new Error(strings.getError('data_class_is_required'));
     }
-    
+
     if (!this.module) {
-      throw new Error('Module path is required');
+      throw new Error(strings.getError('module_path_is_required'));
     }
-    
+
     if (!Array.isArray(this.children)) {
-      throw new Error('Children must be an array');
+      throw new Error(strings.getError('children_must_be_an_array'));
     }
-    
+
     if (typeof this.config !== 'object') {
-      throw new Error('Config must be an object');
+      throw new Error(strings.getError('config_must_be_an_object'));
     }
-    
+
     if (typeof this.nestingLevel !== 'number' || this.nestingLevel < 0) {
-      throw new Error('Nesting level must be a non-negative number');
+      throw new Error(strings.getError('nesting_level_must_be_a_non_negative_number'));
     }
-    
+
     return true;
   }
 

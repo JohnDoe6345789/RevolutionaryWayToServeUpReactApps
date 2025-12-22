@@ -19,44 +19,88 @@ function collectKeys(obj) {
 }
 collectKeys(strings.i18n.en);
 
-// Define used keys based on grep search results
-const usedKeys = new Set([
-  // Messages
-  'retro_deck', 'settings', 'sync', 'insert_coin', 'item_name_required', 'service_required',
-  'initializing_service', 'starting_initialization', 'initialization_completed', 'open_settings',
-  'sync_with_cloud', 'launch_arcade', 'browse_library', 'rev_codegen_initializing', 'created_output_dir',
-  'initializing_generators', 'executing_codegen', 'files_generated', 'codegen_failed', 'cleaning_up',
-  'cleaned_items', 'final_cleanup', 'cleanup_operation', 'cleanup_failed', 'final_cleanup_complete',
-  'method_not_implemented', 'created_directory', 'generated_file', 'dry_run_file', 'backed_up_file',
-  'dark_mode', 'broke_developer', 'java_glasses', 'sad_function', 'love_nature', 'unlocked', 'keep_going',
-  'found_me', 'unicorn_mode', 'ai_watching', 'konami_code', 'infinity_beyond', 'diamond_hands', 'rainbow_mode',
-  'all_your_base', 'revolutionary_logo', 'welcome_subtitle', 'completion_celebration_1', 'completion_celebration_2',
-  'completion_celebration_3', 'completion_celebration_4', 'completion_celebration_5', 'stats_files_generated',
-  'stats_files_backed_up', 'stats_duration', 'stats_innovations_triggered', 'stats_achievements_unlocked',
-  'generator_breakdown', 'next_steps', 'next_step_1', 'next_step_2', 'next_step_3', 'next_step_4', 'next_step_5',
-  'farewell_message', 'oops_something_went_wrong', 'error_message', 'error_tip_config', 'error_tip_verbose',
-  'error_tip_reassurance', 'operation_not_found', 'initializing_nested_aggregates', 'initializing_plugin_groups',
-  'hero_description', 'specification_load_failed', 'stats_warnings', 'non_existent_key', 'generating_project_from_spec',
-  'launching_spec_editor', 'stats_errors', 'processing_file_filename', 'starting_process',
+// Automatically detect used keys by scanning for string service calls
+function findUsedKeys() {
+  const usedKeys = new Set();
 
-  // Errors
-  'service_required_initialization', 'service_name_required', 'service_type_required', 'dependencies_invalid',
-  'config_object_required', 'service_name_invalid', 'factory_type_required', 'target_class_required',
-  'data_class_required', 'serviceregistry_must_be_an_object', 'namespace_must_be_an_object', 'configjson_must_be_a_valid_object',
-  'failed_to_load_aggregate_hierarchy_error_message', 'nesting_level_aggregate_nestinglevel_exceeds_maxim',
-  'failed_to_create_aggregate_name_error_message', 'specification_not_loaded',
+  try {
+    console.log('🔍 Scanning for string service calls...');
 
-  // Console
-  'loggingmanager', 'client_log', 'nested_aggregates_initialized', 'plugin_groups_initialized',
+    // Get all JS/TS/TSX files to scan (from project root)
+    const projectRoot = path.resolve(__dirname, '..');
+    const files = execSync(`find . -name "*.js" -o -name "*.ts" -o -name "*.tsx" | grep -v node_modules | grep -v .git | grep -v coverage | grep -v test-tooling | grep -v e2e`, {
+      encoding: 'utf8',
+      cwd: projectRoot
+    }).trim().split('\n').filter(f => f);
 
-  // Labels
-  'no_store_no_cache_must_revalidate',
+    console.log(`📁 Found ${files.length} files to scan`);
 
-  // Bootstrapper.js specific
-  'bootstrapper', 'controllers', 'core', 'main_tsx', 'styles_scss', 'bootstrap_success',
-  'fetch_is_unavailable_when_loading_config_json', 'config_json', 'no_store', 'failed_to_load_config_json',
-  'ci_enabled', 'string_1b', 'bootstrap_error', 'root'
-]);
+    // Scan each file for string service calls
+    for (const file of files) {
+      try {
+        const fullPath = path.join(projectRoot, file);
+        const content = fs.readFileSync(fullPath, 'utf8');
+
+        // Find all string service method calls
+        const patterns = [
+          /strings\.(get|getError|getMessage|getLabel|getConsole|getSystem)\s*\(\s*['"`]([^'"`]+)['"`]/g,
+          /strings\.(get|getError|getMessage|getLabel|getConsole|getSystem)\s*\(\s*["']([^"']+)["']/g,
+          /\bstrings\.(get|getError|getMessage|getLabel|getConsole|getSystem)\(['"]([^'"]+)['"]/g
+        ];
+
+        for (const pattern of patterns) {
+          let match;
+          while ((match = pattern.exec(content)) !== null) {
+            if (match[2]) {
+              usedKeys.add(match[2]);
+            }
+          }
+        }
+      } catch (error) {
+        // Skip files that can't be read
+        continue;
+      }
+    }
+
+    console.log(`🔍 Auto-detected ${usedKeys.size} keys used via string service calls`);
+
+  } catch (error) {
+    console.warn('⚠️  Warning: Could not auto-detect used keys, falling back to manual list');
+    // Fallback to manual list if auto-detection fails
+    return new Set([
+      'retro_deck', 'settings', 'sync', 'insert_coin', 'item_name_required', 'service_required',
+      'initializing_service', 'starting_initialization', 'initialization_completed', 'open_settings',
+      'sync_with_cloud', 'launch_arcade', 'browse_library', 'rev_codegen_initializing', 'created_output_dir',
+      'initializing_generators', 'executing_codegen', 'files_generated', 'codegen_failed', 'cleaning_up',
+      'cleaned_items', 'final_cleanup', 'cleanup_operation', 'cleanup_failed', 'final_cleanup_complete',
+      'method_not_implemented', 'created_directory', 'generated_file', 'dry_run_file', 'backed_up_file',
+      'dark_mode', 'broke_developer', 'java_glasses', 'sad_function', 'love_nature', 'unlocked', 'keep_going',
+      'found_me', 'unicorn_mode', 'ai_watching', 'konami_code', 'infinity_beyond', 'diamond_hands', 'rainbow_mode',
+      'all_your_base', 'revolutionary_logo', 'welcome_subtitle', 'completion_celebration_1', 'completion_celebration_2',
+      'completion_celebration_3', 'completion_celebration_4', 'completion_celebration_5', 'stats_files_generated',
+      'stats_files_backed_up', 'stats_duration', 'stats_innovations_triggered', 'stats_achievements_unlocked',
+      'generator_breakdown', 'next_steps', 'next_step_1', 'next_step_2', 'next_step_3', 'next_step_4', 'next_step_5',
+      'farewell_message', 'oops_something_went_wrong', 'error_message', 'error_tip_config', 'error_tip_verbose',
+      'error_tip_reassurance', 'operation_not_found', 'initializing_nested_aggregates', 'initializing_plugin_groups',
+      'hero_description', 'specification_load_failed', 'stats_warnings', 'non_existent_key', 'generating_project_from_spec',
+      'launching_spec_editor', 'stats_errors', 'processing_file_filename', 'starting_process',
+      'service_required_initialization', 'service_name_required', 'service_type_required', 'dependencies_invalid',
+      'config_object_required', 'service_name_invalid', 'factory_type_required', 'target_class_required',
+      'data_class_required', 'serviceregistry_must_be_an_object', 'namespace_must_be_an_object', 'configjson_must_be_a_valid_object',
+      'failed_to_load_aggregate_hierarchy_error_message', 'nesting_level_aggregate_nestinglevel_exceeds_maxim',
+      'failed_to_create_aggregate_name_error_message', 'specification_not_loaded',
+      'loggingmanager', 'client_log', 'nested_aggregates_initialized', 'plugin_groups_initialized',
+      'no_store_no_cache_must_revalidate',
+      'bootstrapper', 'controllers', 'core', 'main_tsx', 'styles_scss', 'bootstrap_success',
+      'fetch_is_unavailable_when_loading_config_json', 'config_json', 'no_store', 'failed_to_load_config_json',
+      'ci_enabled', 'string_1b', 'bootstrap_error', 'root'
+    ]);
+  }
+
+  return usedKeys;
+}
+
+const usedKeys = findUsedKeys();
 
 // Find unused keys
 const unusedKeys = [];
