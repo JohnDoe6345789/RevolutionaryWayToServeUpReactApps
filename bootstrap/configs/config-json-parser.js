@@ -23,10 +23,6 @@ class ConfigJsonParser {
    * @throws Error if configuration is invalid
    */
   validate() {
-// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
-// Original: "object"
-// File: ../bootstrap/configs/config-json-parser.js:26
-// Replaced with: strings.getMessage('object_3')
     if (typeof this.configJson !== getMessage('object_3') || this.configJson === null) {
       throw new Error(strings.getError('configjson_must_be_a_valid_object'));
     }

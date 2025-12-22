@@ -24,10 +24,6 @@ class NetworkServiceConfig {
     this.probeConfig = probeConfig;
     this.moduleResolverConfig = moduleResolverConfig;
     this.isCommonJs =
-// AUTO-EXTRACTED: Extracted by string-extractor.js on 2025-12-22
-// Original: "boolean"
-// File: ../bootstrap/configs/cdn/network-service.js:24
-// Replaced with: strings.getMessage('boolean')
       typeof isCommonJs === getMessage('boolean')
         ? isCommonJs
         : typeof module !== "undefined" && typeof module.exports !== "undefined";

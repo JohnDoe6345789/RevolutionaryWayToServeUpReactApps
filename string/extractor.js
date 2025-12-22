@@ -631,11 +631,7 @@ class StringExtractor {
     const timestamp = new Date().toISOString().split('T')[0];
     const relativePath = path.relative(process.cwd(), stringInfo.file);
     
-    return `// AUTO-EXTRACTED: Extracted by string-extractor.js on ${timestamp}
-// Original: "${stringInfo.content}"
-// File: ${relativePath}:${stringInfo.line}
-// Replaced with: strings.${this.getStringServiceMethod(stringInfo.category, '')}('${stringInfo.key}')`;
-  }
+    return `  }
 
   /**
    * Load existing codegen data
