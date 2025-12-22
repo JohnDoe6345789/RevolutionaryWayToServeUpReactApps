@@ -9,6 +9,7 @@
 const fs = require('fs');
 const path = require('path');
 const BasePlugin = require('../lib/base-plugin');
+const LanguageRegistry = require('../lib/language-registry');
 
 // Constants matching Python implementation
 const DEFAULT_EXTENSIONS = ['.js', '.jsx', '.ts', '.tsx', '.html'];
