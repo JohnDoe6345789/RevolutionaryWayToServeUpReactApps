@@ -64,20 +64,20 @@ class BaseCodegen {
   }
 
   /**
-   * Initialize the codegen - required by OO plugin
+   * Initialize codegen - required by OO plugin
    * @returns {Promise<BaseCodegen>} The initialized codegen
    */
   async initialize() {
     this.stats.startTime = new Date();
     this.displayWelcome();
-    const strings = require('../bootstrap/services/string-service').getStringService();
+    this.strings = require('../bootstrap/services/string-service').getStringService();
     
-    this.log(strings.getMessage('rev_codegen_initializing'), 'info');
+    this.log(this.strings.getMessage('rev_codegen_initializing'), 'info');
     
     // Ensure output directory exists
     if (!fs.existsSync(this.options.outputDir)) {
       fs.mkdirSync(this.options.outputDir, { recursive: true });
-      this.log(`📁 Created output directory: ${this.options.outputDir}`, 'success');
+      this.log(this.strings.getMessage('created_output_dir', { path: this.options.outputDir }), 'success');
     }
     
     // Clean up if requested
@@ -86,7 +86,7 @@ class BaseCodegen {
     }
     
     // Display progress animation
-    this.displayProgressAnimation(strings.getMessage('initializing_generators'), 1000);
+    this.displayProgressAnimation(this.strings.getMessage('initializing_generators'), 1000);
     
     return this;
   }
@@ -96,7 +96,7 @@ class BaseCodegen {
    * @returns {Promise<Object>} Generation results
    */
   async execute() {
-    this.log('⚡ Executing revolutionary codegen generation...', 'info');
+    this.log(this.strings.getMessage('executing_codegen'), 'info');
     
     const results = {
       generatedFiles: [],
@@ -129,7 +129,7 @@ class BaseCodegen {
       const duration = this.stats.endTime - this.stats.startTime;
       results.stats.duration = duration;
       
-      this.log(`✨ Generated ${results.generatedFiles.length} files in ${Math.round(duration)}ms`, 'success');
+      this.log(this.strings.getMessage('files_generated', { count: results.generatedFiles.length, duration: Math.round(duration) }), 'success');
       
       // Display completion celebration
       this.displayCompletion(results);
@@ -137,7 +137,7 @@ class BaseCodegen {
     } catch (error) {
       this.stats.errors++;
       results.errors.push(error.message);
-      this.log(`❌ Codegen failed: ${error.message}`, 'error');
+      this.log(this.strings.getMessage('codegen_failed', { error: error.message }), 'error');
       this.displayError(error);
       
       if (this.options.strictMode) {
@@ -153,7 +153,7 @@ class BaseCodegen {
    * @returns {Promise<void>}
    */
   async cleanUp() {
-    this.log('🧹 Cleaning up previous generated files...', 'info');
+    this.log(this.strings.getMessage('cleaning_up'), 'info');
     
     if (!fs.existsSync(this.options.outputDir)) {
       return;
@@ -172,7 +172,7 @@ class BaseCodegen {
           await this.backupFile(filePath);
         }
         
-        // Remove the file
+        // Remove file
         fs.unlinkSync(filePath);
         cleanedCount++;
       } else if (stat.isDirectory() && !file.startsWith('.')) {
@@ -182,7 +182,7 @@ class BaseCodegen {
       }
     }
     
-    this.log(`🗑️  Cleaned up ${cleanedCount} items`, 'info');
+    this.log(this.strings.getMessage('cleaned_items', { count: cleanedCount }), 'info');
   }
 
   /**
@@ -190,14 +190,14 @@ class BaseCodegen {
    * @returns {Promise<void>}
    */
   async cleanDown() {
-    this.log('🎯 Performing final cleanup operations...', 'info');
+    this.log(this.strings.getMessage('final_cleanup'), 'info');
     
     for (const operation of this.cleanupOperations) {
       try {
         await this.executeCleanupOperation(operation);
-        this.log(`✓ Executed cleanup operation: ${operation.type}`, 'info');
+        this.log(this.strings.getMessage('cleanup_operation', { type: operation.type }), 'info');
       } catch (error) {
-        this.log(`⚠️  Cleanup operation failed: ${error.message}`, 'warning');
+        this.log(this.strings.getMessage('cleanup_failed', { error: error.message }), 'warning');
         this.stats.warnings++;
       }
     }
@@ -207,7 +207,7 @@ class BaseCodegen {
     // Clear template cache
     this.templateCache.clear();
     
-    this.log('🧼 Final cleanup completed', 'success');
+    this.log(this.strings.getMessage('final_cleanup_complete'), 'success');
   }
 
   /**
@@ -216,7 +216,7 @@ class BaseCodegen {
    * @returns {Promise<void>}
    */
   async generate(results) {
-    throw new Error('generate() method must be implemented by subclass');
+    throw new Error(this.strings.getMessage('method_not_implemented', { method: 'generate' }));
   }
 
   /**
@@ -241,7 +241,7 @@ class BaseCodegen {
     // Ensure directory exists
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
-      this.log(`📁 Created directory: ${path.relative(this.options.outputDir, dir)}`, 'info');
+      this.log(this.strings.getMessage('created_directory', { path: path.relative(this.options.outputDir, dir) }), 'info');
     }
     
     // Process content with template variables
@@ -252,13 +252,13 @@ class BaseCodegen {
       await this.backupFile(fullPath);
     }
     
-    // Write the file (unless dry run)
+    // Write file (unless dry run)
     if (!this.options.dryRun) {
       fs.writeFileSync(fullPath, processedContent, 'utf8');
-      this.log(`📝 Generated: ${relativePath}`, 'success');
+      this.log(this.strings.getMessage('generated_file', { path: relativePath }), 'success');
       this.stats.filesGenerated++;
     } else {
-      this.log(`🔍 [DRY RUN] Would generate: ${relativePath}`, 'info');
+      this.log(this.strings.getMessage('dry_run_file', { path: relativePath }), 'info');
     }
     
     this.generatedFiles.add(relativePath);
@@ -291,7 +291,7 @@ class BaseCodegen {
     this.backupFiles.set(filePath, backupPath);
     this.stats.filesBackedUp++;
     
-    this.log(`💾 Backed up: ${path.basename(filePath)} -> ${path.basename(backupPath)}`, 'info');
+    this.log(this.strings.getMessage('backed_up_file', { filename: path.basename(filePath), backupName: path.basename(backupPath) }), 'info');
   }
 
   /**
@@ -457,7 +457,7 @@ class BaseCodegen {
         break;
         
       default:
-        throw new Error(`Unknown cleanup operation type: ${operation.type}`);
+        throw new Error(this.strings.getMessage('operation_not_found', { type: operation.type }));
     }
   }
 
@@ -684,26 +684,25 @@ class BaseCodegen {
    */
   displayCompletion(results) {
     const celebrations = [
-      "🎉 Generation complete! You're awesome! 🎉",
-      "🚀 Project generated! Time to conquer the world! 🌍",
-      "✨ Magic happened! Your code is ready! ✨",
-      "🏆 Victory! Your project has been created! 🏆",
-      "🎯 Mission accomplished! Project ready! 🎯"
+      this.strings.getMessage('completion_celebration_1'),
+      this.strings.getMessage('completion_celebration_2'),
+      this.strings.getMessage('completion_celebration_3'),
+      this.strings.getMessage('completion_celebration_4'),
+      this.strings.getMessage('completion_celebration_5')
     ];
     
     const celebration = celebrations[Math.floor(Math.random() * celebrations.length)];
     console.log(`\n${celebration}\n`);
     
     // Display stats
-    console.log('📊 Generation Statistics:');
-    console.log(`   📁 Files Generated: ${results.stats.filesGenerated}`);
-    console.log(`   💾 Files Backed Up: ${results.stats.filesBackedUp}`);
-    console.log(`   ⏱️  Duration: ${Math.round(results.stats.duration)}ms`);
+    console.log(this.strings.getMessage('stats_files_generated', { count: results.stats.filesGenerated }));
+    console.log(this.strings.getMessage('stats_files_backed_up', { count: results.stats.filesBackedUp }));
+    console.log(this.strings.getMessage('stats_duration', { duration: Math.round(results.stats.duration) }));
     
     if (this.options.enableInnovations && this.innovations) {
-      console.log(`   🎮 Innovations Triggered: ${results.stats.innovationsTriggered}`);
+      console.log(this.strings.getMessage('stats_innovations_triggered', { count: results.stats.innovationsTriggered }));
       if (this.innovations.achievements.size > 0) {
-        console.log(`   🏅 Achievements Unlocked: ${this.innovations.achievements.size}`);
+        console.log(this.strings.getMessage('stats_achievements_unlocked', { count: this.innovations.achievements.size }));
       }
     }
     
