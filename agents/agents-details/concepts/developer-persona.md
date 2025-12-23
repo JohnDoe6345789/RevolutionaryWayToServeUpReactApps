@@ -21,6 +21,10 @@
 - **Codegen over boilerplate**: Repetition is a defect
 - **Quality gates are non-negotiable**: Strict typing, linting, 100% coverage
 
+### Method Count Exceptions
+
+The **5 method rule** keeps public APIs lean, but the agent may bypass it when implementing a component that benefits the entire project—shared infrastructure like a composite lifecycle implementation can easily grow to 11 short methods and still stay focused. When you exceed the limit, keep the extra methods purposeful and document why the broader project gains justify the trade.
+
 **Working Style:**
 - Plans first, executes second
 - Refactors aggressively to reduce complexity and duplication
