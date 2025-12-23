@@ -13,13 +13,20 @@
     "clean": "bun run clean.ts"
   },
   "devDependencies": {
+    "@types/node": "^25.0.3",
     "bun-types": "latest",
-    "@types/node": "latest"
+    "typescript": "^5.9.3"
   },
   "engines": {
     "node": ">=20.0.0"
   },
-  "keywords": ["codegen", "agile", "plugin", "spec-driven", "oop"],
+  "keywords": [
+    "codegen",
+    "agile",
+    "plugin",
+    "spec-driven",
+    "oop"
+  ],
   "author": "Codegen Team",
   "license": "MIT"
 }
