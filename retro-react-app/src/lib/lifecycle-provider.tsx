@@ -82,10 +82,13 @@ export function LifecycleProvider({
 
   // Cleanup on unmount
   useEffect(() => {
+    // Capture the current components map at effect creation time
+    const currentComponents = componentsRef.current;
+
     return (): void => {
       setGlobalStatus(ComponentLifecycleStatus.CLEANING);
 
-      const cleanupPromises = Array.from(componentsRef.current.entries()).map(
+      const cleanupPromises = Array.from(currentComponents.entries()).map(
         async ([componentId, component]) => {
           try {
             await component.cleanup();
