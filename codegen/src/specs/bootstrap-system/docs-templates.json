@@ -66,14 +66,5 @@
     "{methods}",
     ""
   ],
-  "usageExample": [
-    "### {title}",
-    "",
-    "```javascript",
-    "{code}",
-    "```",
-    "",
-    "{description}",
-    ""
-  ]
+  "usageExample": ["### {title}", "", "```javascript", "{code}", "```", "", "{description}", ""]
 }

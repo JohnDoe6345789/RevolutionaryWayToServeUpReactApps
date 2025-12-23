@@ -1,15 +1,16 @@
-'use client';
+"use client";
 
-import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
-import { IconButton, Tooltip } from '@mui/material';
-import { Brightness4, Brightness7 } from '@mui/icons-material';
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+import { IconButton, Tooltip } from "@mui/material";
+import { Brightness4, Brightness7 } from "@mui/icons-material";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // Avoid hydration mismatch
+  // Avoid hydration mismatch - only run on client
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -22,17 +23,17 @@ export function ThemeToggle() {
     );
   }
 
-  const isDark = theme === 'dark';
+  const isDark = theme === "dark";
 
   return (
-    <Tooltip title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
+    <Tooltip title={isDark ? "Switch to light mode" : "Switch to dark mode"}>
       <IconButton
-        onClick={() => setTheme(isDark ? 'light' : 'dark')}
+        onClick={() => setTheme(isDark ? "light" : "dark")}
         size="small"
         sx={{
-          color: 'text.primary',
-          '&:hover': {
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          color: "text.primary",
+          "&:hover": {
+            backgroundColor: "rgba(255, 255, 255, 0.1)",
           },
         }}
       >

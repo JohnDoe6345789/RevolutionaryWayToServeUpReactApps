@@ -13,9 +13,9 @@ class TestRegistry extends Registry {
         summary: 'A test registry implementation',
         keywords: ['test', 'registry'],
         domain: 'core',
-        capabilities: ['storage', 'lookup']
+        capabilities: ['storage', 'lookup'],
       },
-      componentType: 'test'
+      componentType: 'test',
     });
   }
 }
@@ -46,21 +46,21 @@ describe('Registry', () => {
       summary: 'First test component',
       keywords: ['test', 'component'],
       domain: 'testing',
-      capabilities: ['testing']
+      capabilities: ['testing'],
     });
     mockComponent2 = new MockComponent('22222222-2222-2222-2222-222222222222', 'comp2', {
       title: 'Component 2',
       summary: 'Second test component',
       keywords: ['test', 'component'],
       domain: 'testing',
-      capabilities: ['testing']
+      capabilities: ['testing'],
     });
     mockComponent3 = new MockComponent('33333333-3333-3333-3333-333333333333', 'comp3', {
       title: 'Component 3',
       summary: 'Third test component',
       keywords: ['test', 'component'],
       domain: 'testing',
-      capabilities: ['testing']
+      capabilities: ['testing'],
     });
 
     // Use reflection to add components to registry (since _register is protected)
@@ -134,8 +134,14 @@ describe('Registry', () => {
 
       it('should prioritize ID lookup over UUID lookup', () => {
         // Add a component with ID that matches another component's UUID
-        const conflictingComponent = new MockComponent('44444444-4444-4444-4444-444444444444', '22222222-2222-2222-2222-222222222222');
-        (registry as any).components.set('22222222-2222-2222-2222-222222222222', conflictingComponent);
+        const conflictingComponent = new MockComponent(
+          '44444444-4444-4444-4444-444444444444',
+          '22222222-2222-2222-2222-222222222222'
+        );
+        (registry as any).components.set(
+          '22222222-2222-2222-2222-222222222222',
+          conflictingComponent
+        );
 
         // Should return component with matching ID, not UUID
         const result = registry.get('22222222-2222-2222-2222-222222222222');
@@ -159,20 +165,28 @@ describe('Registry', () => {
 
   describe('describe', () => {
     it.each([
-      ['existing component by ID', 'comp1', {
-        title: 'Component 1',
-        summary: 'First test component',
-        keywords: ['test', 'component'],
-        domain: 'testing',
-        capabilities: ['testing']
-      }],
-      ['existing component by UUID', '11111111-1111-1111-1111-111111111111', {
-        title: 'Component 1',
-        summary: 'First test component',
-        keywords: ['test', 'component'],
-        domain: 'testing',
-        capabilities: ['testing']
-      }],
+      [
+        'existing component by ID',
+        'comp1',
+        {
+          title: 'Component 1',
+          summary: 'First test component',
+          keywords: ['test', 'component'],
+          domain: 'testing',
+          capabilities: ['testing'],
+        },
+      ],
+      [
+        'existing component by UUID',
+        '11111111-1111-1111-1111-111111111111',
+        {
+          title: 'Component 1',
+          summary: 'First test component',
+          keywords: ['test', 'component'],
+          domain: 'testing',
+          capabilities: ['testing'],
+        },
+      ],
       ['non-existent component', 'nonexistent', null],
       ['null ID', null as any, null],
       ['undefined ID', undefined as any, null],
@@ -189,7 +203,7 @@ describe('Registry', () => {
         summary: 'Second test component',
         keywords: ['test', 'component'],
         domain: 'testing',
-        capabilities: ['testing']
+        capabilities: ['testing'],
       });
     });
 
@@ -199,7 +213,7 @@ describe('Registry', () => {
         summary: 'A complex component',
         keywords: ['complex', 'advanced'],
         tags: ['tag1', 'tag2'],
-        domain: 'testing'
+        domain: 'testing',
       });
       (registry as any).components.set('complex-comp', complexComponent);
 
@@ -209,7 +223,7 @@ describe('Registry', () => {
         summary: 'A complex component',
         keywords: ['complex', 'advanced'],
         tags: ['tag1', 'tag2'],
-        domain: 'testing'
+        domain: 'testing',
       });
     });
   });
@@ -233,7 +247,7 @@ describe('Registry', () => {
       const validComponent = {
         uuid: '12345678-1234-4123-8123-123456789012',
         id: 'test-id',
-        search: { title: 'Test' }
+        search: { title: 'Test' },
       };
       const result = (registry as any)._validateComponent(validComponent);
       expect(result).toBe(true);
@@ -280,7 +294,7 @@ describe('Registry', () => {
         summary: 'First test component',
         keywords: ['test', 'component'],
         domain: 'testing',
-        capabilities: ['testing']
+        capabilities: ['testing'],
       });
 
       // Simulate adding new component

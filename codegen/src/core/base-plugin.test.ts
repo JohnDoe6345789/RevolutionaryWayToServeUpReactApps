@@ -30,7 +30,7 @@ describe('BasePlugin', () => {
       tags: ['testing'],
       aliases: ['test'],
       domain: 'test',
-      capabilities: ['testing']
+      capabilities: ['testing'],
     };
 
     mockSpecLoader = vi.mocked(PluginSpecLoader.prototype);
@@ -71,8 +71,8 @@ describe('BasePlugin', () => {
           summary: 'Test plugin',
           keywords: ['test'],
           domain: 'test',
-          capabilities: ['testing']
-        }
+          capabilities: ['testing'],
+        },
       };
 
       mockSpecLoader.loadSpec.mockResolvedValue(mockSpec);
@@ -94,8 +94,8 @@ describe('BasePlugin', () => {
           summary: 'Test plugin',
           keywords: ['test'],
           domain: 'test',
-          capabilities: ['testing']
-        }
+          capabilities: ['testing'],
+        },
       };
 
       mockSpecLoader.loadSpec.mockResolvedValue(mockSpec);
@@ -115,7 +115,7 @@ describe('BasePlugin', () => {
     it('should load messages from message loader', async () => {
       const mockMessages = {
         en: { hello: 'Hello', goodbye: 'Goodbye' },
-        es: { hello: 'Hola', goodbye: 'Adiós' }
+        es: { hello: 'Hola', goodbye: 'Adiós' },
       };
 
       mockMessageLoader.loadMessages.mockResolvedValue(mockMessages);
@@ -139,8 +139,8 @@ describe('BasePlugin', () => {
           summary: 'Test plugin',
           keywords: ['test'],
           domain: 'test',
-          capabilities: ['testing']
-        }
+          capabilities: ['testing'],
+        },
       };
 
       mockSpecLoader.loadSpec.mockResolvedValue(mockSpec);
@@ -163,8 +163,8 @@ describe('BasePlugin', () => {
           summary: 'Test plugin',
           keywords: ['test'],
           domain: 'test',
-          capabilities: ['testing']
-        }
+          capabilities: ['testing'],
+        },
       };
 
       mockSpecLoader.loadSpec.mockResolvedValue(mockSpec);

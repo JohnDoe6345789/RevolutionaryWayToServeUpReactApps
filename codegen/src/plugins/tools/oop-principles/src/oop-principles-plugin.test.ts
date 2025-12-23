@@ -14,8 +14,8 @@ describe('OOPPrinciplesPlugin', () => {
         summary: 'Enforces object-oriented programming principles',
         keywords: ['oop', 'principles', 'design'],
         domain: 'development',
-        capabilities: ['analysis', 'validation']
-      }
+        capabilities: ['analysis', 'validation'],
+      },
     });
   });
 

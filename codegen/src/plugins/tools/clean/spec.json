@@ -1,0 +1,120 @@
+{
+  "uuid": "550e8400-e29b-41d4-a716-446655440006",
+  "id": "tool.dev.clean",
+  "type": "tool",
+  "search": {
+    "title": "Clean",
+    "summary": "Cleanup utility for generated code and dependencies",
+    "keywords": ["cleanup", "clean", "remove", "delete", "generated", "dependencies"],
+    "tags": ["dev-workflow", "maintenance", "essential"],
+    "aliases": ["cleanup", "purge"],
+    "domain": "tooling",
+    "capabilities": ["clean", "remove", "delete", "purge"]
+  },
+  "platforms": {
+    "win": true,
+    "mac": true,
+    "linux": true
+  },
+  "verify": {
+    "linux": ["which", "rm"],
+    "mac": ["which", "rm"],
+    "win": ["where", "rmdir"]
+  },
+  "help": {
+    "linux": ["echo", "Clean plugin: removes generated code and node_modules"],
+    "mac": ["echo", "Clean plugin: removes generated code and node_modules"],
+    "win": ["echo", "Clean plugin: removes generated code and node_modules"]
+  },
+  "oneLiners": [
+    {
+      "id": "clean-node-modules",
+      "description": "Remove all node_modules directories",
+      "platforms": { "win": true, "mac": true, "linux": true },
+      "command": [
+        "find",
+        ".",
+        "-name",
+        "node_modules",
+        "-type",
+        "d",
+        "-exec",
+        "rm",
+        "-rf",
+        "{}",
+        "+"
+      ]
+    },
+    {
+      "id": "clean-dist",
+      "description": "Remove all dist and build directories",
+      "platforms": { "win": true, "mac": true, "linux": true },
+      "command": [
+        "find",
+        ".",
+        "-name",
+        "dist",
+        "-o",
+        "-name",
+        "build",
+        "-o",
+        "-name",
+        "out",
+        "-type",
+        "d",
+        "-exec",
+        "rm",
+        "-rf",
+        "{}",
+        "+"
+      ]
+    },
+    {
+      "id": "clean-cache",
+      "description": "Remove cache directories",
+      "platforms": { "win": true, "mac": true, "linux": true },
+      "command": [
+        "find",
+        ".",
+        "-name",
+        ".cache",
+        "-o",
+        "-name",
+        ".next",
+        "-o",
+        "-name",
+        "coverage",
+        "-type",
+        "d",
+        "-exec",
+        "rm",
+        "-rf",
+        "{}",
+        "+"
+      ]
+    }
+  ],
+  "options": [
+    {
+      "flag": "--dry-run",
+      "description": "Show what would be cleaned without actually removing",
+      "platforms": { "win": true, "mac": true, "linux": true }
+    },
+    {
+      "flag": "--force",
+      "description": "Force removal without confirmation",
+      "platforms": { "win": true, "mac": true, "linux": true }
+    },
+    {
+      "flag": "--targets",
+      "description": "Specify custom cleanup targets (comma-separated)",
+      "platforms": { "win": true, "mac": true, "linux": true }
+    }
+  ],
+  "dependencies": [],
+  "risks": {
+    "destructive": true,
+    "network": false,
+    "confirmation": "This operation will permanently delete files and directories. Continue?"
+  }
+}

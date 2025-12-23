@@ -11,7 +11,7 @@ describe('GitPlugin', () => {
       version: '1.0.0',
       author: 'Test Author',
       category: 'tools',
-      capabilities: ['git', 'version-control']
+      capabilities: ['git', 'version-control'],
     });
   });
 

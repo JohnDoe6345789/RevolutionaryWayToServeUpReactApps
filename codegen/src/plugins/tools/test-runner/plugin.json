@@ -18,14 +18,8 @@
     "mac": true,
     "linux": true
   },
-  "registries": [
-    "DevWorkflowRegistry"
-  ],
-  "capabilities": [
-    "execute",
-    "analyze",
-    "report"
-  ],
+  "registries": ["DevWorkflowRegistry"],
+  "capabilities": ["execute", "analyze", "report"],
   "tests": {
     "directory": "tests/",
     "coverage_required": 100

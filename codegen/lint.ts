@@ -165,7 +165,8 @@ async function checkConstructorDataclassSeparation() {
 
     // Check for inline interface definitions in constructor parameters
     // This regex looks for constructor parameters with inline object types like "param: { prop: string }"
-    const inlineInterfaceMatches = content.match(/constructor\s*\([^)]*\w+\s*:\s*{\s*[^}]*}[^)]*\)/g) || [];
+    const inlineInterfaceMatches =
+      content.match(/constructor\s*\([^)]*\w+\s*:\s*{\s*[^}]*}[^)]*\)/g) || [];
     if (inlineInterfaceMatches.length > 0) {
       throw new Error(
         `File ${file} contains inline interface definitions in constructor parameters. Constructor dataclasses must be defined in separate files.`

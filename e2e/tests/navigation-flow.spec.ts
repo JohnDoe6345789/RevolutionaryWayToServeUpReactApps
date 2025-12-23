@@ -2,9 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test.describe("Navigation Flow", () => {
   test.beforeEach(async ({ page }) => {
-    page.on("console", (message) => {
-      console.debug(`[playwright console] ${message.type()}: ${message.text()}`);
-    });
+    // Listen for console messages during tests (removed debug logging for lint compliance)
   });
 
   test("hero section buttons trigger navigation attempts", async ({ page }) => {

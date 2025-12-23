@@ -21,8 +21,8 @@ describe('Plugin', () => {
         summary: 'Test plugin for unit testing',
         keywords: ['test', 'plugin'],
         domain: 'test',
-        capabilities: ['testing']
-      }
+        capabilities: ['testing'],
+      },
     };
 
     // Create a concrete implementation for testing
@@ -77,7 +77,7 @@ describe('Plugin', () => {
         success: true,
         plugin: mockSpec.id,
         timestamp: expect.any(String),
-        output: {}
+        output: {},
       });
       expect((plugin as any).initialised).toBe(true);
     });

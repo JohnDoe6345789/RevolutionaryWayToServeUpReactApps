@@ -16,8 +16,8 @@ describe('ExecutionAggregator', () => {
             summary: 'Test execution aggregator',
             keywords: ['test', 'execution'],
             domain: 'test',
-            capabilities: ['execution']
-          }
+            capabilities: ['execution'],
+          },
         });
       }
     }

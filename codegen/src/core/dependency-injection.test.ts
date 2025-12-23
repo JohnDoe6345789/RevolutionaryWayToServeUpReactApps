@@ -30,9 +30,27 @@ describe('DependencyInjectionContainer', () => {
     });
 
     it.each([
-      ['service with constructor params', 'paramService', class ParamService { constructor(public value: string) {} }],
-      ['service with dependencies', 'dependentService', class DependentService { constructor(private dep: any) {} }],
-      ['service with complex constructor', 'complexService', class ComplexService { constructor(a: string, b: number, c: boolean) {} }],
+      [
+        'service with constructor params',
+        'paramService',
+        class ParamService {
+          constructor(public value: string) {}
+        },
+      ],
+      [
+        'service with dependencies',
+        'dependentService',
+        class DependentService {
+          constructor(private dep: any) {}
+        },
+      ],
+      [
+        'service with complex constructor',
+        'complexService',
+        class ComplexService {
+          constructor(a: string, b: number, c: boolean) {}
+        },
+      ],
     ])('should register %s', (description, token, implementation) => {
       expect(() => container.register(token, implementation)).not.toThrow();
       expect(container.has(token)).toBe(true);
@@ -41,7 +59,9 @@ describe('DependencyInjectionContainer', () => {
 
   describe('resolve', () => {
     class TestService {}
-    class ParamService { constructor(public value: string = 'default') {} }
+    class ParamService {
+      constructor(public value: string = 'default') {}
+    }
     class ComplexService {
       public readonly initialized: boolean;
       constructor() {
@@ -166,24 +186,30 @@ describe('DependencyInjectionContainer', () => {
         // Don't register this one
       }
 
-      expect(container.has(token1)).toBe(expected || (token1 === 'testService'));
-      expect(container.has(token2)).toBe(expected && (token2 === 'testService'));
+      expect(container.has(token1)).toBe(expected || token1 === 'testService');
+      expect(container.has(token2)).toBe(expected && token2 === 'testService');
     });
   });
 
   describe('integration scenarios', () => {
     class DatabaseService {
-      connect() { return 'connected'; }
+      connect() {
+        return 'connected';
+      }
     }
 
     class UserRepository {
       constructor(private db: DatabaseService) {}
-      getUser() { return this.db.connect(); }
+      getUser() {
+        return this.db.connect();
+      }
     }
 
     class UserService {
       constructor(private repo: UserRepository) {}
-      getUserData() { return this.repo.getUser(); }
+      getUserData() {
+        return this.repo.getUser();
+      }
     }
 
     beforeEach(() => {
@@ -214,12 +240,15 @@ describe('DependencyInjectionContainer', () => {
       ['database service', 'database'],
       ['repository service', 'repository'],
       ['user service', 'service'],
-    ])('should provide singleton-like behavior within resolution context for %s', (description, token) => {
-      const instance1 = container.resolve(token);
-      const instance2 = container.resolve(token);
+    ])(
+      'should provide singleton-like behavior within resolution context for %s',
+      (description, token) => {
+        const instance1 = container.resolve(token);
+        const instance2 = container.resolve(token);
 
-      expect(instance1).not.toBe(instance2); // New instances each time
-      expect(instance1).toBeInstanceOf((instance2 as any).constructor);
-    });
+        expect(instance1).not.toBe(instance2); // New instances each time
+        expect(instance1).toBeInstanceOf((instance2 as any).constructor);
+      }
+    );
   });
 });

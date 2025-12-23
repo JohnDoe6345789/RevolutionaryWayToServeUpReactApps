@@ -15,7 +15,7 @@ describe('BaseCodegen', () => {
       outputDir: './test-output',
       strictMode: false,
       verbose: false,
-      enableCache: false
+      enableCache: false,
     };
 
     // Create a concrete implementation for testing
@@ -153,9 +153,7 @@ describe('BaseCodegen', () => {
     it('should throw error when already initialized', async () => {
       // Mock the initialized state
       (codegen as any).initialized = true;
-      await expect(codegen.initialize()).rejects.toThrow(
-        'Codegen system already initialized'
-      );
+      await expect(codegen.initialize()).rejects.toThrow('Codegen system already initialized');
     });
   });
 });

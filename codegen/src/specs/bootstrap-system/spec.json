@@ -27,7 +27,7 @@
         "keywords": ["module", "loader", "dynamic", "cdn", "local"],
         "domain": "codegen"
       },
-      "platforms": {"win": true, "mac": true, "linux": true},
+      "platforms": { "win": true, "mac": true, "linux": true },
       "dependencies": [],
       "interfaces": ["IModuleLoader"],
       "implementation": {
@@ -45,7 +45,7 @@
         "keywords": ["plugin", "discovery", "loading", "management"],
         "domain": "codegen"
       },
-      "platforms": {"win": true, "mac": true, "linux": true},
+      "platforms": { "win": true, "mac": true, "linux": true },
       "dependencies": ["bootstrap.module-loader"],
       "interfaces": ["IPluginManager"],
       "implementation": {
@@ -63,7 +63,7 @@
         "keywords": ["di", "dependency-injection", "container", "services"],
         "domain": "codegen"
       },
-      "platforms": {"win": true, "mac": true, "linux": true},
+      "platforms": { "win": true, "mac": true, "linux": true },
       "dependencies": [],
       "interfaces": ["IDIContainer"],
       "implementation": {
@@ -81,7 +81,7 @@
         "keywords": ["registry", "aggregate", "component", "management"],
         "domain": "codegen"
       },
-      "platforms": {"win": true, "mac": true, "linux": true},
+      "platforms": { "win": true, "mac": true, "linux": true },
       "dependencies": ["bootstrap.di-container"],
       "interfaces": ["IRegistryManager"],
       "implementation": {
@@ -99,7 +99,7 @@
         "keywords": ["configuration", "config", "validation", "loading"],
         "domain": "codegen"
       },
-      "platforms": {"win": true, "mac": true, "linux": true},
+      "platforms": { "win": true, "mac": true, "linux": true },
       "dependencies": [],
       "interfaces": ["IConfigurationManager"],
       "implementation": {

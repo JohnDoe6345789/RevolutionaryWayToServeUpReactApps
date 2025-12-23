@@ -43,19 +43,19 @@
     {
       "id": "clone-repo",
       "description": "Clone a Git repository",
-      "platforms": {"win": true, "mac": true, "linux": true},
+      "platforms": { "win": true, "mac": true, "linux": true },
       "command": ["git", "clone", "{repo_url}"]
     },
     {
       "id": "init-repo",
       "description": "Initialize a new Git repository",
-      "platforms": {"win": true, "mac": true, "linux": true},
+      "platforms": { "win": true, "mac": true, "linux": true },
       "command": ["git", "init"]
     },
     {
       "id": "add-files",
       "description": "Add files to Git staging area",
-      "platforms": {"win": true, "mac": true, "linux": true},
+      "platforms": { "win": true, "mac": true, "linux": true },
       "command": ["git", "add", "."]
     }
   ],
@@ -63,12 +63,12 @@
     {
       "flag": "--version",
       "description": "Show Git version",
-      "platforms": {"win": true, "mac": true, "linux": true}
+      "platforms": { "win": true, "mac": true, "linux": true }
     },
     {
       "flag": "--help",
       "description": "Show Git help",
-      "platforms": {"win": true, "mac": true, "linux": true}
+      "platforms": { "win": true, "mac": true, "linux": true }
     }
   ],
   "dependencies": [],

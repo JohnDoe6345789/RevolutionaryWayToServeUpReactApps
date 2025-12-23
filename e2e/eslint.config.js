@@ -6,7 +6,7 @@ import prettier from 'eslint-plugin-prettier';
 export default [
   js.configs.recommended,
   {
-    files: ['**/*.ts', '**/*.tsx'],
+    files: ['**/*.ts', '**/*.js'],
     languageOptions: {
       parser: tsparser,
       parserOptions: {
@@ -17,11 +17,16 @@ export default [
       globals: {
         console: 'readonly',
         process: 'readonly',
-        __dirname: 'readonly',
-        require: 'readonly',
-        module: 'readonly',
         Buffer: 'readonly',
         global: 'readonly',
+        // Playwright globals
+        test: 'readonly',
+        expect: 'readonly',
+        describe: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
       },
     },
     plugins: {
@@ -35,33 +40,25 @@ export default [
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-require-imports': 'off',
-      'no-console': 'off', // Allow console in Node.js scripts
-      'no-undef': 'off', // Handled by TypeScript
+      'no-console': 'off', // Allow console in test scripts
+      'no-empty-function': 'off', // Allow empty test functions
     },
   },
   {
-    files: ['**/*.js'],
-    languageOptions: {
-      ecmaVersion: 2022,
-      sourceType: 'module',
-      globals: {
-        console: 'readonly',
-        process: 'readonly',
-        __dirname: 'readonly',
-        require: 'readonly',
-        module: 'readonly',
-        Buffer: 'readonly',
-        global: 'readonly',
-      },
-    },
+    files: ['tests/**/*.spec.ts', 'tests/**/*.test.ts'],
     rules: {
-      'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-      'no-console': 'off', // Allow console in Node.js scripts
-      'no-undef': 'off', // Allow Node.js globals
+      '@typescript-eslint/no-explicit-any': 'off', // Allow any in tests
+      'no-console': 'off', // Allow console logging in tests
     },
   },
   {
-    ignores: ['node_modules/**', 'dist/**', 'build/**', '*.config.js', '*.config.ts'],
+    ignores: [
+      'node_modules/**',
+      'test-results/**',
+      'playwright-report/**',
+      '*.config.js',
+      '*.config.ts',
+      'run-e2e.js',
+    ],
   },
 ];

@@ -14,8 +14,8 @@ describe('TestRunnerPlugin', () => {
         summary: 'Executes automated tests',
         keywords: ['test', 'runner', 'automation'],
         domain: 'testing',
-        capabilities: ['execution', 'reporting']
-      }
+        capabilities: ['execution', 'reporting'],
+      },
     });
   });
 

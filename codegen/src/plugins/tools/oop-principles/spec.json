@@ -41,7 +41,7 @@
     {
       "id": "analyze-project",
       "description": "msg.tool.oop-principles.oneliner.analyze",
-      "platforms": {"win": true, "mac": true, "linux": true},
+      "platforms": { "win": true, "mac": true, "linux": true },
       "command": ["node", "codegen.js", "tool", "run", "oop-principles", "analyze"]
     }
   ],
@@ -49,7 +49,7 @@
     {
       "flag": "--strict",
       "description": "msg.tool.oop-principles.opt.strict",
-      "platforms": {"win": true, "mac": true, "linux": true}
+      "platforms": { "win": true, "mac": true, "linux": true }
     }
   ],
   "dependencies": [],

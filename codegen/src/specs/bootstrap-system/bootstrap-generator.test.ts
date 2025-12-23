@@ -16,8 +16,8 @@ describe('BootstrapGenerator', () => {
             summary: 'Generates bootstrap system files',
             keywords: ['bootstrap', 'generator', 'system'],
             domain: 'codegen',
-            capabilities: ['generation', 'bootstrap']
-          }
+            capabilities: ['generation', 'bootstrap'],
+          },
         });
       }
     }

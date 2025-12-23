@@ -1,0 +1,65 @@
+{
+  "msg.tool.clean.title": {
+    "en": "Clean",
+    "es": "Limpiar",
+    "fr": "Nettoyer",
+    "de": "Bereinigen",
+    "ja": "クリーン"
+  },
+  "msg.tool.clean.summary": {
+    "en": "Cleanup utility for generated code and dependencies",
+    "es": "Utilidad de limpieza para código generado y dependencias",
+    "fr": "Utilitaire de nettoyage pour le code généré et les dépendances",
+    "de": "Bereinigungsprogramm für generierten Code und Abhängigkeiten",
+    "ja": "生成されたコードと依存関係のクリーンアップユーティリティ"
+  },
+  "msg.tool.clean.oneliner.node_modules": {
+    "en": "Remove all node_modules directories",
+    "es": "Eliminar todos los directorios node_modules",
+    "fr": "Supprimer tous les répertoires node_modules",
+    "de": "Alle node_modules-Verzeichnisse entfernen",
+    "ja": "すべてのnode_modulesディレクトリを削除する"
+  },
+  "msg.tool.clean.oneliner.dist": {
+    "en": "Remove all dist and build directories",
+    "es": "Eliminar todos los directorios dist y build",
+    "fr": "Supprimer tous les répertoires dist et build",
+    "de": "Alle dist- und build-Verzeichnisse entfernen",
+    "ja": "すべてのdistおよびbuildディレクトリを削除する"
+  },
+  "msg.tool.clean.oneliner.cache": {
+    "en": "Remove cache directories",
+    "es": "Eliminar directorios de caché",
+    "fr": "Supprimer les répertoires de cache",
+    "de": "Cache-Verzeichnisse entfernen",
+    "ja": "キャッシュディレクトリを削除する"
+  },
+  "msg.tool.clean.opt.dry_run": {
+    "en": "Show what would be cleaned without actually removing",
+    "es": "Mostrar qué se limpiaría sin eliminar realmente",
+    "fr": "Afficher ce qui serait nettoyé sans supprimer réellement",
+    "de": "Anzeigen, was bereinigt werden würde, ohne tatsächlich zu entfernen",
+    "ja": "実際に削除せずに何がクリーンアップされるかを表示する"
+  },
+  "msg.tool.clean.opt.force": {
+    "en": "Force removal without confirmation",
+    "es": "Forzar eliminación sin confirmación",
+    "fr": "Forcer la suppression sans confirmation",
+    "de": "Entfernung ohne Bestätigung erzwingen",
+    "ja": "確認なしで削除を強制する"
+  },
+  "msg.tool.clean.opt.targets": {
+    "en": "Specify custom cleanup targets (comma-separated)",
+    "es": "Especificar objetivos de limpieza personalizados (separados por comas)",
+    "fr": "Spécifier des cibles de nettoyage personnalisées (séparées par des virgules)",
+    "de": "Benutzerdefinierte Bereinigungsziele angeben (durch Kommas getrennt)",
+    "ja": "カスタムクリーンアップターゲットを指定する（コンマ区切り）"
+  },
+  "msg.tool.clean.risk.confirmation": {
+    "en": "This operation will permanently delete files and directories. Continue?",
+    "es": "Esta operación eliminará permanentemente archivos y directorios. ¿Continuar?",
+    "fr": "Cette opération supprimera définitivement des fichiers et des répertoires. Continuer ?",
+    "de": "Dieser Vorgang wird Dateien und Verzeichnisse dauerhaft löschen. Fortfahren?",
+    "ja": "この操作により、ファイルとディレクトリが完全に削除されます。続行しますか？"
+  }
+}

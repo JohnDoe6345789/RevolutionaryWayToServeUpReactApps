@@ -21,8 +21,8 @@ describe('BaseAggregator', () => {
         summary: 'Test aggregator for unit testing',
         keywords: ['test', 'aggregator'],
         domain: 'test',
-        capabilities: ['aggregation', 'lifecycle']
-      }
+        capabilities: ['aggregation', 'lifecycle'],
+      },
     };
 
     // Create a concrete implementation for testing

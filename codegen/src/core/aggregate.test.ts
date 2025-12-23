@@ -22,8 +22,8 @@ describe('Aggregate', () => {
         summary: 'Test aggregate for unit testing',
         keywords: ['test', 'aggregate'],
         domain: 'test',
-        capabilities: ['aggregation']
-      }
+        capabilities: ['aggregation'],
+      },
     };
 
     // Create a concrete implementation for testing
@@ -46,10 +46,18 @@ describe('Aggregate', () => {
     it('should throw error with invalid spec', () => {
       const invalidSpec = { ...mockSpec, uuid: '' };
       class TestAggregate extends Aggregate {
-        constructor(spec: ISpec) { super(spec); }
-        protected _validateInput(input: unknown): boolean { return true; }
-        protected _processItems(items: unknown[]): Promise<unknown[]> { return Promise.resolve([]); }
-        protected _mergeResults(results: unknown[]): unknown { return null; }
+        constructor(spec: ISpec) {
+          super(spec);
+        }
+        protected _validateInput(input: unknown): boolean {
+          return true;
+        }
+        protected _processItems(items: unknown[]): Promise<unknown[]> {
+          return Promise.resolve([]);
+        }
+        protected _mergeResults(results: unknown[]): unknown {
+          return null;
+        }
       }
       expect(() => new TestAggregate(invalidSpec as any)).toThrow();
     });

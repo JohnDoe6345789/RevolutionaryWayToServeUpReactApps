@@ -29,7 +29,7 @@ describe('PluginMessageLoader', () => {
     it('should load and parse messages file successfully', async () => {
       const mockMessages = {
         en: { hello: 'Hello', goodbye: 'Goodbye' },
-        es: { hello: 'Hola', goodbye: 'Adiós' }
+        es: { hello: 'Hola', goodbye: 'Adiós' },
       };
 
       vi.mocked(fs.existsSync).mockReturnValue(true);
@@ -63,7 +63,7 @@ describe('PluginMessageLoader', () => {
     it('should validate valid message structure', () => {
       const validMessages = {
         en: { hello: 'Hello', goodbye: 'Goodbye' },
-        es: { hello: 'Hola', goodbye: 'Adiós' }
+        es: { hello: 'Hola', goodbye: 'Adiós' },
       };
 
       expect(loader.validateMessages(validMessages)).toBe(true);
@@ -79,7 +79,7 @@ describe('PluginMessageLoader', () => {
 
     it('should reject invalid locale structure', () => {
       const invalidMessages = {
-        en: { hello: 'Hello', goodbye: 123 } // number instead of string
+        en: { hello: 'Hello', goodbye: 123 }, // number instead of string
       };
 
       expect(loader.validateMessages(invalidMessages)).toBe(false);
@@ -87,7 +87,7 @@ describe('PluginMessageLoader', () => {
 
     it('should reject non-object locale values', () => {
       const invalidMessages = {
-        en: 'not an object'
+        en: 'not an object',
       };
 
       expect(loader.validateMessages(invalidMessages)).toBe(false);

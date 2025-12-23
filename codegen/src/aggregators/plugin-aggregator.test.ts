@@ -16,8 +16,8 @@ describe('PluginAggregator', () => {
             summary: 'Test plugin aggregator',
             keywords: ['test', 'plugin'],
             domain: 'test',
-            capabilities: ['plugin-aggregation']
-          }
+            capabilities: ['plugin-aggregation'],
+          },
         });
       }
     }

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { ThemeProvider as NextThemesProvider } from 'next-themes';
-import { ThemeProviderWrapper } from '@/lib/theme';
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { ThemeProviderWrapper } from "@/lib/theme";
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -15,9 +15,7 @@ export function Providers({ children }: ProvidersProps) {
       enableSystem
       disableTransitionOnChange
     >
-      <ThemeProviderWrapper>
-        {children}
-      </ThemeProviderWrapper>
+      <ThemeProviderWrapper>{children}</ThemeProviderWrapper>
     </NextThemesProvider>
   );
 }

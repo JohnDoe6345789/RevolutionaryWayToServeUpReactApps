@@ -39,13 +39,24 @@ describe('BaseComponent', () => {
 
     it.each([
       ['invalid UUID', { ...mockSpec, uuid: 'invalid-uuid' }, 'Invalid UUID: invalid-uuid'],
-      ['missing id', { uuid: '12345678-1234-4123-8123-123456789012', id: '', search: { keywords: ['test'] } }, 'Missing required fields: id, search'],
-      ['missing search', { uuid: '12345678-1234-4123-8123-123456789012', id: 'test-id', search: undefined }, 'Missing required fields: id, search'],
-    ])('should throw error for %s', async (description: string, invalidSpec: any, expectedError: string) => {
-      const invalidComponent = new TestComponent(invalidSpec);
+      [
+        'missing id',
+        { uuid: '12345678-1234-4123-8123-123456789012', id: '', search: { keywords: ['test'] } },
+        'Missing required fields: id, search',
+      ],
+      [
+        'missing search',
+        { uuid: '12345678-1234-4123-8123-123456789012', id: 'test-id', search: undefined },
+        'Missing required fields: id, search',
+      ],
+    ])(
+      'should throw error for %s',
+      async (description: string, invalidSpec: any, expectedError: string) => {
+        const invalidComponent = new TestComponent(invalidSpec);
 
-      await expect(invalidComponent.initialise()).rejects.toThrow(expectedError);
-    });
+        await expect(invalidComponent.initialise()).rejects.toThrow(expectedError);
+      }
+    );
   });
 
   describe('execute', () => {

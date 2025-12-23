@@ -1,17 +1,18 @@
 {
-  "uuid": "550e8400-e29b-41d4-a716-446655440001",
-  "id": "plugin.tools.oop-principles",
+  "uuid": "550e8400-e29b-41d4-a716-446655440005",
+  "id": "plugin.tools.clean",
   "version": "1.0.0",
   "type": "tool",
-  "name": "OOP Principles Plugin",
-  "description": "Enforces AGENTS.md OOP principles and constraints",
+  "name": "Clean Tool Plugin",
+  "description": "Cleanup utility for generated code and dependencies",
   "author": "Codegen Team",
   "license": "MIT",
-  "entry_point": "src/oop-principles-plugin.js",
+  "entry_point": "src/clean-plugin.js",
   "spec_file": "spec.json",
   "messages_file": "messages.json",
   "dependencies": {
-    "core": ">=1.0.0"
+    "core": ">=1.0.0",
+    "plugins": []
   },
   "platforms": {
     "win": true,
@@ -19,7 +20,7 @@
     "linux": true
   },
   "registries": ["DevWorkflowRegistry"],
-  "capabilities": ["analyze", "validate", "enforce"],
+  "capabilities": ["execute", "verify", "help"],
   "tests": {
     "directory": "tests/",
     "coverage_required": 100

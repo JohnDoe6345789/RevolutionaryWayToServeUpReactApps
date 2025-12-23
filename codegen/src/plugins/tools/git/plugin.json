@@ -19,15 +19,8 @@
     "mac": true,
     "linux": true
   },
-  "registries": [
-    "DevWorkflowRegistry"
-  ],
-  "capabilities": [
-    "install",
-    "verify",
-    "execute",
-    "help"
-  ],
+  "registries": ["DevWorkflowRegistry"],
+  "capabilities": ["install", "verify", "execute", "help"],
   "tests": {
     "directory": "tests/",
     "coverage_required": 100

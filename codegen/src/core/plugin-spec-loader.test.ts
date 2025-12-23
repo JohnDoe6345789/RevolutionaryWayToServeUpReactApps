@@ -37,8 +37,8 @@ describe('PluginSpecLoader', () => {
           summary: 'Test plugin',
           keywords: ['test'],
           domain: 'test',
-          capabilities: ['testing']
-        }
+          capabilities: ['testing'],
+        },
       });
 
       vi.mocked(fs.existsSync).mockReturnValue(true);
@@ -47,18 +47,13 @@ describe('PluginSpecLoader', () => {
       const result = await loader.loadSpec();
 
       expect(result).toEqual(JSON.parse(mockSpecContent));
-      expect(fs.readFileSync).toHaveBeenCalledWith(
-        expect.stringContaining('spec.json'),
-        'utf8'
-      );
+      expect(fs.readFileSync).toHaveBeenCalledWith(expect.stringContaining('spec.json'), 'utf8');
     });
 
     it('should throw error when spec file does not exist', async () => {
       vi.mocked(fs.existsSync).mockReturnValue(false);
 
-      await expect(loader.loadSpec()).rejects.toThrow(
-        'Plugin spec.json not found'
-      );
+      await expect(loader.loadSpec()).rejects.toThrow('Plugin spec.json not found');
     });
 
     it('should throw error for invalid JSON', async () => {
@@ -80,8 +75,8 @@ describe('PluginSpecLoader', () => {
           summary: 'Test plugin',
           keywords: ['test'],
           domain: 'test',
-          capabilities: ['testing']
-        }
+          capabilities: ['testing'],
+        },
       };
 
       expect(loader.validateSpec(validSpec)).toBe(true);
@@ -91,7 +86,7 @@ describe('PluginSpecLoader', () => {
       const invalidSpec = {
         id: 'test-plugin',
         type: 'plugin',
-        search: { title: 'Test' }
+        search: { title: 'Test' },
       };
 
       expect(loader.validateSpec(invalidSpec as any)).toBe(false);
@@ -101,7 +96,7 @@ describe('PluginSpecLoader', () => {
       const invalidSpec = {
         uuid: 'test-uuid-123',
         type: 'plugin',
-        search: { title: 'Test' }
+        search: { title: 'Test' },
       };
 
       expect(loader.validateSpec(invalidSpec as any)).toBe(false);
@@ -111,7 +106,7 @@ describe('PluginSpecLoader', () => {
       const invalidSpec = {
         uuid: 'test-uuid-123',
         id: 'test-plugin',
-        type: 'plugin'
+        type: 'plugin',
       };
 
       expect(loader.validateSpec(invalidSpec as any)).toBe(false);

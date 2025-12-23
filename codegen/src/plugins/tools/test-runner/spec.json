@@ -41,7 +41,7 @@
     {
       "id": "run-tests",
       "description": "msg.tool.test-runner.oneliner.run",
-      "platforms": {"win": true, "mac": true, "linux": true},
+      "platforms": { "win": true, "mac": true, "linux": true },
       "command": ["node", "codegen.js", "tool", "run", "test-runner", "execute"]
     }
   ],
@@ -49,12 +49,12 @@
     {
       "flag": "--framework",
       "description": "msg.tool.test-runner.opt.framework",
-      "platforms": {"win": true, "mac": true, "linux": true}
+      "platforms": { "win": true, "mac": true, "linux": true }
     },
     {
       "flag": "--coverage",
       "description": "msg.tool.test-runner.opt.coverage",
-      "platforms": {"win": true, "mac": true, "linux": true}
+      "platforms": { "win": true, "mac": true, "linux": true }
     }
   ],
   "dependencies": [],

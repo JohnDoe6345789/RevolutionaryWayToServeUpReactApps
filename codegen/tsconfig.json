@@ -31,11 +31,7 @@
     "exactOptionalPropertyTypes": true,
     "types": ["node"]
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "specs/**/*.json"
-  ],
+  "include": ["**/*.ts", "**/*.tsx", "specs/**/*.json"],
   "exclude": [
     "node_modules",
     "dist",

@@ -22,8 +22,8 @@ describe('CodegenAggregator', () => {
             summary: 'Test codegen aggregator',
             keywords: ['test', 'codegen'],
             domain: 'test',
-            capabilities: ['aggregation']
-          }
+            capabilities: ['aggregation'],
+          },
         });
       }
     }

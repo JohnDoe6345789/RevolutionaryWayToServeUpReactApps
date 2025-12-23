@@ -14,7 +14,7 @@ describe('CodegenEntrypoint', () => {
     mockAggregator = {
       drillDown: vi.fn(),
       listChildren: vi.fn(),
-      execute: vi.fn()
+      execute: vi.fn(),
     };
 
     entrypoint = new CodegenEntrypoint(mockAggregator);
