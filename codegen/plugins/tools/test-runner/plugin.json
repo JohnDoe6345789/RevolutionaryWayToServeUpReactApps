@@ -1,0 +1,33 @@
+{
+  "uuid": "550e8400-e29b-41d4-a716-446655440003",
+  "id": "plugin.tools.test-runner",
+  "version": "1.0.0",
+  "type": "tool",
+  "name": "Test Runner Plugin",
+  "description": "Unified test execution framework compliant with AGENTS.md",
+  "author": "Codegen Team",
+  "license": "MIT",
+  "entry_point": "src/test-runner-plugin.js",
+  "spec_file": "spec.json",
+  "messages_file": "messages.json",
+  "dependencies": {
+    "core": ">=1.0.0"
+  },
+  "platforms": {
+    "win": true,
+    "mac": true,
+    "linux": true
+  },
+  "registries": [
+    "DevWorkflowRegistry"
+  ],
+  "capabilities": [
+    "execute",
+    "analyze",
+    "report"
+  ],
+  "tests": {
+    "directory": "tests/",
+    "coverage_required": 100
+  }
+}

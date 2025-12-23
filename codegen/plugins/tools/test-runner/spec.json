@@ -1,0 +1,66 @@
+{
+  "uuid": "550e8400-e29b-41d4-a716-446655440004",
+  "id": "tool.dev.test-runner",
+  "type": "tool",
+  "search": {
+    "title": "Test Runner",
+    "summary": "Unified test execution framework with AGENTS.md compliance",
+    "keywords": ["testing", "test-runner", "ci-cd", "automation", "quality"],
+    "tags": ["testing", "ci-cd", "automation", "quality-assurance"],
+    "aliases": ["test-executor", "test-framework"],
+    "domain": "tooling",
+    "capabilities": ["execute-tests", "generate-reports", "analyze-coverage"]
+  },
+  "platforms": {
+    "win": true,
+    "mac": true,
+    "linux": true
+  },
+  "install": {
+    "linux": {
+      "apt": ["apt-get", "install", "-y", "nodejs", "npm"]
+    },
+    "mac": {
+      "brew": ["brew", "install", "node"]
+    },
+    "win": {
+      "winget": ["winget", "install", "OpenJS.NodeJS"]
+    }
+  },
+  "verify": {
+    "linux": ["node", "--version"],
+    "mac": ["node", "--version"],
+    "win": ["node", "--version"]
+  },
+  "help": {
+    "linux": ["node", "--help"],
+    "mac": ["node", "--help"],
+    "win": ["node", "--help"]
+  },
+  "oneLiners": [
+    {
+      "id": "run-tests",
+      "description": "msg.tool.test-runner.oneliner.run",
+      "platforms": {"win": true, "mac": true, "linux": true},
+      "command": ["node", "codegen.js", "tool", "run", "test-runner", "execute"]
+    }
+  ],
+  "options": [
+    {
+      "flag": "--framework",
+      "description": "msg.tool.test-runner.opt.framework",
+      "platforms": {"win": true, "mac": true, "linux": true}
+    },
+    {
+      "flag": "--coverage",
+      "description": "msg.tool.test-runner.opt.coverage",
+      "platforms": {"win": true, "mac": true, "linux": true}
+    }
+  ],
+  "dependencies": [],
+  "risks": {
+    "destructive": false,
+    "network": false,
+    "confirmation": null
+  }
+}
