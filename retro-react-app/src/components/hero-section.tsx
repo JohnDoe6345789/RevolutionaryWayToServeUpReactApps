@@ -5,13 +5,16 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import React, { useRef } from "react";
 import { ConsoleIcon } from "./console-icon";
-import { ComponentLifecycleStatus } from "@/lib/lifecycle-manager";
-import type { IReactComponentLifecycle } from "@/lib/lifecycle-manager";
+import {
+  ComponentLifecycleStatus,
+  type IReactComponentLifecycle,
+} from "@/lib/lifecycle-manager";
 import componentPatterns from "@/lib/component-patterns.json";
 
 // HeroSection lifecycle with exactly 4 public methods (<5 constraint per AGENTS.md)
 class HeroSectionLifecycle implements IReactComponentLifecycle {
-  private componentStatus: ComponentLifecycleStatus = ComponentLifecycleStatus.UNINITIALIZED;
+  private componentStatus: ComponentLifecycleStatus =
+    ComponentLifecycleStatus.UNINITIALIZED;
   private translationsLoaded = false;
   private routerReady = false;
 
@@ -98,23 +101,14 @@ export function HeroSection(): React.JSX.Element {
             sx={componentPatterns.styles.chip}
           />
 
-          <Typography
-            variant="h2"
-            sx={componentPatterns.styles.title}
-          >
+          <Typography variant="h2" sx={componentPatterns.styles.title}>
             {t("press_start")}
-            <Box
-              component="span"
-              sx={componentPatterns.styles.subtitle}
-            >
+            <Box component="span" sx={componentPatterns.styles.subtitle}>
               {t("to_continue")}
             </Box>
           </Typography>
 
-          <Typography
-            variant="body2"
-            sx={componentPatterns.styles.description}
-          >
+          <Typography variant="body2" sx={componentPatterns.styles.description}>
             {t("hero_description")}
           </Typography>
 
@@ -138,15 +132,17 @@ export function HeroSection(): React.JSX.Element {
           </Stack>
 
           <Stack sx={componentPatterns.styles.tagStack}>
-            {systemTags.slice(0, componentPatterns.validation.maxTagsDisplayed).map((tag: string) => (
-              <Chip
-                key={tag}
-                label={tag}
-                variant="outlined"
-                size="small"
-                sx={componentPatterns.styles.systemTag}
-              />
-            ))}
+            {systemTags
+              .slice(0, componentPatterns.validation.maxTagsDisplayed)
+              .map((tag: string) => (
+                <Chip
+                  key={tag}
+                  label={tag}
+                  variant="outlined"
+                  size="small"
+                  sx={componentPatterns.styles.systemTag}
+                />
+              ))}
           </Stack>
         </Box>
 
