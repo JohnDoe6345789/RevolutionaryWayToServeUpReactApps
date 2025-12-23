@@ -1,0 +1,53 @@
+{
+  "messageKeys": {
+    "msg.tool.oop-principles.oneliner.analyze": {
+      "en": "Analyze project for OOP principles compliance",
+      "es": "Analizar proyecto para cumplimiento de principios OOP",
+      "fr": "Analyser le projet pour la conformité des principes OOP",
+      "de": "Projekt auf OOP-Prinzipien-Konformität analysieren",
+      "ja": "OOP原則準拠性についてプロジェクトを分析する"
+    },
+    "msg.tool.oop-principles.opt.strict": {
+      "en": "Enforce strict AGENTS.md compliance checking",
+      "es": "Aplicar verificación estricta de cumplimiento de AGENTS.md",
+      "fr": "Appliquer une vérification stricte de conformité AGENTS.md",
+      "de": "Strikte AGENTS.md-Konformitätsprüfung erzwingen",
+      "ja": "厳格なAGENTS.md準拠チェックを適用する"
+    },
+    "msg.tool.oop-principles.analysis.start": {
+      "en": "Starting AGENTS.md OOP principles analysis...",
+      "es": "Iniciando análisis de principios OOP de AGENTS.md...",
+      "fr": "Démarrage de l'analyse des principes OOP AGENTS.md...",
+      "de": "AGENTS.md OOP-Prinzipien-Analyse wird gestartet...",
+      "ja": "AGENTS.md OOP原則分析を開始しています..."
+    },
+    "msg.tool.oop-principles.analysis.complete": {
+      "en": "OOP principles analysis completed successfully",
+      "es": "Análisis de principios OOP completado exitosamente",
+      "fr": "Analyse des principes OOP terminée avec succès",
+      "de": "OOP-Prinzipien-Analyse erfolgreich abgeschlossen",
+      "ja": "OOP原則分析が正常に完了しました"
+    },
+    "msg.tool.oop-principles.violation.method-count": {
+      "en": "Class exceeds 3 public method limit",
+      "es": "La clase excede el límite de 3 métodos públicos",
+      "fr": "La classe dépasse la limite de 3 méthodes publiques",
+      "de": "Klasse überschreitet 3 öffentliche Methoden-Limit",
+      "ja": "クラスが3つの公開メソッド制限を超えています"
+    },
+    "msg.tool.oop-principles.violation.method-length": {
+      "en": "Method exceeds 10 line limit",
+      "es": "El método excede el límite de 10 líneas",
+      "fr": "La méthode dépasse la limite de 10 lignes",
+      "de": "Methode überschreitet 10-Zeilen-Limit",
+      "ja": "メソッドが10行制限を超えています"
+    },
+    "msg.tool.oop-principles.violation.constructor-params": {
+      "en": "Constructor has multiple parameters (max 1 allowed)",
+      "es": "El constructor tiene múltiples parámetros (máx 1 permitido)",
+      "fr": "Le constructeur a plusieurs paramètres (max 1 autorisé)",
+      "de": "Konstruktor hat mehrere Parameter (max 1 erlaubt)",
+      "ja": "コンストラクタに複数のパラメータがあります（最大1許可）"
+    }
+  }
+}
