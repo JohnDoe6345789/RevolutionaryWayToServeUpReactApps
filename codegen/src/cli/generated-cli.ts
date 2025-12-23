@@ -1,5 +1,5 @@
 /**
- * Generated CLI - Command Line Interface
+ * GeneratedCLI - Command Line Interface implementation
  *
  * Generated CLI with drill-down navigation and registry-based commands
  *
@@ -7,18 +7,8 @@
  * TypeScript strict typing with no 'any' types
  */
 
+import type { CLICommand } from './cli-command';
 import type { CodegenEntrypoint } from '../entrypoints/codegen-entrypoint';
-
-/**
- *
- */
-export interface CLICommand {
-  name: string;
-  description: string;
-  syntax: string;
-  examples: string[];
-  handler: (args: string[], entrypoint: CodegenEntrypoint) => Promise<void>;
-}
 
 /**
  *
@@ -319,9 +309,4 @@ export class GeneratedCLI {
     console.log('Executing schema command with args:', args);
     // TODO: Implement schema command logic
   }
-}
-
-// Export factory function for programmatic use
-export function createGeneratedCLI(entrypoint: CodegenEntrypoint): GeneratedCLI {
-  return new GeneratedCLI(entrypoint);
 }

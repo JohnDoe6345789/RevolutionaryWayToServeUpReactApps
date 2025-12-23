@@ -4,16 +4,7 @@
  * Based on docs-viewer core principles
  */
 
-export enum LifecycleStatus {
-  UNINITIALIZED = 'uninitialized',
-  INITIALIZING = 'initializing',
-  VALIDATING = 'validating',
-  READY = 'ready',
-  EXECUTING = 'executing',
-  CLEANING = 'cleaning',
-  ERROR = 'error',
-  DESTROYED = 'destroyed'
-}
+import type { LifecycleStatus } from './lifecycle-status';
 
 /**
  * IStandardLifecycle interface - All components MUST implement this

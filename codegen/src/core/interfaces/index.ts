@@ -20,7 +20,7 @@ export type { IDependencyInjectionContainer } from './common/idependency-injecti
 export type { ILifecycleManager } from './common/ilifecycle-manager';
 export type { LifecycleState } from './common/lifecycle-state';
 export type { IStandardLifecycle } from './common/istandard-lifecycle';
-export { LifecycleStatus } from './common/istandard-lifecycle';
+export { LifecycleStatus } from './common/lifecycle-status';
 
 // Plugin interfaces
 export type { IPlugin } from './plugins/iplugin';
