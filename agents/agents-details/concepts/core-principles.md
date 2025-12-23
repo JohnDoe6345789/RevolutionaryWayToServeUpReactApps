@@ -2,7 +2,7 @@
 
 ### 1. Single Source of Truth (MANDATORY)
 - **One canonical JSON file** defines all specs (e.g., `specs.json`)
-- Contains: tool records, profiles, project templates, snippets, message keys, registries, aggregates
+- Contains: tool records, profiles, project templates, snippets, message keys, registries, lifecycle builders
 - Never hardcode behavior that belongs in specs
 - Generator reads JSON → produces artifacts (code, CLI, WebUI, docs, tests)
 
@@ -13,7 +13,7 @@ Every component MUST be:
 - Search metadata enabled (field name: `search` with title/summary/keywords)
 - Lifecycle-aware with standard contract methods
 - Platform-scoped where relevant
-- Registry/aggregate reachable
+- Registry/lifecycle builder reachable
 
 ### 3. Inheritance/Interface Requirement (MANDATORY)
 **No standalone concrete classes allowed.**
@@ -30,22 +30,34 @@ Language-idiomatic contracts:
 - **Go**: Interface type + struct implementation
 - **C#**: `Interface` or `abstract class`
 
-### 4. Standard Lifecycle Contract (Component)
-Required public methods:
+### 4. Standard Lifecycle Contract (IStandardLifecycle)
+All components MUST implement the `IStandardLifecycle` interface. Required methods:
+
 1. `initialise()` → void/Result
-   - Prepares runtime state
-   - Validates dependencies
-   - Loads catalogs/config
-   - Ensures readiness
+   - Called after construction
+   - Register with dependency registry
+   - Prepare runtime state and load configuration
 
-2. `execute(input)` → output
-   - Primary operational method (signature language-idiomatic)
-   - Must be pure or mediated through injected adapters
+2. `validate()` → void/Result
+   - Pre-flight checks before execution
+   - Verify dependencies and configuration
+   - Should fail fast (synchronous where possible)
 
-Optional public methods (≤3 total public methods including required):
-- `validate(input)` → void/Result (no I/O unless at edges)
-- `describe()` → string/Descriptor
-- `shutdown()` → void/Result (cleanup, edge-only)
+3. `execute()` → void/Result
+   - Primary operational method
+   - Return values sent via internal messaging service
+   - Data flows through Redux-like messaging pattern
+
+4. `cleanup()` → void/Result
+   - Resource cleanup and shutdown
+   - Should be idempotent
+
+Additional required methods:
+- `debug()` → Record<string, unknown> (diagnostic data)
+- `reset()` → void/Result (state reset for testing)
+- `status()` → LifecycleStatus (current state enum)
+
+The interface is intentionally lean. Optional extensions (pause/resume/stop) added via interface inheritance only.
 
 ### 5. Registry Contract (MANDATORY)
 Public methods (≤3):
@@ -59,16 +71,23 @@ Requirements:
 - Deterministically derived from JSON source of truth
 - No global mutable state
 
-### 6. Aggregate Contract (MANDATORY)
-Public methods (≤3):
-1. `list_children()` → list[string]
-2. `get_child(id_or_uuid: string)` → Aggregate|Registry
-3. `describe()` → Descriptor (optional)
+### 6. LifecycleBuilder Pattern (MANDATORY)
+Fluent API for component orchestration with dependency management and error policies:
+
+```typescript
+interface LifecycleBuilder {
+  add(name: string, lifecycle: IStandardLifecycle, startOrder?: number, stopOrder?: number): this;
+  dependsOn(name: string, dependencyName: string): this;
+  onError(policy: 'fail-fast' | 'continue' | 'rollback'): this;
+  build(): CompositeLifecycle;
+}
+```
 
 Requirements:
-- Forms hierarchical drill-down tree
-- Root aggregate (e.g., `AppAggregate`) contains domain-bounded children
-- Supports navigation and capability discovery
+- Declarative component composition with explicit dependencies
+- Automatic startup/shutdown orchestration
+- Configurable error handling (fail-fast/continue/rollback)
+- Topological dependency resolution for initialization order
 
 ### 7. Strict Method & File Constraints (MANDATORY)
 - **≤3 public methods per class** (constructors excluded)

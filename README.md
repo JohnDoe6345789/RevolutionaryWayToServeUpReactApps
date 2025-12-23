@@ -11,7 +11,7 @@ A **revolutionary** code generation system that creates complete, well-structure
 ### 🏗️ Project Generation
 - **Complete Structure**: Generates folder hierarchies, static files, and configuration
 - **Business Logic Classes**: Creates classes with initialize/execute pattern
-- **Aggregate Hierarchies**: Unlimited nesting with get methods for navigation
+- **Lifecycle Builders**: Fluent API for component orchestration with dependency management
 - **Factory & Data Classes**: Automatic generation with dependency injection
 - **TypeScript Definitions**: Complete type definitions for all generated code
 - **Test Stubs**: Automated test scaffolding with examples
@@ -126,21 +126,19 @@ class UserService extends BaseService {
 }
 ```
 
-#### Aggregate Class
+#### Lifecycle Builder Example
 ```javascript
-class UserAggregate extends BaseAggregate {
-  constructor(data) {
-    super(data);
-  }
+const userLifecycle = new LifecycleBuilder()
+  .add('userService', new UserService())
+  .add('profileService', new ProfileService())
+  .dependsOn('profileService', 'userService')
+  .onError('fail-fast')
+  .build();
 
-  async getUserService() {
-    // Return user service instance
-  }
-
-  async getProfileService() {
-    // Return profile service instance
-  }
-}
+// Automatic lifecycle management
+await userLifecycle.initialise();
+await userLifecycle.execute();
+await userLifecycle.cleanup();
 ```
 
 ## 🎮 Innovation Features
@@ -187,7 +185,7 @@ Visual feedback during generation:
 ### Plugin System
 - **Plugin-based Architecture**: Extensible through plugins
 - **Core Plugins**: OOP principles, validation, utilities
-- **Generator Plugins**: Structure, business logic, aggregates, etc.
+- **Generator Plugins**: Structure, business logic, lifecycle builders, etc.
 - **Language Agnostic**: Works with any programming language
 
 ## 📋 Usage Examples
@@ -216,7 +214,7 @@ Visual feedback during generation:
 # Use microservice template
 ./revolutionary-codegen.js edit --template microservice
 
-# Generate with nested aggregates
+# Generate with lifecycle builders
 ./revolutionary-codegen.js generate --spec-path my-service.json --enable-innovations
 ```
 
