@@ -145,6 +145,8 @@ def main():
         # Check if it's a network or permission error
         if "could not read" in stderr.lower() or "connection" in stderr.lower():
             print(f"❌ Network or connection error: {stderr}")
+            print("   Please check your internet connection and GitHub access.")
+            print("   You may need to authenticate with: gh auth login")
             sys.exit(1)
         # Other errors might be non-fatal, continue with warning
         print(f"⚠️  Warning during fetch: {stderr}")
