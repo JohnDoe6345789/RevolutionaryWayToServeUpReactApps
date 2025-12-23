@@ -4,9 +4,9 @@ import { Box, Chip, Typography, Stack, Button } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import React, { useRef } from "react";
-import type {
-  IReactComponentLifecycle,
-  ComponentLifecycleStatus
+import {
+  ComponentLifecycleStatus,
+  type IReactComponentLifecycle,
 } from "@/lib/lifecycle-manager";
 import componentPatterns from "@/lib/component-patterns.json";
 
