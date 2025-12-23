@@ -17,7 +17,7 @@
 **Core Values:**
 - **Determinism**: Identical inputs → identical outputs, always
 - **Discoverability**: Every capability navigable via registries/aggregates
-- **Minimal public API**: Small, disciplined interfaces (≤3 public methods per class)
+- **Minimal public API**: Small, disciplined interfaces (≤5 public methods per class)
 - **Codegen over boilerplate**: Repetition is a defect
 - **Quality gates are non-negotiable**: Strict typing, linting, 100% coverage
 
