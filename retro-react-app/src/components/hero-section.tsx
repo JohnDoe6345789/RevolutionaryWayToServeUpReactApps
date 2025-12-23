@@ -3,12 +3,10 @@
 import { Box, Chip, Typography, Stack, Button } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { ConsoleIcon } from "./console-icon";
-import {
-  ComponentLifecycleStatus,
-  type IReactComponentLifecycle,
-} from "@/lib/lifecycle-manager";
+import { ComponentLifecycleStatus } from "@/lib/lifecycle-manager";
+import type { IReactComponentLifecycle } from "@/lib/lifecycle-manager";
 import componentPatterns from "@/lib/component-patterns.json";
 
 // HeroSection lifecycle with exactly 4 public methods (<5 constraint per AGENTS.md)
@@ -19,13 +17,13 @@ class HeroSectionLifecycle implements IReactComponentLifecycle {
   private routerReady = false;
 
   // Public methods: initialise, validate, execute, cleanup (4 total, <5 constraint)
-  public async initialise(): Promise<void> {
+  public initialise(): void {
     this.componentStatus = ComponentLifecycleStatus.INITIALIZING;
     this.translationsLoaded = true;
     this.routerReady = true;
   }
 
-  public async validate(): Promise<void> {
+  public validate(): void {
     this.componentStatus = ComponentLifecycleStatus.VALIDATING;
     if (!this.translationsLoaded) {
       throw new Error(componentPatterns.errorMessages.translationsNotLoaded);
@@ -35,11 +33,11 @@ class HeroSectionLifecycle implements IReactComponentLifecycle {
     }
   }
 
-  public async execute(): Promise<void> {
+  public execute(): void {
     this.componentStatus = ComponentLifecycleStatus.EXECUTING;
   }
 
-  public async cleanup(): Promise<void> {
+  public cleanup(): void {
     this.componentStatus = ComponentLifecycleStatus.CLEANING;
     this.translationsLoaded = false;
     this.routerReady = false;
@@ -54,9 +52,9 @@ class HeroSectionLifecycle implements IReactComponentLifecycle {
     };
   }
 
-  public async reset(): Promise<void> {
-    await this.cleanup();
-    await this.initialise();
+  public reset(): void {
+    this.cleanup();
+    this.initialise();
   }
 
   public status(): ComponentLifecycleStatus {
@@ -71,6 +69,16 @@ export function HeroSection(): React.JSX.Element {
 
   // Create lifecycle instance (internal management per AGENTS.md)
   const lifecycleRef = useRef(new HeroSectionLifecycle());
+
+  useEffect(() => {
+    const lifecycle = lifecycleRef.current;
+    lifecycle.initialise();
+    lifecycle.validate();
+    lifecycle.execute();
+    return (): void => {
+      lifecycle.cleanup();
+    };
+  }, []);
 
   const systemTags = gamesT.raw("systemTags") as string[];
 
