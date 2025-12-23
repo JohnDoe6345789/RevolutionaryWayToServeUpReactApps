@@ -1,5 +1,6 @@
-// Standard Lifecycle Interface
+// Standard Lifecycle Interface (AGENTS.md MANDATORY)
 // Defines the contract for all components in the system
+// All components MUST implement this interface
 
 export enum LifecycleStatus {
   UNINITIALIZED = 'uninitialized',
@@ -13,42 +14,48 @@ export enum LifecycleStatus {
 }
 
 /**
- *
+ * IStandardLifecycle - Core contract for all components
+ * MANDATORY: All components must implement this interface
+ * ≤3 public methods per class (constructors excluded)
+ * ≤10 lines per function
  */
 export interface IStandardLifecycle {
-  // Core lifecycle methods
+  // Core lifecycle methods (MANDATORY)
   /**
-   *
+   * initialise - Called after construction, register with registry, prepare state
    */
   initialise: () => Promise<void> | void;
+
   /**
-   *
+   * validate - Pre-flight checks before execution, verify dependencies
    */
   validate: () => Promise<void> | void;
+
   /**
-   *
+   * execute - Primary operational method, return values via messaging
    */
   execute: () => Promise<unknown> | unknown;
+
   /**
-   *
+   * cleanup - Resource cleanup and shutdown, idempotent
    */
   cleanup: () => Promise<void> | void;
 
-  // Debug and status methods
+  // Debug and status methods (MANDATORY)
   /**
-   *
+   * debug - Return diagnostic data for debugging
    */
   debug: () => Record<string, unknown>;
+
   /**
-   *
+   * reset - State reset for testing, return to uninitialized
    */
   reset: () => Promise<void> | void;
+
   /**
-   *
+   * status - Return current lifecycle state
    */
   status: () => LifecycleStatus;
-
-  // Optional extension points (pause/resume/stop can be added via interface extension)
 }
 
 /**

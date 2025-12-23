@@ -151,7 +151,17 @@ export default [
       'jsdoc/require-param': 'warn',
       'jsdoc/require-returns': 'warn',
       'jsdoc/require-throws': 'warn',
-      'oop-compliance/oop-compliance': 'error',
+      'oop-compliance/oop-compliance': [
+        'error',
+        {
+          coreFiles: [
+            'src/core/codegen/base-component.ts',
+            'src/core/plugins/base-plugin.ts',
+          ],
+          baseComponentFile: 'src/core/codegen/base-component.ts',
+          maxMethods: 3,
+        },
+      ],
       'single-export-per-file/single-export-per-file': 'error',
       'validate-specs/validate-specs': [
         'error',

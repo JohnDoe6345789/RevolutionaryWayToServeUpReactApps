@@ -1,19 +1,22 @@
 /**
  * BaseComponent - Foundation for all AGENTS.md compliant components
- * Strict OO constraints: 1 constructor param, ≤3 public methods, ≤10 lines per function
+ * Implements IStandardLifecycle with ≤3 public methods, ≤10 lines per function
  * TypeScript strict typing with no 'any' types
  */
 
-import type { IComponent, ISearchMetadata, ISpec } from './interfaces/index';
+import type { ISearchMetadata, ISpec } from '../interfaces/index';
+import type { IStandardLifecycle } from '../types/lifecycle';
+import { LifecycleStatus } from '../types/lifecycle';
 
 /**
- *
+ * BaseComponent - AGENTS.md compliant base class implementing IStandardLifecycle
  */
-export abstract class BaseComponent implements IComponent {
+export abstract class BaseComponent implements IStandardLifecycle {
   public readonly uuid: string;
   public readonly id: string;
   public readonly search: ISearchMetadata;
   public readonly spec: ISpec;
+  protected currentStatus: LifecycleStatus = LifecycleStatus.UNINITIALIZED;
 
   /**
    * Constructor with single spec parameter (AGENTS.md requirement)
@@ -27,44 +30,81 @@ export abstract class BaseComponent implements IComponent {
   }
 
   /**
-   * Initialise component (lifecycle method, ≤10 lines)
-   * @returns Promise<BaseComponent> Initialised component
+   * initialise - Called after construction, register with registry, prepare state
    */
-  public async initialise(): Promise<IComponent> {
-    // Validate UUID format
+  public initialise(): void {
+    this.validateSpec();
+    this.currentStatus = LifecycleStatus.READY;
+  }
+
+  /**
+   * validate - Pre-flight checks before execution, verify dependencies
+   */
+  public validate(): void {
+    if (this.currentStatus === LifecycleStatus.UNINITIALIZED) {
+      throw new Error('Component not initialized');
+    }
+    this.currentStatus = LifecycleStatus.READY;
+  }
+
+  /**
+   * execute - Primary operational method, return values via messaging
+   */
+  public execute(): unknown {
+    this.currentStatus = LifecycleStatus.EXECUTING;
+    return {
+      success: true,
+      component: this.id,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  /**
+   * cleanup - Resource cleanup and shutdown, idempotent
+   */
+  public cleanup(): void {
+    this.currentStatus = LifecycleStatus.DESTROYED;
+  }
+
+  /**
+   * debug - Return diagnostic data for debugging
+   */
+  public debug(): Record<string, unknown> {
+    return {
+      uuid: this.uuid,
+      id: this.id,
+      status: this.currentStatus,
+      spec: this.spec,
+    };
+  }
+
+  /**
+   * reset - State reset for testing, return to uninitialized
+   */
+  public reset(): void {
+    this.currentStatus = LifecycleStatus.UNINITIALIZED;
+  }
+
+  /**
+   * status - Return current lifecycle state
+   */
+  public status(): LifecycleStatus {
+    return this.currentStatus;
+  }
+
+  /**
+   * Validate component specification (private helper, ≤10 lines)
+   */
+  private validateSpec(): void {
     if (!this.isValidUUID(this.uuid)) {
       throw new Error(`Invalid UUID: ${this.uuid}`);
     }
-    // Validate required fields
     if (!this.id) {
       throw new Error('Missing required field: id');
     }
     if (!this.search.title) {
       throw new Error('Missing required field: search.title');
     }
-    return await Promise.resolve(this);
-  }
-
-  /**
-   * Execute component logic (core method, ≤10 lines)
-   * @param _context - Execution context
-   * @returns Execution result
-   */
-  public async execute(_context: Record<string, unknown>): Promise<unknown> {
-    return await Promise.resolve({
-      success: true,
-      component: this.id,
-      timestamp: new Date().toISOString(),
-    });
-  }
-
-  /**
-   * Validate input (optional method, keeps ≤3 total public methods)
-   * @param input - Input to validate
-   * @returns Validation result
-   */
-  public validate(input: unknown): boolean {
-    return input !== null && input !== undefined && typeof input === 'object';
   }
 
   /**
