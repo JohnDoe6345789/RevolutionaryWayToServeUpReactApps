@@ -60,7 +60,7 @@ Additional required methods:
 The interface is intentionally lean. Optional extensions (pause/resume/stop) added via interface inheritance only.
 
 ### 5. Registry Contract (MANDATORY)
-Public methods (≤3):
+Public methods (53):
 1. `list_ids()` → list[string]
 2. `get(id_or_uuid: string)` → Component/Factory/Descriptor
 3. `describe(id_or_uuid: string)` → Descriptor (optional)
