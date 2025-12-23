@@ -79,6 +79,12 @@ export default [
     },
   },
   {
+    files: ['**/*.ts', '**/*.tsx'],
+    rules: {
+      'max-lines': ['error', 300]
+    }
+  },
+  {
     files: ['**/*.js'],
     languageOptions: {
       ecmaVersion: 2022,

@@ -22,7 +22,15 @@ export class ESLintSyncPlugin extends BasePlugin {
         'prettier/prettier': 'error',
         'no-console': 'off',
         'no-undef': 'off'
-      }
+      },
+      overrides: [
+        {
+          files: ['**/*.ts', '**/*.tsx'],
+          rules: {
+            'max-lines': ['error', 300]
+          }
+        }
+      ]
     },
     strict: {
       extends: ['@eslint/js', 'next/core-web-vitals'],
@@ -38,7 +46,15 @@ export class ESLintSyncPlugin extends BasePlugin {
         'react-hooks/exhaustive-deps': 'error',
         'react-hooks/rules-of-hooks': 'error',
         'no-console': 'error'
-      }
+      },
+      overrides: [
+        {
+          files: ['**/*.ts', '**/*.tsx'],
+          rules: {
+            'max-lines': ['error', 300]
+          }
+        }
+      ]
     },
     test: {
       extends: ['@eslint/js'],
@@ -50,7 +66,15 @@ export class ESLintSyncPlugin extends BasePlugin {
         '@typescript-eslint/explicit-module-boundary-types': 'off',
         'prettier/prettier': 'error',
         'no-console': 'off'
-      }
+      },
+      overrides: [
+        {
+          files: ['**/*.ts', '**/*.tsx'],
+          rules: {
+            'max-lines': ['error', 300]
+          }
+        }
+      ]
     }
   };
 
@@ -526,7 +550,7 @@ export class ESLintSyncPlugin extends BasePlugin {
    */
   private mergeConfigs(standard: any, existing: any): any {
     // Simple merge - in practice, you'd want more sophisticated merging
-    return {
+    const merged = {
       ...standard,
       ...existing,
       rules: {
@@ -534,6 +558,16 @@ export class ESLintSyncPlugin extends BasePlugin {
         ...existing.rules,
       },
     };
+
+    // Merge overrides if they exist
+    if (standard.overrides || existing.overrides) {
+      merged.overrides = [
+        ...(standard.overrides || []),
+        ...(existing.overrides || [])
+      ];
+    }
+
+    return merged;
   }
 
   /**
