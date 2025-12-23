@@ -1,0 +1,85 @@
+/**
+ * Plugin Test Suite
+ * Tests for the Plugin base class
+ */
+
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { Plugin } from './plugin';
+import { ISpec } from './interfaces/ispec';
+
+describe('Plugin', () => {
+  let plugin: Plugin;
+  let mockSpec: ISpec;
+
+  beforeEach(() => {
+    mockSpec = {
+      uuid: 'test-uuid-789',
+      id: 'test-plugin',
+      type: 'plugin',
+      search: {
+        title: 'Test Plugin',
+        summary: 'Test plugin for unit testing',
+        keywords: ['test', 'plugin'],
+        domain: 'test',
+        capabilities: ['testing']
+      }
+    };
+
+    // Create a concrete implementation for testing
+    class TestPlugin extends Plugin {
+      constructor(spec: ISpec) {
+        super(spec);
+      }
+    }
+
+    plugin = new TestPlugin(mockSpec);
+  });
+
+  describe('constructor', () => {
+    it('should initialize with valid spec', () => {
+      expect(plugin).toBeDefined();
+      expect(plugin.uuid).toBe(mockSpec.uuid);
+      expect(plugin.id).toBe(mockSpec.id);
+    });
+
+    it('should not be initialized initially', () => {
+      expect((plugin as any).initialised).toBe(false);
+    });
+  });
+
+  describe('initialise', () => {
+    it('should initialize successfully', async () => {
+      const result = await plugin.initialise();
+      expect(result).toBe(plugin);
+      expect((plugin as any).initialised).toBe(true);
+    });
+  });
+
+  describe('getSpec', () => {
+    it('should return spec', () => {
+      expect(plugin.getSpec()).toBe(mockSpec);
+    });
+  });
+
+  describe('register', () => {
+    it('should initialize if not initialized', async () => {
+      const mockRegistryManager = { register: vi.fn() };
+      await plugin.register(mockRegistryManager as any);
+      expect((plugin as any).initialised).toBe(true);
+    });
+  });
+
+  describe('execute', () => {
+    it('should initialize if not initialized and return default result', async () => {
+      const context = { operation: 'test' };
+      const result = await plugin.execute(context);
+      expect(result).toEqual({
+        success: true,
+        plugin: mockSpec.id,
+        timestamp: expect.any(String),
+        output: {}
+      });
+      expect((plugin as any).initialised).toBe(true);
+    });
+  });
+});
