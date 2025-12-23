@@ -341,6 +341,8 @@ This section maps the developer's life journey to provide context for the archit
 ## Project Overview
 This is a **spec-driven, deterministic, cross-platform tooling orchestrator** built on dataclass-first component architecture. The system generates code, scaffolds projects, and orchestrates developer tooling across Windows/macOS/Linux from a single JSON source of truth.
 
+A standout feature is its **self-hosting capability**: the codegen system can generate its own CLI and WebUI components using its own codegen tools, enabling true bootstrapping and iterative development of the platform itself.
+
 ### What This Platform Is
 - Unified tooling orchestrator ("god tool") for dev environments
 - Spec-driven code generator for multi-language targets
@@ -1700,6 +1702,7 @@ Monaco editor MUST be embedded to:
 - Select snippet/group + language → render generated preview
 - "Generate" action produces artifact (zip/tarball) via backend API route
 - Show diff when modifying specs
+- Schema generation operations with bulk generation support
 
 #### 5. Runbook Generator
 - Select target platform + profile + toolset
@@ -1749,6 +1752,9 @@ codegen profile apply fullstack-dev   # Set active profile
 
 # Initialization (if explicit phase exposed)
 codegen init tooling --profile=fullstack-dev
+
+# Schema operations
+codegen schema generate <type> --bulk --defaults  # Bulk generate schema bits with sensible defaults
 ```
 
 ### CLI Must Be Generated
