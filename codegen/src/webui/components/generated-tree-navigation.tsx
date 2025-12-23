@@ -5,25 +5,16 @@
  *
  * Auto-generated from spec.json
  */
+/* eslint-disable max-lines-per-function, sort-imports */
 
+import { Description as DescriptionIcon, Folder as FolderIcon } from '@mui/icons-material';
+import { Box, Chip, Paper, Typography } from '@mui/material';
+import { SimpleTreeView, TreeItem } from '@mui/x-tree-view';
 import React, { useState } from 'react';
-import {
-  TreeView,
-  TreeItem,
-} from '@mui/lab';
-import {
-  ExpandMore as ExpandMoreIcon,
-  ChevronRight as ChevronRightIcon,
-  Folder as FolderIcon,
-  Description as DescriptionIcon,
-} from '@mui/icons-material';
-import {
-  Box,
-  Typography,
-  Paper,
-  Chip,
-} from '@mui/material';
 
+/**
+ * A node that can be rendered inside the generated tree navigation.
+ */
 interface TreeNode {
   id: string;
   name: string;
@@ -36,79 +27,107 @@ interface TreeNode {
   };
 }
 
+/**
+ * Props passed to the generated tree navigation component.
+ */
 interface GeneratedTreeNavigationProps {
   data: TreeNode[];
   onNodeSelect?: (nodeId: string) => void;
   selectedNodeId: string | undefined;
 }
 
-const GeneratedTreeNavigation: React.FC<GeneratedTreeNavigationProps> = ({
+const hasChildNodes = (node: TreeNode): boolean =>
+  Array.isArray(node.children) && node.children.length > 0;
+
+const nodeIcon = ({ hasChildren }: { hasChildren: boolean }): React.ReactElement => {
+  if (hasChildren) {
+    return <FolderIcon />;
+  }
+  return <DescriptionIcon />;
+};
+
+const nodeCountChip = ({ count }: { count?: number }): React.ReactElement | null => {
+  if (typeof count !== 'number') {
+    return null;
+  }
+  return <Chip label={count} size="small" sx={{ marginLeft: 1 }} />;
+};
+
+const nodeDomainChip = ({ domain }: { domain?: string }): React.ReactElement | null => {
+  if (domain === '' || typeof domain === 'undefined') {
+    return null;
+  }
+  return <Chip label={domain} size="small" variant="outlined" sx={{ marginLeft: 1 }} />;
+};
+
+const treeNodeLabel = (node: TreeNode): React.ReactElement => (
+  <Box sx={{ alignItems: 'center', display: 'flex', padding: 0.5 }}>
+    {nodeIcon({ hasChildren: hasChildNodes(node) })}
+    <Typography variant="body2" sx={{ marginLeft: 1 }}>
+      {node.name}
+    </Typography>
+    {nodeCountChip({ count: node.metadata?.count })}
+    {nodeDomainChip({ domain: node.metadata?.domain })}
+  </Box>
+);
+
+const treeNodeItem = (node: TreeNode): React.ReactElement => (
+  <TreeItem key={node.id} nodeId={node.id} label={treeNodeLabel(node)}>
+    {(node.children ?? []).map((child) => treeNodeItem(child))}
+  </TreeItem>
+);
+
+/**
+ * Stateless tree navigation that renders the aggregated registry hierarchy.
+ *
+ * @param props Component props.
+ * @param props.data The tree data to render.
+ * @param props.onNodeSelect Callback invoked when a node is selected.
+ * @param props.selectedNodeId Currently selected node id.
+ * @returns The rendered navigation component.
+ */
+const generatedTreeNavigation = ({
   data,
   onNodeSelect,
   selectedNodeId,
-}) => {
+}: GeneratedTreeNavigationProps): React.ReactElement => {
   const [expanded, setExpanded] = useState<string[]>([]);
 
-  const handleToggle = (event: React.SyntheticEvent, nodeIds: string[]) => {
-    setExpanded(nodeIds);
+  const handleExpansionChange = (
+    _event: React.SyntheticEvent,
+    nodeIds: readonly string[],
+  ): void => {
+    setExpanded(Array.from(nodeIds));
   };
 
-  const handleSelect = (event: React.SyntheticEvent, nodeId: string) => {
-    onNodeSelect?.(nodeId);
+  const handleSelectionChange = (
+    _event: React.SyntheticEvent | null,
+    itemId: string | null,
+  ): void => {
+    if (typeof itemId === 'string') {
+      onNodeSelect?.(itemId);
+    }
   };
-
-  const renderTree = (nodes: TreeNode[]): React.ReactNode =>
-    nodes.map((node) => (
-      <TreeItem
-        key={node.id}
-        nodeId={node.id}
-        label={
-          <Box sx={{ display: 'flex', alignItems: 'center', p: 0.5 }}>
-            {node.children ? <FolderIcon /> : <DescriptionIcon />}
-            <Typography variant="body2" sx={{ ml: 1 }}>
-              {node.name}
-            </Typography>
-            {node.metadata?.count && (
-              <Chip
-                label={node.metadata.count}
-                size="small"
-                sx={{ ml: 1 }}
-              />
-            )}
-            {node.metadata?.domain && (
-              <Chip
-                label={node.metadata.domain}
-                size="small"
-                variant="outlined"
-                sx={{ ml: 1 }}
-              />
-            )}
-          </Box>
-        }
-      >
-        {node.children && renderTree(node.children)}
-      </TreeItem>
-    ));
 
   return (
-    <Paper sx={{ p: 2, height: '100%', overflow: 'auto' }}>
+    <Paper sx={{ height: '100%', overflow: 'auto', padding: 2 }}>
       <Typography variant="h6" gutterBottom>
         Registry Navigation
       </Typography>
-      <TreeView
+      <SimpleTreeView
         aria-label="registry navigator"
-        defaultCollapseIcon={<ExpandMoreIcon />}
-        defaultExpandIcon={<ChevronRightIcon />}
-        expanded={expanded}
-        selected={selectedNodeId}
-        onNodeToggle={handleToggle}
-        onNodeSelect={handleSelect}
+        expandedItems={expanded}
+        onExpandedItemsChange={handleExpansionChange}
+        selectedItems={selectedNodeId ?? null}
+        onSelectedItemsChange={handleSelectionChange}
         sx={{ flexGrow: 1 }}
       >
-        {renderTree(data)}
-      </TreeView>
+        {data.map((node) => treeNodeItem(node))}
+      </SimpleTreeView>
     </Paper>
   );
 };
 
-export default GeneratedTreeNavigation;
+generatedTreeNavigation.displayName = 'GeneratedTreeNavigation';
+
+export default generatedTreeNavigation;
