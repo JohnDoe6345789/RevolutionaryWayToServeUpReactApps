@@ -3,36 +3,38 @@ import { expect, test } from "@playwright/test";
 test.describe("Language Switching", () => {
   test.beforeEach(async ({ page }) => {
     page.on("console", (message) => {
-      console.debug(`[playwright console] ${message.type()}: ${message.text()}`);
+      console.debug(
+        `[playwright console] ${message.type()}: ${message.text()}`,
+      );
     });
   });
 
-  test.each([
-    ['en'],
-    ['es'],
-  ])("language switcher shows %s language option", async (languageCode: string, { page }) => {
-    await page.goto("/", { waitUntil: "networkidle" });
+  test.each([["en"], ["es"]])(
+    "language switcher shows %s language option",
+    async (languageCode: string, { page }) => {
+      await page.goto("/", { waitUntil: "networkidle" });
 
-    // Check that language selector exists
-    const languageSelect = page.locator('select').first();
-    await expect(languageSelect).toBeVisible();
+      // Check that language selector exists
+      const languageSelect = page.locator("select").first();
+      await expect(languageSelect).toBeVisible();
 
-    // Verify it has the language option
-    const languageOption = page.locator(`option[value="${languageCode}"]`);
-    await expect(languageOption).toBeDefined();
-  });
+      // Verify it has the language option
+      const languageOption = page.locator(`option[value="${languageCode}"]`);
+      await expect(languageOption).toBeDefined();
+    },
+  );
 
   test("language switcher is accessible", async ({ page }) => {
     await page.goto("/", { waitUntil: "networkidle" });
 
-    const languageSelect = page.locator('select').first();
+    const languageSelect = page.locator("select").first();
 
     // Check accessibility
     await expect(languageSelect).toBeVisible();
     await expect(languageSelect).toBeEnabled();
 
     // Should be properly labeled
-    const id = await languageSelect.getAttribute('id');
+    const id = await languageSelect.getAttribute("id");
     const label = id ? page.locator(`label[for="${id}"]`) : null;
 
     // Either has a label or proper aria attributes
@@ -52,19 +54,23 @@ test.describe("Language Switching", () => {
     // Note: Language switching may require navigation to different routes
     // In a real app, this would test /es/ routes vs /en/ routes
     // For now, we verify the language switcher infrastructure is in place
-    const languageSelect = page.locator('select').first();
-    await expect(languageSelect).toHaveValue('en');
+    const languageSelect = page.locator("select").first();
+    await expect(languageSelect).toHaveValue("en");
   });
 
-  test("language preference persists across page interactions", async ({ page }) => {
+  test("language preference persists across page interactions", async ({
+    page,
+  }) => {
     await page.goto("/", { waitUntil: "networkidle" });
 
     // Get initial language setting
-    const languageSelect = page.locator('select').first();
+    const languageSelect = page.locator("select").first();
     const initialValue = await languageSelect.inputValue();
 
     // Perform some interactions
-    const arcadeButton = page.getByRole("button", { name: /launch arcade mode/i });
+    const arcadeButton = page.getByRole("button", {
+      name: /launch arcade mode/i,
+    });
     await arcadeButton.click();
 
     // Check that language setting is maintained

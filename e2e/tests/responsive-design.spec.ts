@@ -3,7 +3,9 @@ import { expect, test } from "@playwright/test";
 test.describe("Responsive Design", () => {
   test.beforeEach(async ({ page }) => {
     page.on("console", (message) => {
-      console.debug(`[playwright console] ${message.type()}: ${message.text()}`);
+      console.debug(
+        `[playwright console] ${message.type()}: ${message.text()}`,
+      );
     });
   });
 
@@ -17,7 +19,7 @@ test.describe("Responsive Design", () => {
     await expect(page.getByText("Super Mario Bros")).toBeVisible();
 
     // Check header layout (should be horizontal on desktop)
-    const header = page.locator('header').first();
+    const header = page.locator("header").first();
     await expect(header).toBeVisible();
   });
 
@@ -30,7 +32,9 @@ test.describe("Responsive Design", () => {
     await expect(page.getByText("Featured Games")).toBeVisible();
 
     // Hero section should still be functional
-    const arcadeButton = page.getByRole("button", { name: /launch arcade mode/i });
+    const arcadeButton = page.getByRole("button", {
+      name: /launch arcade mode/i,
+    });
     await expect(arcadeButton).toBeVisible();
   });
 
@@ -43,18 +47,22 @@ test.describe("Responsive Design", () => {
     await expect(page.getByText("Featured Games")).toBeVisible();
 
     // Buttons should still be accessible
-    const arcadeButton = page.getByRole("button", { name: /launch arcade mode/i });
+    const arcadeButton = page.getByRole("button", {
+      name: /launch arcade mode/i,
+    });
     await expect(arcadeButton).toBeVisible();
 
     // Check that text doesn't overflow
-    const headings = page.locator('h1, h2, h3, h4, h5, h6');
+    const headings = page.locator("h1, h2, h3, h4, h5, h6");
     for (const heading of await headings.all()) {
       const isVisible = await heading.isVisible();
       expect(isVisible).toBe(true);
     }
   });
 
-  test("hero section layout adapts to different screen sizes", async ({ page }) => {
+  test("hero section layout adapts to different screen sizes", async ({
+    page,
+  }) => {
     // Test desktop layout
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto("/", { waitUntil: "networkidle" });
@@ -69,7 +77,9 @@ test.describe("Responsive Design", () => {
 
     // Content should stack vertically on mobile
     await expect(page.getByText("Press Start")).toBeVisible();
-    await expect(page.getByRole("button", { name: /launch arcade mode/i })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /launch arcade mode/i }),
+    ).toBeVisible();
   });
 
   test("featured games grid adapts to screen size", async ({ page }) => {
@@ -90,21 +100,24 @@ test.describe("Responsive Design", () => {
 
   test("header remains functional across screen sizes", async ({ page }) => {
     const viewports = [
-      { width: 1280, height: 720, name: 'desktop' },
-      { width: 768, height: 1024, name: 'tablet' },
-      { width: 375, height: 667, name: 'mobile' }
+      { width: 1280, height: 720, name: "desktop" },
+      { width: 768, height: 1024, name: "tablet" },
+      { width: 375, height: 667, name: "mobile" },
     ];
 
     for (const viewport of viewports) {
-      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      await page.setViewportSize({
+        width: viewport.width,
+        height: viewport.height,
+      });
       await page.goto("/", { waitUntil: "networkidle" });
 
       // Header should always be visible and functional
       await expect(page.getByText("Retro Deck")).toBeVisible();
-      await expect(page.locator('header')).toBeVisible();
+      await expect(page.locator("header")).toBeVisible();
 
       // Language switcher should be accessible
-      const languageSelect = page.locator('select').first();
+      const languageSelect = page.locator("select").first();
       await expect(languageSelect).toBeVisible();
     }
   });
@@ -114,8 +127,12 @@ test.describe("Responsive Design", () => {
     await page.goto("/", { waitUntil: "networkidle" });
 
     // All interactive elements should be clickable on mobile
-    const arcadeButton = page.getByRole("button", { name: /launch arcade mode/i });
-    const libraryButton = page.getByRole("button", { name: /browse rom library/i });
+    const arcadeButton = page.getByRole("button", {
+      name: /launch arcade mode/i,
+    });
+    const libraryButton = page.getByRole("button", {
+      name: /browse rom library/i,
+    });
     const playButton = page.getByRole("button", { name: /play/i }).first();
 
     await expect(arcadeButton).toBeVisible();

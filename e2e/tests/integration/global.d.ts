@@ -33,7 +33,10 @@ declare global {
       [key: string]: any;
     };
     __RWTRA_BUILD_VALIDATOR__?: {
-      getCrossLanguageTargets(sourceLang: string, targetLang: string): Promise<any[]>;
+      getCrossLanguageTargets(
+        sourceLang: string,
+        targetLang: string,
+      ): Promise<any[]>;
     };
     __RWTRA_CONFIG_MANAGER__?: {
       loadConfig(): Promise<any>;

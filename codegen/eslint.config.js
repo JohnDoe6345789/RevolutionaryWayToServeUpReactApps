@@ -131,7 +131,13 @@ export default [
       'jsdoc/require-throws': 'warn',
       'oop-compliance/oop-compliance': 'error',
       'single-export-per-file/single-export-per-file': 'error',
-      'validate-specs/validate-specs': 'error',
+      'validate-specs/validate-specs': ['error', {
+        specFiles: [
+          'src/plugins/tools/oop-principles/spec.json',
+          'src/plugins/tools/test-runner/spec.json',
+          'src/specs/bootstrap-system/spec.json',
+        ],
+      }],
       'plugin-dependencies/plugin-dependencies': 'error',
     },
   },

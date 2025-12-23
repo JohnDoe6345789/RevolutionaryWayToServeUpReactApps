@@ -10,24 +10,31 @@ test.describe("Navigation Flow", () => {
 
     // Mock console.log to capture navigation logs
     const logs: string[] = [];
-    page.on('console', msg => {
-      if (msg.text().includes('Launch Arcade Mode') || msg.text().includes('Browse ROM Library')) {
+    page.on("console", (msg) => {
+      if (
+        msg.text().includes("Launch Arcade Mode") ||
+        msg.text().includes("Browse ROM Library")
+      ) {
         logs.push(msg.text());
       }
     });
 
     // Click Launch Arcade Mode button
-    const arcadeButton = page.getByRole("button", { name: /launch arcade mode/i });
+    const arcadeButton = page.getByRole("button", {
+      name: /launch arcade mode/i,
+    });
     await arcadeButton.click();
 
     // Click Browse ROM Library button
-    const libraryButton = page.getByRole("button", { name: /browse rom library/i });
+    const libraryButton = page.getByRole("button", {
+      name: /browse rom library/i,
+    });
     await libraryButton.click();
 
     // Verify navigation was attempted (console logs should appear)
     expect(logs.length).toBe(2);
-    expect(logs[0]).toContain('Launch Arcade Mode');
-    expect(logs[1]).toContain('Browse ROM Library');
+    expect(logs[0]).toContain("Launch Arcade Mode");
+    expect(logs[1]).toContain("Browse ROM Library");
   });
 
   test("featured games navigation works", async ({ page }) => {
@@ -35,8 +42,11 @@ test.describe("Navigation Flow", () => {
 
     // Mock console.log to capture game navigation logs
     const logs: string[] = [];
-    page.on('console', msg => {
-      if (msg.text().includes('Play') || msg.text().includes('Super Mario Bros')) {
+    page.on("console", (msg) => {
+      if (
+        msg.text().includes("Play") ||
+        msg.text().includes("Super Mario Bros")
+      ) {
         logs.push(msg.text());
       }
     });
@@ -46,13 +56,15 @@ test.describe("Navigation Flow", () => {
     await playButton.click();
 
     // Click Details button on featured game
-    const detailsButton = page.getByRole("button", { name: /details/i }).first();
+    const detailsButton = page
+      .getByRole("button", { name: /details/i })
+      .first();
     await detailsButton.click();
 
     // Verify game navigation was attempted
     expect(logs.length).toBe(2);
-    expect(logs[0]).toContain('Play');
-    expect(logs[1]).toContain('Super Mario Bros');
+    expect(logs[0]).toContain("Play");
+    expect(logs[1]).toContain("Super Mario Bros");
   });
 
   test("view all games button triggers navigation", async ({ page }) => {
@@ -71,8 +83,12 @@ test.describe("Navigation Flow", () => {
     await page.goto("/", { waitUntil: "networkidle" });
 
     // Click multiple navigation buttons
-    const arcadeButton = page.getByRole("button", { name: /launch arcade mode/i });
-    const libraryButton = page.getByRole("button", { name: /browse rom library/i });
+    const arcadeButton = page.getByRole("button", {
+      name: /launch arcade mode/i,
+    });
+    const libraryButton = page.getByRole("button", {
+      name: /browse rom library/i,
+    });
     const playButton = page.getByRole("button", { name: /play/i }).first();
     const viewAllButton = page.getByRole("button", { name: /all games/i });
 

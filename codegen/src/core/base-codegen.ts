@@ -265,7 +265,7 @@ export abstract class BaseCodegen {
       try {
         const entryPoint = path.join(pluginInfo.path, pluginInfo.entry_point);
         // Note: require() is used here as plugins may be CommonJS or ESM
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const PluginClass = require(entryPoint);
 
         // Create plugin instance

@@ -3,11 +3,15 @@ import { expect, test } from "@playwright/test";
 test.describe("Game Interactions", () => {
   test.beforeEach(async ({ page }) => {
     page.on("console", (message) => {
-      console.debug(`[playwright console] ${message.type()}: ${message.text()}`);
+      console.debug(
+        `[playwright console] ${message.type()}: ${message.text()}`,
+      );
     });
   });
 
-  test("featured games are displayed with proper information", async ({ page }) => {
+  test("featured games are displayed with proper information", async ({
+    page,
+  }) => {
     await page.goto("/", { waitUntil: "networkidle" });
 
     // Check that Super Mario Bros is displayed
@@ -30,8 +34,11 @@ test.describe("Game Interactions", () => {
 
     // Capture console logs for navigation attempts
     const logs: string[] = [];
-    page.on('console', msg => {
-      if (msg.text().includes('Play') || msg.text().includes('Super Mario Bros')) {
+    page.on("console", (msg) => {
+      if (
+        msg.text().includes("Play") ||
+        msg.text().includes("Super Mario Bros")
+      ) {
         logs.push(msg.text());
       }
     });
@@ -43,7 +50,9 @@ test.describe("Game Interactions", () => {
     await playButton.click();
 
     // Test Details button
-    const detailsButton = page.getByRole("button", { name: /details/i }).first();
+    const detailsButton = page
+      .getByRole("button", { name: /details/i })
+      .first();
     await expect(detailsButton).toBeVisible();
     await expect(detailsButton).toBeEnabled();
     await detailsButton.click();
@@ -71,7 +80,9 @@ test.describe("Game Interactions", () => {
     await expect(gameCard).toBeVisible();
 
     // Get initial transform
-    const initialTransform = await gameCard.evaluate(el => getComputedStyle(el).transform);
+    const initialTransform = await gameCard.evaluate(
+      (el) => getComputedStyle(el).transform,
+    );
 
     // Hover over the card
     await gameCard.hover();

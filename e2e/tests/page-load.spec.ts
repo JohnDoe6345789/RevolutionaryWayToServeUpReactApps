@@ -3,12 +3,14 @@ import { expect, test } from "@playwright/test";
 test.describe("Retro Gaming App", () => {
   test.beforeEach(async ({ page }) => {
     page.on("console", (message) => {
-      console.debug(`[playwright console] ${message.type()}: ${message.text()}`);
+      console.debug(
+        `[playwright console] ${message.type()}: ${message.text()}`,
+      );
     });
     page.on("response", (response) => {
       if (response.status() >= 400) {
         console.warn(
-          `[playwright response] ${response.status()} ${response.url()}`
+          `[playwright response] ${response.status()} ${response.url()}`,
         );
       }
     });
@@ -36,14 +38,27 @@ test.describe("Retro Gaming App", () => {
     await expect(page.getByText("Retro Gaming Hub")).toBeVisible();
     await expect(page.getByText("Press Start")).toBeVisible();
     await expect(page.getByText("To Continue")).toBeVisible();
-    await expect(page.getByText("Discover the ultimate retro gaming experience...")).toBeVisible();
+    await expect(
+      page.getByText("Discover the ultimate retro gaming experience..."),
+    ).toBeVisible();
 
     // Check hero section buttons
-    await expect(page.getByRole("button", { name: /launch arcade mode/i })).toBeVisible();
-    await expect(page.getByRole("button", { name: /browse rom library/i })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /launch arcade mode/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /browse rom library/i }),
+    ).toBeVisible();
 
     // Check system tags
-    const systemTags = ["NES", "SNES", "Genesis", "PlayStation", "Arcade", "DOS"];
+    const systemTags = [
+      "NES",
+      "SNES",
+      "Genesis",
+      "PlayStation",
+      "Arcade",
+      "DOS",
+    ];
     for (const tag of systemTags) {
       await expect(page.getByText(tag)).toBeVisible();
     }
@@ -62,7 +77,9 @@ test.describe("Retro Gaming App", () => {
     await expect(page.getByRole("button", { name: /details/i })).toBeVisible();
 
     // Check "View All Games" button
-    await expect(page.getByRole("button", { name: /all games/i })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /all games/i }),
+    ).toBeVisible();
   });
 
   test("has proper page structure and accessibility", async ({ page }) => {
@@ -90,8 +107,12 @@ test.describe("Retro Gaming App", () => {
     await page.goto("/", { waitUntil: "networkidle" });
 
     // Test that buttons are clickable (though navigation may not work in test env)
-    const arcadeButton = page.getByRole("button", { name: /launch arcade mode/i });
-    const libraryButton = page.getByRole("button", { name: /browse rom library/i });
+    const arcadeButton = page.getByRole("button", {
+      name: /launch arcade mode/i,
+    });
+    const libraryButton = page.getByRole("button", {
+      name: /browse rom library/i,
+    });
 
     await expect(arcadeButton).toBeEnabled();
     await expect(libraryButton).toBeEnabled();
