@@ -6,7 +6,7 @@
 
 import { BaseComponent } from './base-component';
 import type { IAggregate, IRegistry, ISearchMetadata } from './interfaces/index';
-import type { ISpec } from './interfaces/ispec';
+import type { ISpec } from './interfaces/index';
 
 /**
  *

@@ -6,7 +6,7 @@
 
 import { BaseComponent } from './base-component';
 import type { IPluginExecutionResult, IPluginRegistryManager } from './interfaces/index';
-import type { ISpec } from './interfaces/ispec';
+import type { ISpec } from './interfaces/index';
 
 /**
  *

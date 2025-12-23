@@ -5,7 +5,7 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { BaseAggregator } from './base-aggregator';
-import type { ISpec } from './interfaces/ispec';
+import type { ISpec } from './interfaces/index';
 
 describe('BaseAggregator', () => {
   let mockSpec: ISpec;

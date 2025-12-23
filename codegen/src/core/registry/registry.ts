@@ -6,8 +6,8 @@
 
 import { BaseComponent } from './base-component';
 import type { IRegistry, IComponent } from './interfaces/index';
-import type { ISearchMetadata } from './interfaces/isearch-metadata';
-import type { ISpec } from './interfaces/ispec';
+import type { ISearchMetadata } from './interfaces/index';
+import type { ISpec } from './interfaces/index';
 
 /**
  *

@@ -6,7 +6,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { PluginSpecLoader } from './plugin-spec-loader';
 import * as fs from 'fs';
-import type { ISpec } from './interfaces/ispec';
+import type { ISpec } from './interfaces/index';
 
 // Mock fs module
 vi.mock('fs');

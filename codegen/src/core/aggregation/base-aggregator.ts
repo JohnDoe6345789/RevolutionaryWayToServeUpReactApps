@@ -6,7 +6,7 @@
 
 import { BaseComponent } from './base-component';
 import type { IAggregator, IComponent, LifecycleState } from './interfaces/index';
-import type { ISpec } from './interfaces/ispec';
+import type { ISpec } from './interfaces/index';
 
 /**
  *
