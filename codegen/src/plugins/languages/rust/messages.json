@@ -1,0 +1,52 @@
+{
+  "msg.language.rust.title": {
+    "en": "Rust Language Support",
+    "es": "Soporte de Lenguaje Rust",
+    "fr": "Support du Langage Rust"
+  },
+  "msg.language.rust.summary": {
+    "en": "Generate Rust code from declarative templates",
+    "es": "Generar código Rust desde plantillas declarativas",
+    "fr": "Générer du code Rust à partir de modèles déclaratifs"
+  },
+  "msg.language.rust.templates.struct": {
+    "en": "Rust struct template",
+    "es": "Plantilla de struct Rust",
+    "fr": "Modèle de struct Rust"
+  },
+  "msg.language.rust.templates.function": {
+    "en": "Rust function template",
+    "es": "Plantilla de función Rust",
+    "fr": "Modèle de fonction Rust"
+  },
+  "msg.language.rust.templates.impl": {
+    "en": "Rust impl block template",
+    "es": "Plantilla de bloque impl Rust",
+    "fr": "Modèle de bloc impl Rust"
+  },
+  "msg.language.rust.templates.enum": {
+    "en": "Rust enum template",
+    "es": "Plantilla de enum Rust",
+    "fr": "Modèle d'enum Rust"
+  },
+  "msg.language.rust.templates.trait": {
+    "en": "Rust trait template",
+    "es": "Plantilla de trait Rust",
+    "fr": "Modèle de trait Rust"
+  },
+  "msg.language.rust.templates.module": {
+    "en": "Rust module template",
+    "es": "Plantilla de módulo Rust",
+    "fr": "Modèle de module Rust"
+  },
+  "msg.language.rust.error.invalid_syntax": {
+    "en": "Invalid Rust syntax in template",
+    "es": "Sintaxis Rust inválida en plantilla",
+    "fr": "Syntaxe Rust invalide dans le modèle"
+  },
+  "msg.language.rust.error.missing_field": {
+    "en": "Required field missing in Rust template",
+    "es": "Campo requerido faltante en plantilla Rust",
+    "fr": "Champ requis manquant dans le modèle Rust"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "id": "plugin.languages.rust",
+  "version": "1.0.0",
+  "type": "language",
+  "name": "Rust Language Plugin",
+  "description": "Code generation plugin for Rust programming language",
+  "author": "Codegen Team",
+  "license": "MIT",
+  "entry_point": "src/rust-generator.ts:RustGenerator",
+  "spec_file": "spec.json",
+  "messages_file": "messages.json",
+  "dependencies": {
+    "core": ">=1.0.0",
+    "plugins": []
+  },
+  "platforms": {
+    "win": true,
+    "mac": true,
+    "linux": true
+  },
+  "capabilities": [
+    "generate",
+    "validate",
+    "templates"
+  ],
+  "tests": {
+    "directory": "tests/",
+    "coverage_required": 100
+  }
+}

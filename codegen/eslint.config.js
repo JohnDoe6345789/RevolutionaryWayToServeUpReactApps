@@ -45,7 +45,7 @@ export default [
       'plugin-dependencies': pluginDependencies,
     },
     rules: {
-      // ESLint all rules
+      // ESLint all rules - as per linting-system.md
       ...js.configs.all.rules,
       // TypeScript ESLint all rules
       ...tseslint.configs.all.rules,
@@ -53,8 +53,11 @@ export default [
       ...tseslint.configs['strict-type-checked'].rules,
       // TypeScript ESLint stylistic type-checked rules
       ...tseslint.configs['stylistic-type-checked'].rules,
+
+      // Prettier integration
       'prettier/prettier': 'error',
-      // Mandatory strict rules from linting-system.md
+
+      // Strict rules from linting-system.md
       'max-lines-per-function': ['error', 10],
       'max-params': ['error', 3],
       'complexity': ['error', 5],
@@ -62,32 +65,61 @@ export default [
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/strict-boolean-expressions': 'error',
       '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-      // Existing rules that are still needed
-      '@typescript-eslint/explicit-module-boundary-types': 'error',
-      '@typescript-eslint/prefer-nullish-coalescing': 'error',
-      '@typescript-eslint/prefer-optional-chain': 'error',
-      '@typescript-eslint/no-unnecessary-condition': 'error',
-      '@typescript-eslint/require-await': 'error',
-      '@typescript-eslint/no-shadow': 'error',
-      '@typescript-eslint/no-redundant-type-constituents': 'error',
-      '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
-      '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
-      '@typescript-eslint/no-confusing-void-expression': 'error',
-      '@typescript-eslint/prefer-as-const': 'error',
-      '@typescript-eslint/prefer-enum-initializers': 'error',
-      '@typescript-eslint/prefer-literal-enum-member': 'error',
-      '@typescript-eslint/prefer-readonly': 'error',
-      '@typescript-eslint/prefer-readonly-parameter-types': 'off',
-      '@typescript-eslint/triple-slash-reference': 'error',
-      '@typescript-eslint/prefer-regexp-exec': 'error',
-      '@typescript-eslint/prefer-return-this-type': 'error',
-      '@typescript-eslint/prefer-string-starts-ends-with': 'error',
-      '@typescript-eslint/prefer-ts-expect-error': 'error',
-      '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-unused-vars': 'error',
+
+      // Additional strict rules for code quality
       'max-classes-per-file': ['error', 1],
-      'no-console': 'off', // Allow console in Node.js scripts
-      'no-undef': 'off', // Allow Node.js globals
+      'max-lines': ['error', 300],
+      'sort-imports': ['error', { 'ignoreCase': true, 'memberSyntaxSortOrder': ['none', 'all', 'multiple', 'single'] }],
+      'sort-keys': ['error', 'asc', { 'caseSensitive': true, 'natural': false, 'minKeys': 2 }],
+      'sort-vars': 'error',
+      'one-var': ['error', 'never'],
+      'func-style': ['error', 'expression'],
+      '@typescript-eslint/member-ordering': [
+        'error',
+        {
+          'default': [
+            'signature',
+            'field',
+            'constructor',
+            'method'
+          ]
+        }
+      ],
+      'no-ternary': 'error',
+      'no-eq-null': 'error',
+      'eqeqeq': ['error', 'always'],
+      'no-continue': 'error',
+      'no-await-in-loop': 'error',
+      'no-inline-comments': 'error',
+      'no-underscore-dangle': 'error',
+      '@typescript-eslint/init-declarations': 'error',
+      '@typescript-eslint/no-magic-numbers': ['error', { 'ignore': [0, 1] }],
+      '@typescript-eslint/explicit-member-accessibility': ['error', { 'accessibility': 'explicit' }],
+      '@typescript-eslint/naming-convention': [
+        'error',
+        {
+          'selector': 'variableLike',
+          'format': ['camelCase'],
+          'leadingUnderscore': 'allow'
+        },
+        {
+          'selector': 'typeLike',
+          'format': ['PascalCase']
+        },
+        {
+          'selector': 'memberLike',
+          'modifiers': ['private'],
+          'format': ['camelCase'],
+          'leadingUnderscore': 'require'
+        }
+      ],
+      'no-duplicate-imports': 'error',
+      'require-atomic-updates': 'error',
+
+      // Allow console in Node.js environment
+      'no-console': 'off',
+      'no-undef': 'off',
       'no-hardcoded-strings/no-hardcoded-strings': [
         'warn',
         {
