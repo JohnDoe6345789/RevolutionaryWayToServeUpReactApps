@@ -9,15 +9,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { IAggregate, IRegistry } from './interfaces/index';
-
-interface BaseCodegenOptions {
-  outputDir?: string;
-  strictMode?: boolean;
-  verbose?: boolean;
-  enableCache?: boolean;
-  [key: string]: unknown;
-}
+import { IAggregate, IRegistry, IBaseCodegenOptions } from './interfaces/index';
 
 interface PluginInfo {
   id: string;
@@ -66,11 +58,11 @@ interface SystemStatus {
     aggregates: number;
     specs: number;
   };
-  options: BaseCodegenOptions;
+  options: IBaseCodegenOptions;
 }
 
 export abstract class BaseCodegen {
-  protected options: BaseCodegenOptions;
+  protected options: IBaseCodegenOptions;
   protected pluginRegistry: Map<string, unknown>;
   protected aggregateRegistry: Map<string, IAggregate | IRegistry>;
   protected specRegistry: Map<string, unknown>;
@@ -80,7 +72,7 @@ export abstract class BaseCodegen {
   protected specs: Map<string, unknown>;
   protected templates: Map<string, unknown>;
 
-  constructor(options: BaseCodegenOptions = {}) {
+  constructor(options: IBaseCodegenOptions = {}) {
     this.options = {
       outputDir: options.outputDir || './generated',
       strictMode: options.strictMode !== false,

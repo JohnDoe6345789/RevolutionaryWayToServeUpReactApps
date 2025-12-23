@@ -1,6 +1,6 @@
 /**
- * Base codegen options interface
- * Configuration options for the BaseCodegen class
+ * BaseCodegenOptions - Configuration options for BaseCodegen
+ * Defines constructor parameters for codegen system initialization
  */
 
 export interface IBaseCodegenOptions {
