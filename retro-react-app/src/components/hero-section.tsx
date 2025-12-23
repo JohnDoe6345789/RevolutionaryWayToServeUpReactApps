@@ -44,13 +44,11 @@ export function HeroSection(): React.JSX.Element {
   const systemTags = gamesT.raw("systemTags");
 
   const handleLaunchArcade = (): void => {
-    console.log(t("launch_arcade_mode"));
     // Navigate to arcade mode
     router.push("/arcade");
   };
 
   const handleBrowseLibrary = (): void => {
-    console.log(t("browse_rom_library"));
     // Navigate to games library
     router.push("/games");
   };

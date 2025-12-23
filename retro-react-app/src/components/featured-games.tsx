@@ -33,7 +33,6 @@ export function FeaturedGames(): React.JSX.Element {
   const featuredGames = gamesT.raw("featured") as Game[];
 
   const handlePlayGame = (gameId: string): void => {
-    console.log(gameT("play"), gameId);
     router.push(`/games/${gameId}`);
   };
 

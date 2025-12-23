@@ -1,6 +1,6 @@
 "use client";
 
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { createTheme, ThemeProvider, Theme } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
 import { useTheme } from "next-themes";
 import { useMemo } from "react";
@@ -64,7 +64,7 @@ const lightRetroColors = {
   divider: "rgba(5, 5, 16, 0.12)",
 };
 
-export function createAppTheme(mode: "light" | "dark"): any {
+export function createAppTheme(mode: "light" | "dark"): Theme {
   const colors = mode === "dark" ? retroColors : lightRetroColors;
 
   return createTheme({
