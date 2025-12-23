@@ -6,35 +6,9 @@
 
 import { Plugin } from '../../../core/plugin';
 import type { ISpec } from '../../../core/interfaces/ispec';
-
-/**
- *
- */
-interface AnalyzerState {
-  violations: string[];
-  analyzed: number;
-}
-
-/**
- *
- */
-interface AnalysisResults {
-  success: boolean;
-  violations: string[];
-  summary: {
-    analyzed: number;
-    compliant: number;
-    violations: number;
-  };
-}
-
-/**
- *
- */
-interface ValidationInput {
-  operation: string;
-  [key: string]: unknown;
-}
+import type { AnalysisResults } from './analysis-results';
+import type { AnalyzerState } from './analyzer-state';
+import type { ValidationInput } from './validation-input';
 
 /**
  *

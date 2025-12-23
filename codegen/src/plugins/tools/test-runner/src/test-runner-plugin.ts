@@ -6,46 +6,10 @@
 
 import { Plugin } from '../../../core/plugin';
 import type { ISpec } from '../../../core/interfaces/ispec';
-
-/**
- *
- */
-interface ExecutorState {
-  framework: string;
-  testsRun: number;
-}
-
-/**
- *
- */
-interface TestResults {
-  success: boolean;
-  framework: string;
-  summary: {
-    total: number;
-    passed: number;
-    failed: number;
-  };
-}
-
-/**
- *
- */
-interface ExecutionResults {
-  summary: {
-    total: number;
-    passed: number;
-    failed: number;
-  };
-}
-
-/**
- *
- */
-interface ValidationInput {
-  operation: string;
-  [key: string]: unknown;
-}
+import type { ExecutionResults } from './execution-results';
+import type { ExecutorState } from './executor-state';
+import type { TestResults } from './test-results';
+import type { ValidationInput } from './validation-input';
 
 /**
  *
