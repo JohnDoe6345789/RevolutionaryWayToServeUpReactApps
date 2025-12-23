@@ -1,0 +1,182 @@
+{
+  "uuid": "550e8400-e29b-41d4-a716-446655440019",
+  "id": "interface.webui",
+  "type": "interface",
+  "search": {
+    "title": "Web User Interface",
+    "summary": "Generated Next.js WebUI with tree navigation, search, and Monaco editor integration",
+    "keywords": ["webui", "nextjs", "tree-navigation", "search", "monaco-editor", "generated"],
+    "tags": ["interface", "webui", "generated", "nextjs"],
+    "aliases": ["web-interface", "browser-interface"],
+    "domain": "codegen",
+    "capabilities": ["tree-navigation", "full-text-search", "monaco-editor", "preview-generate", "runbook-generator"]
+  },
+  "platforms": {
+    "win": true,
+    "mac": true,
+    "linux": true
+  },
+  "components": {
+    "tree-navigation": {
+      "uuid": "550e8400-e29b-41d4-a716-446655440020",
+      "id": "webui.component.tree-navigation",
+      "type": "component",
+      "search": {
+        "title": "Tree Navigation",
+        "summary": "Hierarchical tree view of aggregates with expand/collapse functionality",
+        "keywords": ["tree", "navigation", "hierarchical", "expand", "collapse"],
+        "domain": "codegen"
+      },
+      "features": [
+        "renders aggregate drill-down structure",
+        "expand/collapse nodes",
+        "select node shows details (descriptor, IDs, UUID, tags, search metadata)",
+        "breadcrumb navigation"
+      ]
+    },
+    "full-text-search": {
+      "uuid": "550e8400-e29b-41d4-a716-446655440021",
+      "id": "webui.component.full-text-search",
+      "type": "component",
+      "search": {
+        "title": "Full-Text Search",
+        "summary": "Search across component metadata with relevance ranking and highlighting",
+        "keywords": ["search", "full-text", "metadata", "ranking", "highlighting"],
+        "domain": "codegen"
+      },
+      "search-fields": [
+        "search.title",
+        "search.summary",
+        "search.keywords",
+        "search.tags",
+        "search.aliases",
+        "id",
+        "uuid"
+      ],
+      "filters": [
+        {
+          "name": "domain",
+          "values": ["codegen", "adapter", "domain", "i18n", "tooling"]
+        },
+        {
+          "name": "platform",
+          "values": ["win", "mac", "linux"]
+        },
+        {
+          "name": "language",
+          "values": ["TypeScript", "Python", "Rust", "Go", "C#"]
+        },
+        {
+          "name": "type",
+          "values": ["tool", "profile", "snippet", "template"]
+        }
+      ]
+    },
+    "monaco-editor": {
+      "uuid": "550e8400-e29b-41d4-a716-446655440022",
+      "id": "webui.component.monaco-editor",
+      "type": "component",
+      "search": {
+        "title": "Monaco Editor Integration",
+        "summary": "Embedded Monaco editor for editing specs with JSON schema validation",
+        "keywords": ["monaco", "editor", "json", "schema", "validation"],
+        "domain": "codegen"
+      },
+      "capabilities": [
+        "edit specs.json with schema validation",
+        "edit snippet templates (string[] form)",
+        "view generated previews (read-only)",
+        "JSON schema validation (client-side)",
+        "syntax highlighting",
+        "auto-formatting (Prettier integration)",
+        "diff view (comparing profile overrides vs base specs)"
+      ]
+    },
+    "preview-generate-workflow": {
+      "uuid": "550e8400-e29b-41d4-a716-446655440023",
+      "id": "webui.component.preview-generate",
+      "type": "component",
+      "search": {
+        "title": "Preview/Generate Workflow",
+        "summary": "Select snippet/language and generate preview or artifact",
+        "keywords": ["preview", "generate", "workflow", "artifact", "zip", "tar"],
+        "domain": "codegen"
+      },
+      "features": [
+        "select snippet/group + language → render generated preview",
+        "generate action produces artifact (zip/tarball) via backend API route",
+        "show diff when modifying specs"
+      ]
+    },
+    "runbook-generator": {
+      "uuid": "550e8400-e29b-41d4-a716-446655440024",
+      "id": "webui.component.runbook-generator",
+      "type": "component",
+      "search": {
+        "title": "Runbook Generator",
+        "summary": "Generate ordered install/verify plans for target platforms and profiles",
+        "keywords": ["runbook", "generator", "install", "verify", "platform", "profile"],
+        "domain": "codegen"
+      },
+      "capabilities": [
+        "select target platform + profile + toolset",
+        "generate ordered install/verify plan",
+        "export formats: markdown (human-readable), JSON (machine-readable), shell script (bash/PowerShell)"
+      ]
+    }
+  },
+  "pages": {
+    "home": {
+      "uuid": "550e8400-e29b-41d4-a716-446655440025",
+      "id": "webui.page.home",
+      "route": "/",
+      "components": ["tree-navigation", "full-text-search"]
+    },
+    "editor": {
+      "uuid": "550e8400-e29b-41d4-a716-446655440026",
+      "id": "webui.page.editor",
+      "route": "/editor",
+      "components": ["monaco-editor", "preview-generate-workflow"]
+    },
+    "runbook": {
+      "uuid": "550e8400-e29b-41d4-a716-446655440027",
+      "id": "webui.page.runbook",
+      "route": "/runbook",
+      "components": ["runbook-generator"]
+    }
+  },
+  "api-routes": {
+    "generate": {
+      "uuid": "550e8400-e29b-41d4-a716-446655440028",
+      "id": "webui.api.generate",
+      "route": "/api/generate",
+      "method": "POST",
+      "description": "Generate artifact from specs"
+    },
+    "preview": {
+      "uuid": "550e8400-e29b-41d4-a716-446655440029",
+      "id": "webui.api.preview",
+      "route": "/api/preview",
+      "method": "POST",
+      "description": "Generate preview of code output"
+    },
+    "search": {
+      "uuid": "550e8400-e29b-41d4-a716-446655440030",
+      "id": "webui.api.search",
+      "route": "/api/search",
+      "method": "GET",
+      "description": "Search components by query and filters"
+    }
+  },
+  "implementation": {
+    "framework": "nextjs",
+    "generator": "WebUIGenerator",
+    "template": "nextjs-template",
+    "output": {
+      "language": "typescript",
+      "structure": "multi-file",
+      "entry-point": "src/app/generated/",
+      "api-entry-point": "src/app/api/generated/"
+    }
+  }
+}

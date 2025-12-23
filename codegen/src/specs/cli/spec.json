@@ -1,0 +1,166 @@
+{
+  "uuid": "550e8400-e29b-41d4-a716-446655440011",
+  "id": "interface.cli",
+  "type": "interface",
+  "search": {
+    "title": "Command Line Interface",
+    "summary": "Generated CLI with drill-down navigation and registry-based commands",
+    "keywords": ["cli", "command-line", "drill-down", "registry", "generated"],
+    "tags": ["interface", "cli", "generated"],
+    "aliases": ["command-line", "terminal-interface"],
+    "domain": "codegen",
+    "capabilities": ["list", "describe", "search", "tool-operations", "profile-management", "runbook-generation", "schema-generation"]
+  },
+  "platforms": {
+    "win": true,
+    "mac": true,
+    "linux": true
+  },
+  "commands": {
+    "list": {
+      "uuid": "550e8400-e29b-41d4-a716-446655440012",
+      "id": "cli.command.list",
+      "type": "command",
+      "search": {
+        "title": "List Command",
+        "summary": "List top-level aggregates or drill-down into registries",
+        "keywords": ["list", "drill-down", "aggregates", "registries"],
+        "domain": "codegen"
+      },
+      "syntax": "codegen list [category] [subcategory]",
+      "examples": [
+        "codegen list",
+        "codegen list tooling",
+        "codegen list tooling.package-managers"
+      ],
+      "options": []
+    },
+    "describe": {
+      "uuid": "550e8400-e29b-41d4-a716-446655440013",
+      "id": "cli.command.describe",
+      "type": "command",
+      "search": {
+        "title": "Describe Command",
+        "summary": "Show detailed information about components by ID or UUID",
+        "keywords": ["describe", "details", "component", "id", "uuid"],
+        "domain": "codegen"
+      },
+      "syntax": "codegen describe <id_or_uuid>",
+      "examples": [
+        "codegen describe tool.dev.git",
+        "codegen describe 550e8400-e29b-41d4-a716-446655440000"
+      ],
+      "options": []
+    },
+    "search": {
+      "uuid": "550e8400-e29b-41d4-a716-446655440014",
+      "id": "cli.command.search",
+      "type": "command",
+      "search": {
+        "title": "Search Command",
+        "summary": "Full-text search across component metadata",
+        "keywords": ["search", "full-text", "metadata", "query"],
+        "domain": "codegen"
+      },
+      "syntax": "codegen search \"<query>\"",
+      "examples": [
+        "codegen search \"version control\"",
+        "codegen search \"package manager\""
+      ],
+      "options": []
+    },
+    "tool": {
+      "uuid": "550e8400-e29b-41d4-a716-446655440015",
+      "id": "cli.command.tool",
+      "type": "command",
+      "search": {
+        "title": "Tool Command",
+        "summary": "Tool installation, verification, and execution operations",
+        "keywords": ["tool", "install", "verify", "execute"],
+        "domain": "codegen"
+      },
+      "subcommands": {
+        "install": {
+          "syntax": "codegen tool install <tool-id> [--profile=<profile>]",
+          "examples": ["codegen tool install git", "codegen tool install git --profile=fullstack-dev"]
+        },
+        "verify": {
+          "syntax": "codegen tool verify <tool-id>",
+          "examples": ["codegen tool verify git"]
+        },
+        "run": {
+          "syntax": "codegen tool run <tool-id> <command> [args...]",
+          "examples": ["codegen tool run git clone https://github.com/user/repo.git"]
+        }
+      }
+    },
+    "runbook": {
+      "uuid": "550e8400-e29b-41d4-a716-446655440016",
+      "id": "cli.command.runbook",
+      "type": "command",
+      "search": {
+        "title": "Runbook Command",
+        "summary": "Generate and export installation/execution runbooks",
+        "keywords": ["runbook", "generate", "export", "installation"],
+        "domain": "codegen"
+      },
+      "subcommands": {
+        "generate": {
+          "syntax": "codegen runbook generate --profile=<profile> --platform=<platform>",
+          "examples": ["codegen runbook generate --profile=fullstack-dev --platform=linux"]
+        },
+        "export": {
+          "syntax": "codegen runbook export --format=<format> --output=<file>",
+          "examples": ["codegen runbook export --format=markdown --output=setup.md"]
+        }
+      }
+    },
+    "profile": {
+      "uuid": "550e8400-e29b-41d4-a716-446655440017",
+      "id": "cli.command.profile",
+      "type": "command",
+      "search": {
+        "title": "Profile Command",
+        "summary": "Profile management and selection",
+        "keywords": ["profile", "management", "selection"],
+        "domain": "codegen"
+      },
+      "subcommands": {
+        "list": {
+          "syntax": "codegen profile list",
+          "examples": ["codegen profile list"]
+        },
+        "show": {
+          "syntax": "codegen profile show <profile-id>",
+          "examples": ["codegen profile show fullstack-dev"]
+        },
+        "apply": {
+          "syntax": "codegen profile apply <profile-id>",
+          "examples": ["codegen profile apply fullstack-dev"]
+        }
+      }
+    },
+    "schema": {
+      "uuid": "550e8400-e29b-41d4-a716-446655440018",
+      "id": "cli.command.schema",
+      "type": "command",
+      "search": {
+        "title": "Schema Command",
+        "summary": "Generate schema specifications with defaults",
+        "keywords": ["schema", "generate", "defaults", "bulk"],
+        "domain": "codegen"
+      },
+      "syntax": "codegen schema generate <type> --bulk --defaults",
+      "examples": ["codegen schema generate tool --bulk --defaults"]
+    }
+  },
+  "implementation": {
+    "generator": "CLIGenerator",
+    "template": "cli-template",
+    "output": {
+      "language": "typescript",
+      "structure": "single-file",
+      "entry-point": "src/cli/generated-cli.ts"
+    }
+  }
+}
