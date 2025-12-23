@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { IconButton, Tooltip } from "@mui/material";
 import { Brightness4, Brightness7 } from "@mui/icons-material";
 
-export function ThemeToggle() {
+export function ThemeToggle(): React.JSX.Element {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 

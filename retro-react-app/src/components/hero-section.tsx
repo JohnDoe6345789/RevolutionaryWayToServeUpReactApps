@@ -36,20 +36,20 @@ const ConsoleIcon: React.FC<{ text: string }> = ({ text }) => {
   return <div dangerouslySetInnerHTML={{ __html: svgContent }} />;
 };
 
-export function HeroSection() {
+export function HeroSection(): React.JSX.Element {
   const t = useTranslations("hero");
   const gamesT = useTranslations("games_data");
   const router = useRouter();
 
   const systemTags = gamesT.raw("systemTags");
 
-  const handleLaunchArcade = () => {
+  const handleLaunchArcade = (): void => {
     console.log(t("launch_arcade_mode"));
     // Navigate to arcade mode
     router.push("/arcade");
   };
 
-  const handleBrowseLibrary = () => {
+  const handleBrowseLibrary = (): void => {
     console.log(t("browse_rom_library"));
     // Navigate to games library
     router.push("/games");

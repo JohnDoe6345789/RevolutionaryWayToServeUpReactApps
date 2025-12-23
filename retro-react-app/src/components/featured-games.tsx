@@ -24,7 +24,7 @@ interface Game {
   rating: number;
 }
 
-export function FeaturedGames() {
+export function FeaturedGames(): React.JSX.Element {
   const t = useTranslations("games");
   const gamesT = useTranslations("games_data");
   const gameT = useTranslations("game");
@@ -32,12 +32,12 @@ export function FeaturedGames() {
 
   const featuredGames = gamesT.raw("featured") as Game[];
 
-  const handlePlayGame = (gameId: string) => {
+  const handlePlayGame = (gameId: string): void => {
     console.log(gameT("play"), gameId);
     router.push(`/games/${gameId}`);
   };
 
-  const handleViewDetails = (gameId: string) => {
+  const handleViewDetails = (gameId: string): void => {
     router.push(`/games/${gameId}`);
   };
 

@@ -2,7 +2,7 @@ import { Container, Box, Divider } from "@mui/material";
 import { HeroSection } from "@/components/hero-section";
 import { FeaturedGames } from "@/components/featured-games";
 
-export default function Home() {
+export default function Home(): React.JSX.Element {
   return (
     <Box>
       {/* Hero Section */}

@@ -10,13 +10,13 @@ import {
 } from "@mui/material";
 import { useTransition } from "react";
 
-export function LanguageSwitcher() {
+export function LanguageSwitcher(): React.JSX.Element {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
 
-  const handleLanguageChange = (event: SelectChangeEvent<string>) => {
+  const handleLanguageChange = (event: SelectChangeEvent<string>): void => {
     const newLocale = event.target.value;
     startTransition(() => {
       // Remove the current locale from pathname and add the new one

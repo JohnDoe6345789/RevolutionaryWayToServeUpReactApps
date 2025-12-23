@@ -64,7 +64,7 @@ const lightRetroColors = {
   divider: "rgba(5, 5, 16, 0.12)",
 };
 
-export function createAppTheme(mode: "light" | "dark") {
+export function createAppTheme(mode: "light" | "dark"): any {
   const colors = mode === "dark" ? retroColors : lightRetroColors;
 
   return createTheme({
@@ -226,7 +226,9 @@ interface ThemeProviderWrapperProps {
   children: React.ReactNode;
 }
 
-export function ThemeProviderWrapper({ children }: ThemeProviderWrapperProps) {
+export function ThemeProviderWrapper({
+  children,
+}: ThemeProviderWrapperProps): React.JSX.Element {
   const { theme } = useTheme();
   const muiTheme = useMemo(
     () => createAppTheme(theme === "dark" ? "dark" : "light"),

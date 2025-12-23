@@ -17,7 +17,7 @@ vi.mock("next/navigation", () => ({
 
 // Mock next-intl
 vi.mock("next-intl", () => ({
-  useTranslations: (namespace?: string) => {
+  useTranslations: (namespace?: string): any => {
     const translations: Record<string, any> = {
       hero: {
         retro_gaming_hub: "Retro Gaming Hub",
@@ -56,7 +56,7 @@ vi.mock("next-intl", () => ({
       },
     };
 
-    const translator = (key: string) => {
+    const translator = (key: string): string => {
       if (namespace && translations[namespace]) {
         return translations[namespace][key] || key;
       }
@@ -72,7 +72,7 @@ vi.mock("next-intl", () => ({
     };
 
     // Add the raw method for accessing raw translation objects
-    translator.raw = (key: string) => {
+    translator.raw = (key: string): any => {
       if (namespace && translations[namespace]) {
         return translations[namespace][key] || {};
       }
@@ -81,24 +81,28 @@ vi.mock("next-intl", () => ({
 
     return translator;
   },
-  useLocale: () => "en",
+  useLocale: (): string => "en",
 }));
 
 // Mock next-themes
 vi.mock("next-themes", () => ({
-  useTheme: () => ({
+  useTheme: (): any => ({
     theme: "dark",
     setTheme: vi.fn(),
     themes: ["light", "dark", "system"],
     systemTheme: "dark",
   }),
-  ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
+  ThemeProvider: ({
+    children,
+  }: {
+    children: React.ReactNode;
+  }): React.ReactNode => children,
 }));
 
 // Mock Material-UI icons
 vi.mock("@mui/icons-material", () => ({
-  Brightness4: () => "Brightness4",
-  Brightness7: () => "Brightness7",
+  Brightness4: (): string => "Brightness4",
+  Brightness7: (): string => "Brightness7",
 }));
 
 // Mock dangerouslySetInnerHTML for SVG content

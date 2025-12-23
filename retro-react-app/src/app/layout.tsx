@@ -45,7 +45,7 @@ export async function generateMetadata({
 export default function RootLayout({
   children,
   params: { locale },
-}: LayoutProps) {
+}: LayoutProps): React.JSX.Element {
   return (
     <html lang={locale} suppressHydrationWarning>
       <body className={`${jetbrainsMono.variable} antialiased`}>

@@ -23,11 +23,11 @@ vi.mock("next/navigation", async () => {
 });
 
 describe("HeroSection", () => {
-  beforeEach(() => {
+  beforeEach((): void => {
     mockPush.mockClear();
   });
 
-  it("renders the hero section with all required elements", () => {
+  it("renders the hero section with all required elements", (): void => {
     render(<HeroSection />);
 
     // Check main heading
