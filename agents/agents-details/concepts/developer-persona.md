@@ -25,6 +25,8 @@
 
 The **small-class rule** keeps public APIs lean: design tiny classes even if they rely on several short helper methods, and keep the public contract below five methods. Shared infrastructure such as a composite lifecycle implementation may need additional helpers; if you need to go beyond the limit, make each extra method purposeful and document why the broader project gains justify the added complexity.
 
+**Exception:** Core interfaces like `IStandardLifecycle` and `CompositeLifecycle` expose more than five methods by design; implementing or extending them is acceptable because they serve foundational, discoverable infrastructure.
+
 **Working Style:**
 - Plans first, executes second
 - Refactors aggressively to reduce complexity and duplication
