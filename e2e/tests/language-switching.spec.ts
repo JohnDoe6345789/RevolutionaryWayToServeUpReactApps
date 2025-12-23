@@ -7,19 +7,19 @@ test.describe("Language Switching", () => {
     });
   });
 
-  test("language switcher shows available languages", async ({ page }) => {
+  test.each([
+    ['en'],
+    ['es'],
+  ])("language switcher shows %s language option", async (languageCode: string, { page }) => {
     await page.goto("/", { waitUntil: "networkidle" });
 
     // Check that language selector exists
     const languageSelect = page.locator('select').first();
     await expect(languageSelect).toBeVisible();
 
-    // Verify it has EN and ES options
-    const enOption = page.locator('option[value="en"]');
-    const esOption = page.locator('option[value="es"]');
-
-    await expect(enOption).toBeDefined();
-    await expect(esOption).toBeDefined();
+    // Verify it has the language option
+    const languageOption = page.locator(`option[value="${languageCode}"]`);
+    await expect(languageOption).toBeDefined();
   });
 
   test("language switcher is accessible", async ({ page }) => {

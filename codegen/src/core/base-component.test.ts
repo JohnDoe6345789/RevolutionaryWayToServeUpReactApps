@@ -37,29 +37,14 @@ describe('BaseComponent', () => {
       expect(result).toBe(component);
     });
 
-    it('should throw error for invalid UUID', async () => {
-      const invalidSpec = { ...mockSpec, uuid: 'invalid-uuid' };
+    it.each([
+      ['invalid UUID', { ...mockSpec, uuid: 'invalid-uuid' }, 'Invalid UUID: invalid-uuid'],
+      ['missing id', { uuid: '12345678-1234-4123-8123-123456789012', id: '', search: { keywords: ['test'] } }, 'Missing required fields: id, search'],
+      ['missing search', { uuid: '12345678-1234-4123-8123-123456789012', id: 'test-id', search: undefined }, 'Missing required fields: id, search'],
+    ])('should throw error for %s', async (description: string, invalidSpec: any, expectedError: string) => {
       const invalidComponent = new TestComponent(invalidSpec);
 
-      await expect(invalidComponent.initialise()).rejects.toThrow('Invalid UUID: invalid-uuid');
-    });
-
-    it('should throw error for missing id', async () => {
-      const invalidSpec = { ...mockSpec, id: '' };
-      const invalidComponent = new TestComponent(invalidSpec);
-
-      await expect(invalidComponent.initialise()).rejects.toThrow(
-        'Missing required fields: id, search'
-      );
-    });
-
-    it('should throw error for missing search', async () => {
-      const invalidSpec = { ...mockSpec, search: undefined };
-      const invalidComponent = new TestComponent(invalidSpec);
-
-      await expect(invalidComponent.initialise()).rejects.toThrow(
-        'Missing required fields: id, search'
-      );
+      await expect(invalidComponent.initialise()).rejects.toThrow(expectedError);
     });
   });
 
@@ -77,21 +62,27 @@ describe('BaseComponent', () => {
   });
 
   describe('validate', () => {
-    it('should return true for valid objects', () => {
-      expect(component.validate({})).toBe(true);
-      expect(component.validate({ key: 'value' })).toBe(true);
-      expect(component.validate([])).toBe(true);
+    it.each([
+      ['empty object', {}, true],
+      ['object with properties', { key: 'value' }, true],
+      ['array', [], true],
+    ])('should return %s for %s', (expected: string, input: any, result: boolean) => {
+      expect(component.validate(input)).toBe(result);
     });
 
-    it('should return false for null or undefined', () => {
-      expect(component.validate(null)).toBe(false);
-      expect(component.validate(undefined)).toBe(false);
+    it.each([
+      ['null', null, false],
+      ['undefined', undefined, false],
+    ])('should return false for %s', (description: string, input: any, expected: boolean) => {
+      expect(component.validate(input)).toBe(expected);
     });
 
-    it('should return false for non-objects', () => {
-      expect(component.validate('string')).toBe(false);
-      expect(component.validate(42)).toBe(false);
-      expect(component.validate(true)).toBe(false);
+    it.each([
+      ['string', 'string', false],
+      ['number', 42, false],
+      ['boolean', true, false],
+    ])('should return false for %s input', (description: string, input: any, expected: boolean) => {
+      expect(component.validate(input)).toBe(expected);
     });
   });
 });

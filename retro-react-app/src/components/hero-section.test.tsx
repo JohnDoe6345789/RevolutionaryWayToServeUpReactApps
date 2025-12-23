@@ -50,24 +50,17 @@ describe('HeroSection', () => {
     expect(screen.getByText('Genesis')).toBeInTheDocument();
   });
 
-  it('navigates to arcade mode when launch arcade button is clicked', async () => {
+  it.each([
+    ['launch arcade mode', /launch arcade mode/i, '/arcade'],
+    ['browse rom library', /browse rom library/i, '/games'],
+  ])('navigates to %s when %s button is clicked', async (description: string, buttonName: RegExp, expectedRoute: string) => {
     const user = userEvent.setup();
     render(<HeroSection />);
 
-    const arcadeButton = screen.getByRole('button', { name: /launch arcade mode/i });
-    await user.click(arcadeButton);
+    const button = screen.getByRole('button', { name: buttonName });
+    await user.click(button);
 
-    expect(mockPush).toHaveBeenCalledWith('/arcade');
-  });
-
-  it('navigates to games library when browse library button is clicked', async () => {
-    const user = userEvent.setup();
-    render(<HeroSection />);
-
-    const libraryButton = screen.getByRole('button', { name: /browse rom library/i });
-    await user.click(libraryButton);
-
-    expect(mockPush).toHaveBeenCalledWith('/games');
+    expect(mockPush).toHaveBeenCalledWith(expectedRoute);
   });
 
   it('renders the console icon with correct text', () => {
@@ -79,14 +72,17 @@ describe('HeroSection', () => {
     expect(heroSection).toBeInTheDocument();
   });
 
-  it('displays system tags as chips', () => {
+  it.each([
+    ['NES'],
+    ['SNES'],
+    ['Genesis'],
+    ['PlayStation'],
+    ['Arcade'],
+    ['DOS'],
+  ])('displays %s system tag as a chip', (systemTag: string) => {
     render(<HeroSection />);
 
-    // Check that system tags are rendered as chips
-    const systemTags = ['NES', 'SNES', 'Genesis', 'PlayStation', 'Arcade', 'DOS'];
-    systemTags.forEach(tag => {
-      expect(screen.getByText(tag)).toBeInTheDocument();
-    });
+    expect(screen.getByText(systemTag)).toBeInTheDocument();
   });
 
   it('has proper accessibility attributes', () => {
