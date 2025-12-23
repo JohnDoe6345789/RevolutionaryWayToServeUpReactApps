@@ -4,7 +4,7 @@
  * TypeScript strict typing with no 'any' types
  */
 
-import { IComponent, ISearchMetadata, ISpec } from './interfaces';
+import { IComponent, ISearchMetadata, ISpec } from './interfaces/index';
 
 export abstract class BaseComponent implements IComponent {
   public readonly uuid: string;

@@ -4,7 +4,7 @@
  * Uses composition with smaller specialized classes
  */
 
-import { IPlugin, IPluginConfig, IRegistryManager, ISpec } from './interfaces';
+import { IPlugin, IPluginConfig, IRegistryManager, ISpec } from './interfaces/index';
 import { BaseComponent } from './base-component';
 import { PluginSpecLoader } from './plugin-spec-loader';
 import { PluginMessageLoader } from './plugin-message-loader';

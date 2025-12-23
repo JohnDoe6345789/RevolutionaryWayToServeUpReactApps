@@ -3,7 +3,7 @@
  * Single responsibility: Git tool management with strict OO constraints
  */
 
-import { IPluginConfig, IRegistryManager } from '../../../../core/interfaces';
+import { IPluginConfig, IRegistryManager } from '../../../../core/interfaces/index';
 import { BasePlugin } from '../../../../core/base-plugin';
 import { execSync } from 'child_process';
 

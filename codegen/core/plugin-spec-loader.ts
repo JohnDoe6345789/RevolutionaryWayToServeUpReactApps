@@ -6,7 +6,7 @@
 
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
-import { ISpec } from './interfaces';
+import { ISpec } from './interfaces/index';
 
 export class PluginSpecLoader {
   private readonly basePath: string;
