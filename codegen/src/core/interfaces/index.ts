@@ -16,3 +16,14 @@ export { IDependencyInjectionContainer } from './idependency-injection-container
 export { IAdapter } from './iadapter';
 export { LifecycleState } from './lifecycle-state';
 export { ILifecycleManager } from './ilifecycle-manager';
+export { IPluginExecutionResult } from './iplugin-execution-result';
+export { IPluginRegistryManager } from './iplugin-registry-manager';
+export { ISpecValidatorOptions } from './ispec-validator-options';
+export { IValidationResult } from './ivalidation-result';
+export { ISpecForValidation } from './ispec-for-validation';
+export { ISearchMetadataForValidation } from './isearch-metadata-for-validation';
+export { IBaseCodegenOptions } from './ibase-codegen-options';
+export { IPluginInfo } from './iplugin-info';
+export { ICodegenExecutionResults } from './icodegen-execution-results';
+export { IAggregateResults } from './iaggregate-results';
+export { ISystemStatus } from './isystem-status';

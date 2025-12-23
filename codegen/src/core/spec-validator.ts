@@ -6,30 +6,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-
-interface SpecValidatorOptions {
-  schemaPath?: string;
-  strictMode?: boolean;
-}
-
-interface ValidationResult {
-  valid: boolean;
-  errors: string[];
-}
-
-interface Spec {
-  uuid: string;
-  id: string;
-  search: SearchMetadata;
-  [key: string]: unknown;
-}
-
-interface SearchMetadata {
-  title: string;
-  summary: string;
-  keywords: string[];
-  [key: string]: unknown;
-}
+import { ISpecValidatorOptions, IValidationResult, ISpecForValidation, ISearchMetadataForValidation } from './interfaces/index';
 
 export class SpecValidator {
   private schemaPath: string;
@@ -40,7 +17,7 @@ export class SpecValidator {
    * Constructor with single options parameter
    * @param options - Validator options
    */
-  constructor(options: SpecValidatorOptions = {}) {
+  constructor(options: ISpecValidatorOptions = {}) {
     this.schemaPath = options.schemaPath || path.join(__dirname, '../schemas/spec-schema.json');
     this.strictMode = options.strictMode !== false;
     this.schema = null;
@@ -60,7 +37,7 @@ export class SpecValidator {
    * @param spec - Specification to validate
    * @returns Validation result
    */
-  public validate(spec: unknown): ValidationResult {
+  public validate(spec: unknown): IValidationResult {
     const errors: string[] = [];
 
     // Basic structure validation
@@ -69,7 +46,7 @@ export class SpecValidator {
     }
 
     // AGENTS.md specific validations
-    if (!this._validateAgentsMdCompliance(spec as Spec, errors)) {
+    if (!this._validateAgentsMdCompliance(spec as ISpecForValidation, errors)) {
       return { valid: false, errors };
     }
 
@@ -105,7 +82,7 @@ export class SpecValidator {
    * @param errors - Error accumulator
    * @returns Is valid
    */
-  private _validateAgentsMdCompliance(spec: Spec, errors: string[]): boolean {
+  private _validateAgentsMdCompliance(spec: ISpecForValidation, errors: string[]): boolean {
     // UUID format validation
     if (!this._isValidUUID(spec.uuid)) {
       errors.push('Invalid UUID format (must be RFC 4122)');
@@ -130,7 +107,7 @@ export class SpecValidator {
    * @param errors - Error accumulator
    * @returns Is valid
    */
-  private _validateSearchMetadata(search: SearchMetadata, errors: string[]): boolean {
+  private _validateSearchMetadata(search: ISearchMetadataForValidation, errors: string[]): boolean {
     if (!search || typeof search !== 'object') {
       errors.push('Search metadata must be an object');
       return false;

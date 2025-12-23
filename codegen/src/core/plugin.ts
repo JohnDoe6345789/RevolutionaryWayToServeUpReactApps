@@ -5,21 +5,10 @@
  */
 
 import { BaseComponent } from './base-component';
-import { IPlugin } from './interfaces/iplugin';
+import { IPluginExecutionResult, IPluginRegistryManager } from './interfaces/index';
 import { ISpec } from './interfaces/ispec';
 
-interface PluginExecutionResult {
-  success: boolean;
-  plugin: string;
-  timestamp: string;
-  output: Record<string, unknown>;
-}
-
-interface RegistryManager {
-  register(id: string, spec: unknown): void;
-}
-
-export abstract class Plugin extends BaseComponent implements IPlugin {
+export abstract class Plugin extends BaseComponent {
   protected initialised: boolean;
   protected specCache: unknown | null;
 
@@ -37,7 +26,7 @@ export abstract class Plugin extends BaseComponent implements IPlugin {
    * Initialise plugin (plugin contract method, ≤10 lines)
    * @returns Promise<Plugin> Initialised plugin
    */
-  public async initialise(): Promise<IPlugin> {
+  public override async initialise(): Promise<Plugin> {
     await super.initialise();
     this.initialised = true;
     this.log(`Plugin ${this.id} initialised`);
@@ -60,7 +49,7 @@ export abstract class Plugin extends BaseComponent implements IPlugin {
    * Register with registry manager (plugin contract method, ≤10 lines)
    * @param registryManager - Registry manager instance
    */
-  public async register(registryManager: RegistryManager): Promise<void> {
+  public async register(registryManager: IPluginRegistryManager): Promise<void> {
     if (!this.initialised) {
       await this.initialise();
     }
@@ -77,7 +66,7 @@ export abstract class Plugin extends BaseComponent implements IPlugin {
    * @param context - Execution context
    * @returns Execution result
    */
-  public async execute(context: Record<string, unknown>): Promise<PluginExecutionResult> {
+  public override async execute(context: Record<string, unknown>): Promise<IPluginExecutionResult> {
     if (!this.initialised) {
       await this.initialise();
     }
