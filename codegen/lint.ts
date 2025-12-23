@@ -7,7 +7,7 @@
 
 import { $ } from 'bun';
 import { existsSync } from 'fs';
-import { join } from 'path';
+import { PluginDependencyLinter } from './src/core/plugin-dependency-linter.js';
 
 async function main() {
   console.log('📋 Running AGENTS.md compliant linting...');
@@ -28,12 +28,16 @@ async function main() {
     console.log('🏗️  Checking AGENTS.md compliance...');
     await checkOOPCompliance();
 
-    // Check constructor dataclass separation
-    await checkConstructorDataclassSeparation();
+    // Check single export per file
+    await checkSingleExportPerFile();
 
     // Validate specs
     console.log('📋 Validating specifications...');
     await validateSpecs();
+
+    // Check plugin dependencies for circular imports
+    console.log('🔗 Analyzing plugin dependencies...');
+    await checkPluginDependencies();
 
     console.log('✅ All lint checks passed!');
   } catch (error) {
@@ -54,8 +58,8 @@ async function runNodeLinting() {
   console.log('🏗️  Checking AGENTS.md compliance...');
   await checkOOPCompliance();
 
-  // Check constructor dataclass separation
-  await checkConstructorDataclassSeparation();
+  // Check single export per file
+  await checkSingleExportPerFile();
 
   // Validate specs
   console.log('📋 Validating specifications...');
@@ -99,8 +103,8 @@ async function checkOOPCompliance() {
   }
 }
 
-async function checkConstructorDataclassSeparation() {
-  console.log('🔍 Checking constructor dataclass separation (1 dataclass per file)...');
+async function checkSingleExportPerFile() {
+  console.log('🔍 Checking single export per file (1 class/interface/constant/function per file)...');
 
   const fs = await import('fs');
   const path = await import('path');
@@ -128,39 +132,40 @@ async function checkConstructorDataclassSeparation() {
   scanDirectory(srcDir);
 
   for (const file of tsFiles) {
+
     const content = fs.readFileSync(file, 'utf8');
 
-    // Find all exported interfaces in this file
-    const exportedInterfaces = content.match(/export\s+(interface|type)\s+(\w+)/g) || [];
-    const exportedClasses = content.match(/export\s+(?:abstract\s+)?class\s+(\w+)/g) || [];
+    // Count different types of exports
+    const exportedClasses = (content.match(/export\s+(?:abstract\s+)?class\s+\w+/g) || []).length;
+    const exportedInterfaces = (content.match(/export\s+(interface|type)\s+\w+/g) || []).length;
+    const exportedFunctions = (content.match(/export\s+(?:async\s+)?function\s+\w+/g) || []).length;
+    const exportedConstants = (content.match(/export\s+(?:const|let|var)\s+\w+/g) || []).length;
+    const exportedDefaults = (content.match(/export\s+default/g) || []).length;
 
-    // Count constructor dataclass interfaces (interfaces used as constructor params)
-    let constructorDataclassCount = 0;
-    const constructorMatches = content.match(/constructor\s*\(([^)]*)\)/g) || [];
+    // Count total named exports
+    const totalNamedExports = exportedClasses + exportedInterfaces + exportedFunctions + exportedConstants;
 
-    for (const constructorMatch of constructorMatches) {
-      // Extract parameter types from constructor
-      const paramMatches = constructorMatch.match(/(\w+):\s*([^{}=&|;,\s]+)/g) || [];
-      for (const paramMatch of paramMatches) {
-        const [, , paramType] = paramMatch.match(/(\w+):\s*([^=,&|;\s]+)/) || [];
-        if (paramType && paramType.startsWith('I') && paramType.length > 1) {
-          // This looks like an interface type (starts with I)
-          constructorDataclassCount++;
-        }
-      }
+    // Allow files with only default export + optionally one named export (for barrel exports)
+    if (exportedDefaults > 0 && totalNamedExports <= 1) {
+      continue;
     }
 
     // Check for violations
-    if (exportedInterfaces.length > 1 && constructorDataclassCount > 0) {
+    if (totalNamedExports > 1) {
+      const violations = [];
+      if (exportedClasses > 1) violations.push(`${exportedClasses} classes`);
+      if (exportedInterfaces > 1) violations.push(`${exportedInterfaces} interfaces/types`);
+      if (exportedFunctions > 1) violations.push(`${exportedFunctions} functions`);
+      if (exportedConstants > 1) violations.push(`${exportedConstants} constants`);
+
       throw new Error(
-        `File ${file} contains ${exportedInterfaces.length} exported interfaces but should have at most 1 dataclass interface per file`
+        `File ${file} violates single export rule: ${violations.join(', ')}. Each file should export exactly 1 class, interface, function, or constant.`
       );
     }
 
-    if (exportedClasses.length > 1) {
-      throw new Error(
-        `File ${file} contains ${exportedClasses.length} exported classes but should have at most 1 class per file`
-      );
+    if (totalNamedExports === 0 && exportedDefaults === 0) {
+      // Skip empty files or files with only imports
+      continue;
     }
 
     // Check for inline interface definitions in constructor parameters
@@ -169,12 +174,12 @@ async function checkConstructorDataclassSeparation() {
       content.match(/constructor\s*\([^)]*\w+\s*:\s*{\s*[^}]*}[^)]*\)/g) || [];
     if (inlineInterfaceMatches.length > 0) {
       throw new Error(
-        `File ${file} contains inline interface definitions in constructor parameters. Constructor dataclasses must be defined in separate files.`
+        `File ${file} contains inline interface definitions in constructor parameters. All types must be defined in separate files.`
       );
     }
   }
 
-  console.log(`✅ Constructor dataclass separation check passed for ${tsFiles.length} files`);
+  console.log(`✅ Single export per file check passed for ${tsFiles.length} files`);
 }
 
 async function validateSpecs() {
@@ -191,10 +196,32 @@ async function validateSpecs() {
         const content = fs.readFileSync(specFile, 'utf8');
         JSON.parse(content);
       } catch (error) {
-        throw new Error(`Invalid JSON in ${specFile}: ${error.message}`);
+        throw new Error(`Invalid JSON in ${specFile}: ${(error as Error).message}`);
       }
     }
   }
+}
+
+async function checkPluginDependencies() {
+  const linter = new PluginDependencyLinter();
+  const result = await linter.analyze();
+
+  if (!result.success) {
+    console.log('❌ Circular dependencies detected in plugin system:');
+    result.circularDeps.forEach((cycle, index) => {
+      console.log(`  ${index + 1}. ${cycle.join(' → ')}`);
+    });
+    throw new Error('Plugin circular dependencies found');
+  }
+
+  if (result.warnings.length > 0) {
+    console.log('⚠️  Plugin dependency warnings:');
+    result.warnings.forEach(warning => {
+      console.log(`  - ${warning}`);
+    });
+  }
+
+  console.log(`✅ Plugin dependency analysis passed for ${result.pluginCount} plugins`);
 }
 
 if (import.meta.main) {

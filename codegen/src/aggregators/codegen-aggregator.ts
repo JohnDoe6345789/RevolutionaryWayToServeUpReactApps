@@ -73,7 +73,7 @@ export class CodegenAggregator extends BaseAggregator {
 
   public override async shutdown(): Promise<void> {
     // Shutdown child aggregators
-    for (const [childId, child] of this.children) {
+    for (const [_childId, child] of this.children) {
       if (child && typeof (child as any).shutdown === 'function') {
         await (child as any).shutdown();
       }

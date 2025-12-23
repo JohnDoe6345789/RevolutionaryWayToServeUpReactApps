@@ -1,0 +1,8 @@
+{
+  "id": "plugin.tools.test-c",
+  "version": "1.0.0",
+  "type": "tool",
+  "name": "Test Plugin C",
+  "entry_point": "src/test-c-plugin.ts",
+  "dependencies": ["plugin.tools.test-a"]
+}

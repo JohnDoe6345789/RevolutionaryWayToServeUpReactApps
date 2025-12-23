@@ -7,7 +7,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { BaseAggregator } from '../core/base-aggregator';
-import { IAggregator, IComponent } from '../core/interfaces/index';
+import { IComponent } from '../core/interfaces/index';
 import { ISpec } from '../core/interfaces/ispec';
 
 interface PluginInfo {
@@ -40,7 +40,7 @@ export class PluginAggregator extends BaseAggregator {
   public override async execute(context: Record<string, unknown>): Promise<unknown> {
     await super.execute(context);
     // Execute all loaded plugins
-    for (const [pluginId, plugin] of this.loadedPlugins) {
+    for (const [_pluginId, plugin] of this.loadedPlugins) {
       if (typeof plugin.execute === 'function') {
         await plugin.execute(context);
       }
@@ -50,7 +50,7 @@ export class PluginAggregator extends BaseAggregator {
 
   public override async shutdown(): Promise<void> {
     // Shutdown all plugins
-    for (const [pluginId, plugin] of this.loadedPlugins) {
+    for (const [_pluginId, plugin] of this.loadedPlugins) {
       if (typeof (plugin as any).shutdown === 'function') {
         await (plugin as any).shutdown();
       }
@@ -82,7 +82,7 @@ export class PluginAggregator extends BaseAggregator {
               unknown
             >;
             this.discoveredPlugins.set(manifest.id as string, {
-              ...manifest,
+              ...(manifest as PluginInfo),
               path: pluginDir,
               category,
             });

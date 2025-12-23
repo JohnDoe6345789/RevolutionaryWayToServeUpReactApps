@@ -7,7 +7,6 @@
 
 import { $ } from 'bun';
 import { existsSync, mkdirSync } from 'fs';
-import { join } from 'path';
 
 async function main() {
   console.log('🚀 Building Revolutionary Codegen...');
