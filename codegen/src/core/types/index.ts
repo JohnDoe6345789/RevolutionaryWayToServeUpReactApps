@@ -1,4 +1,22 @@
 // Core type exports
-export * from './result';
-export type * from './messaging';
+export type { Result } from './result';
+export type { ResultAsync } from './result-async';
+export { ok } from './ok';
+export { err } from './err';
+export { isOk } from './is-ok';
+export { isErr } from './is-err';
+export { unwrap } from './unwrap';
+export { unwrapOr } from './unwrap-or';
+export { map } from './map';
+export { mapErr } from './map-err';
+export { andThen } from './and-then';
+export { fromPromise } from './from-promise';
+export { collect } from './collect';
+export type { Action } from './messaging';
+export type { Reducer } from './reducer';
+export type { Unsubscribe } from './unsubscribe';
+export type { Store } from './store';
+export type { Dispatch } from './dispatch';
+export type { MiddlewareAPI } from './middleware-api';
+export type { Middleware } from './middleware';
 export * from './lifecycle';
