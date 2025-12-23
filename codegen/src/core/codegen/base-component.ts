@@ -4,9 +4,8 @@
  * TypeScript strict typing with no 'any' types
  */
 
-import type { ISearchMetadata, ISpec } from '../interfaces/index';
-import type { IStandardLifecycle } from '../types/lifecycle';
-import { LifecycleStatus } from '../types/lifecycle';
+import type { ISearchMetadata, ISpec, IStandardLifecycle } from '../interfaces/index';
+import { LifecycleStatus } from '../interfaces/index';
 
 /**
  * BaseComponent - AGENTS.md compliant base class implementing IStandardLifecycle

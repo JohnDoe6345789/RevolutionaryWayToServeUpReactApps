@@ -9,8 +9,8 @@
 
 import { CodegenEntrypoint } from './entrypoints/index';
 import { LifecycleBuilder } from './core/lifecycle/index';
-import { PluginAggregator } from './aggregators/plugin-aggregator';
-import { ExecutionAggregator } from './aggregators/execution-aggregator';
+import { PluginManager } from './core/plugins/plugin-manager';
+import { ExecutionManager } from './core/codegen/execution-manager';
 
 // Factory function to create the complete system using lifecycle builder
 export function createCodegenSystem(options: Record<string, unknown> = {}): {
@@ -18,27 +18,27 @@ export function createCodegenSystem(options: Record<string, unknown> = {}): {
   lifecycle: typeof LifecycleBuilder;
 } {
   // Create lifecycle-managed components
-  const pluginAggregator = new PluginAggregator({
-    uuid: 'plugin-agg-uuid',
-    id: 'PluginAggregator',
-    type: 'aggregator',
+  const pluginManager = new PluginManager({
+    uuid: 'plugin-mgr-uuid',
+    id: 'PluginManager',
+    type: 'manager',
     search: {
-      title: 'Plugin Aggregator',
+      title: 'Plugin Manager',
       summary: 'Manages plugin discovery and loading',
-      keywords: ['plugin', 'aggregator'],
+      keywords: ['plugin', 'manager'],
       domain: 'core',
       capabilities: ['discovery', 'loading'],
     },
   });
 
-  const executionAggregator = new ExecutionAggregator({
-    uuid: 'exec-agg-uuid',
-    id: 'ExecutionAggregator',
-    type: 'aggregator',
+  const executionManager = new ExecutionManager({
+    uuid: 'exec-mgr-uuid',
+    id: 'ExecutionManager',
+    type: 'manager',
     search: {
-      title: 'Execution Aggregator',
+      title: 'Execution Manager',
       summary: 'Coordinates code generation execution',
-      keywords: ['execution', 'aggregator'],
+      keywords: ['execution', 'manager'],
       domain: 'core',
       capabilities: ['execution', 'coordination'],
     },
@@ -46,9 +46,9 @@ export function createCodegenSystem(options: Record<string, unknown> = {}): {
 
   // Use lifecycle builder for component orchestration
   const lifecycle = new LifecycleBuilder()
-    .add('pluginAggregator', pluginAggregator)
-    .add('executionAggregator', executionAggregator)
-    .dependsOn('executionAggregator', 'pluginAggregator')
+    .add('pluginManager', pluginManager)
+    .add('executionManager', executionManager)
+    .dependsOn('executionManager', 'pluginManager')
     .onError('continue');
 
   // Create entrypoint with lifecycle builder

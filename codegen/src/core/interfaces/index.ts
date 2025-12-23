@@ -4,11 +4,6 @@
  * Now organized into domain-specific subdirectories
  */
 
-// Aggregation interfaces
-export type { IAggregate } from './aggregation/iaggregate';
-export type { IAggregator } from './aggregation/iaggregator';
-export type { IAggregateResults } from './aggregation/iaggregate-results';
-
 // Codegen interfaces
 export type { IBaseCodegenOptions } from './codegen/ibase-codegen-options';
 export type { ICodegenExecutionResults } from './codegen/icodegen-execution-results';
@@ -24,6 +19,8 @@ export type { IComponent } from './common/icomponent';
 export type { IDependencyInjectionContainer } from './common/idependency-injection-container';
 export type { ILifecycleManager } from './common/ilifecycle-manager';
 export type { LifecycleState } from './common/lifecycle-state';
+export type { IStandardLifecycle } from './common/istandard-lifecycle';
+export { LifecycleStatus } from './common/istandard-lifecycle';
 
 // Plugin interfaces
 export type { IPlugin } from './plugins/iplugin';

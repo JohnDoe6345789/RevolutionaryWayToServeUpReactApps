@@ -6,7 +6,7 @@
  * TypeScript strict typing with no 'any' types
  */
 
-import { BaseComponent } from '../core/base-component';
+import { BaseComponent } from '../core/codegen/base-component';
 import type { LifecycleBuilder, CompositeLifecycle } from '../core/types/lifecycle';
 
 /**
@@ -140,9 +140,9 @@ export class CodegenEntrypoint extends BaseComponent {
         profile: options.profile,
         template: options.template,
       },
-      executionAggregator = this.getComponent('executionAggregator');
-    if (executionAggregator) {
-      await executionAggregator.execute(context);
+      executionManager = this.getComponent('executionManager');
+    if (executionManager && 'executeWithContext' in executionManager) {
+      await executionManager.executeWithContext(context);
     }
   }
 
@@ -154,19 +154,19 @@ export class CodegenEntrypoint extends BaseComponent {
     const category = _options.category || 'all';
 
     if (category === 'plugins' || category === 'all') {
-      const pluginAggregator = this.getComponent('pluginAggregator');
-      if (pluginAggregator && 'debug' in pluginAggregator) {
-        const debugInfo = pluginAggregator.debug();
-        console.log('Plugins:', debugInfo.discoveredPlugins || []);
+      const pluginManager = this.getComponent('pluginManager');
+      if (pluginManager && 'getPlugins' in pluginManager) {
+        const plugins = pluginManager.getPlugins();
+        console.log('Plugins:', Array.from(plugins.keys()));
       }
     }
 
     if (category === 'tools' || category === 'all') {
       // For now, just show plugin info as tools are plugins
-      const pluginAggregator = this.getComponent('pluginAggregator');
-      if (pluginAggregator && 'debug' in pluginAggregator) {
-        const debugInfo = pluginAggregator.debug();
-        console.log('Tools:', debugInfo.loadedPlugins || []);
+      const pluginManager = this.getComponent('pluginManager');
+      if (pluginManager && 'getPlugins' in pluginManager) {
+        const plugins = pluginManager.getPlugins();
+        console.log('Tools:', Array.from(plugins.keys()));
       }
     }
   }
@@ -182,20 +182,19 @@ export class CodegenEntrypoint extends BaseComponent {
     }
 
     // Check both components for the requested component
-    const pluginAggregator = this.getComponent('pluginAggregator');
-    const executionAggregator = this.getComponent('executionAggregator');
+    const pluginManager = this.getComponent('pluginManager');
+    const executionManager = this.getComponent('executionManager');
 
-    if (pluginAggregator && 'debug' in pluginAggregator) {
-      const debugInfo = pluginAggregator.debug();
-      const plugins = debugInfo.loadedPlugins as string[] || [];
-      if (plugins.includes(componentId)) {
+    if (pluginManager && 'getPlugins' in pluginManager) {
+      const plugins = pluginManager.getPlugins();
+      if (plugins.has(componentId)) {
         console.log(`Component: ${componentId} (Plugin)`);
         return;
       }
     }
 
-    if (executionAggregator && 'debug' in executionAggregator) {
-      const debugInfo = executionAggregator.debug();
+    if (executionManager && 'debug' in executionManager) {
+      const debugInfo = executionManager.debug();
       console.log(`Component: ${componentId} (Execution)`);
       console.log('Debug Info:', debugInfo);
       return;
