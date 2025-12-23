@@ -1,0 +1,129 @@
+{
+  "navigation": {
+    "retro_deck": "Retro Deck",
+    "settings": "Settings",
+    "sync": "Sync",
+    "home": "Home",
+    "games": "Games",
+    "about": "About"
+  },
+  "hero": {
+    "retro_gaming_hub": "Retro Gaming Hub",
+    "press_start": "Press Start",
+    "to_continue": "to Continue",
+    "hero_description": "Discover the ultimate retro gaming experience with our curated collection of classic games. Relive the golden age of gaming with pixel-perfect emulation and modern features.",
+    "launch_arcade_mode": "Launch Arcade Mode",
+    "browse_rom_library": "Browse ROM Library",
+    "insert_coin": "INSERT COIN"
+  },
+  "games": {
+    "featured_games": "Featured Games",
+    "popular_games": "Popular Games",
+    "new_releases": "New Releases",
+    "all_games": "All Games",
+    "search_games": "Search games...",
+    "filter_by_platform": "Filter by platform",
+    "filter_by_genre": "Filter by genre"
+  },
+  "game": {
+    "play": "Play",
+    "download": "Download",
+    "add_to_favorites": "Add to Favorites",
+    "share": "Share",
+    "description": "Description",
+    "screenshots": "Screenshots",
+    "reviews": "Reviews",
+    "rating": "Rating",
+    "release_year": "Release Year",
+    "developer": "Developer",
+    "publisher": "Publisher"
+  },
+  "footer": {
+    "about_us": "About Us",
+    "contact": "Contact",
+    "privacy_policy": "Privacy Policy",
+    "terms_of_service": "Terms of Service",
+    "social_media": "Social Media",
+    "newsletter": "Newsletter",
+    "subscribe": "Subscribe",
+    "copyright": "© 2024 Retro Deck. All rights reserved."
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "light_mode": "Light Mode",
+    "dark_mode": "Dark Mode",
+    "system_preference": "System Preference",
+    "notifications": "Notifications",
+    "sound": "Sound",
+    "controls": "Controls",
+    "save_settings": "Save Settings"
+  },
+  "console": {
+    "open_settings": "Opening settings...",
+    "sync_with_cloud": "Syncing with cloud...",
+    "launch_arcade": "Launching arcade mode...",
+    "browse_library": "Browsing game library...",
+    "game_loaded": "Game loaded successfully",
+    "error_loading_game": "Error loading game"
+  },
+  "games_data": {
+    "systemTags": [
+      "NES",
+      "SNES",
+      "Genesis",
+      "PlayStation",
+      "Arcade",
+      "Retro",
+      "Classic",
+      "Platformer",
+      "Action",
+      "Adventure"
+    ],
+    "featured": [
+      {
+        "id": "super-mario-bros",
+        "title": "Super Mario Bros",
+        "platform": "NES",
+        "year": "1985",
+        "description": "The iconic platformer that started it all.",
+        "image": "/games/super-mario-bros.jpg",
+        "rating": 4.8
+      },
+      {
+        "id": "the-legend-of-zelda",
+        "title": "The Legend of Zelda",
+        "platform": "NES",
+        "year": "1986",
+        "description": "Embark on an epic adventure in the kingdom of Hyrule.",
+        "image": "/games/zelda.jpg",
+        "rating": 4.9
+      },
+      {
+        "id": "sonic-the-hedgehog",
+        "title": "Sonic the Hedgehog",
+        "platform": "Genesis",
+        "year": "1991",
+        "description": "Fast-paced platforming with the blue blur.",
+        "image": "/games/sonic.jpg",
+        "rating": 4.6
+      }
+    ]
+  }
+}

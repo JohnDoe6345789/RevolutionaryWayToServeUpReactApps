@@ -1,0 +1,129 @@
+{
+  "navigation": {
+    "retro_deck": "Retro Deck",
+    "settings": "Configuración",
+    "sync": "Sincronizar",
+    "home": "Inicio",
+    "games": "Juegos",
+    "about": "Acerca de"
+  },
+  "hero": {
+    "retro_gaming_hub": "Centro de Juegos Retro",
+    "press_start": "Presiona Start",
+    "to_continue": "para Continuar",
+    "hero_description": "Descubre la experiencia definitiva de juegos retro con nuestra colección curada de juegos clásicos. Revive la edad dorada de los videojuegos con emulación perfecta en píxeles y características modernas.",
+    "launch_arcade_mode": "Iniciar Modo Arcade",
+    "browse_rom_library": "Explorar Biblioteca ROM",
+    "insert_coin": "INSERTAR MONEDA"
+  },
+  "games": {
+    "featured_games": "Juegos Destacados",
+    "popular_games": "Juegos Populares",
+    "new_releases": "Nuevos Lanzamientos",
+    "all_games": "Todos los Juegos",
+    "search_games": "Buscar juegos...",
+    "filter_by_platform": "Filtrar por plataforma",
+    "filter_by_genre": "Filtrar por género"
+  },
+  "game": {
+    "play": "Jugar",
+    "download": "Descargar",
+    "add_to_favorites": "Agregar a Favoritos",
+    "share": "Compartir",
+    "description": "Descripción",
+    "screenshots": "Capturas",
+    "reviews": "Reseñas",
+    "rating": "Calificación",
+    "release_year": "Año de Lanzamiento",
+    "developer": "Desarrollador",
+    "publisher": "Editor"
+  },
+  "footer": {
+    "about_us": "Sobre Nosotros",
+    "contact": "Contacto",
+    "privacy_policy": "Política de Privacidad",
+    "terms_of_service": "Términos de Servicio",
+    "social_media": "Redes Sociales",
+    "newsletter": "Boletín",
+    "subscribe": "Suscribirse",
+    "copyright": "© 2024 Retro Deck. Todos los derechos reservados."
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "view": "Ver",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior"
+  },
+  "settings": {
+    "title": "Configuración",
+    "language": "Idioma",
+    "theme": "Tema",
+    "light_mode": "Modo Claro",
+    "dark_mode": "Modo Oscuro",
+    "system_preference": "Preferencia del Sistema",
+    "notifications": "Notificaciones",
+    "sound": "Sonido",
+    "controls": "Controles",
+    "save_settings": "Guardar Configuración"
+  },
+  "console": {
+    "open_settings": "Abriendo configuración...",
+    "sync_with_cloud": "Sincronizando con la nube...",
+    "launch_arcade": "Iniciando modo arcade...",
+    "browse_library": "Explorando biblioteca de juegos...",
+    "game_loaded": "Juego cargado exitosamente",
+    "error_loading_game": "Error al cargar el juego"
+  },
+  "games_data": {
+    "systemTags": [
+      "NES",
+      "SNES",
+      "Genesis",
+      "PlayStation",
+      "Arcade",
+      "Retro",
+      "Clásico",
+      "Plataformas",
+      "Acción",
+      "Aventura"
+    ],
+    "featured": [
+      {
+        "id": "super-mario-bros",
+        "title": "Super Mario Bros",
+        "platform": "NES",
+        "year": "1985",
+        "description": "El icónico plataformas que lo empezó todo.",
+        "image": "/games/super-mario-bros.jpg",
+        "rating": 4.8
+      },
+      {
+        "id": "the-legend-of-zelda",
+        "title": "The Legend of Zelda",
+        "platform": "NES",
+        "year": "1986",
+        "description": "Emprende una épica aventura en el reino de Hyrule.",
+        "image": "/games/zelda.jpg",
+        "rating": 4.9
+      },
+      {
+        "id": "sonic-the-hedgehog",
+        "title": "Sonic the Hedgehog",
+        "platform": "Genesis",
+        "year": "1991",
+        "description": "Plataformas de ritmo rápido con el erizo azul.",
+        "image": "/games/sonic.jpg",
+        "rating": 4.6
+      }
+    ]
+  }
+}
