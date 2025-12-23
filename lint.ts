@@ -56,7 +56,6 @@ async function runNodeLinting() {
 async function checkOOPCompliance() {
   // Simple compliance check - can be enhanced
   const fs = await import("fs");
-  const path = await import("path");
 
   const coreFiles = [
     "codegen/core/base-component.js",
@@ -70,8 +69,14 @@ async function checkOOPCompliance() {
       const content = fs.readFileSync(file, 'utf8');
 
       // Check for class definition
-      if (!content.includes('class ') || !content.includes('extends BaseComponent')) {
-        throw new Error(`${file} does not follow AGENTS.md class structure`);
+      if (!content.includes('class ')) {
+        throw new Error(`${file} does not have class definition`);
+      }
+
+      // Special case: base-component.js doesn't extend anything
+      if (file !== "codegen/core/base-component.js" &&
+          !content.includes('extends BaseComponent')) {
+        throw new Error(`${file} does not extend BaseComponent`);
       }
 
       // Check method count (rough estimate)
