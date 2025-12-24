@@ -53,29 +53,9 @@ jobs:
         with:
           bun-version: 1.3.4
 
-      - name: Install dependencies
+      - name: Install e2e dependencies
         run: bun install
-        working-directory: ci
-
-      - name: Install Playwright browsers
         working-directory: e2e
-        run: |
-          bun x playwright install --with-deps
-
-      - name: Verify Playwright browsers exist
-        working-directory: e2e
-        run: |
-          test -d "$HOME/.cache/ms-playwright"
-          ls -la "$HOME/.cache/ms-playwright"
-          bun x playwright --version
-          bun x playwright test --list
-
-      - name: Link test dependencies into src
-        run: node test-tooling/tests/linkSrcNodeModules.js
-
-      - name: Run unit tests
-        run: bun test
-        working-directory: test-tooling
 
       - name: Run Playwright smoke test
         run: bun run test

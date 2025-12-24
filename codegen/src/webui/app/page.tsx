@@ -8,16 +8,16 @@
 
 import React, { useState } from 'react';
 import {
-  ThemeProvider,
+  AppBar,
+  Box,
+  Container,
   createTheme,
   CssBaseline,
-  Box,
-  AppBar,
-  Toolbar,
-  Typography,
-  Container,
   Grid,
   Paper,
+  ThemeProvider,
+  Toolbar,
+  Typography,
 } from '@mui/material';
 import GeneratedTreeNavigation from '../components/generated-tree-navigation';
 import GeneratedFullTextSearch from '../components/generated-full-text-search';
@@ -76,9 +76,7 @@ export default function HomePage() {
           id: 'profiles',
           name: 'Profiles',
           type: 'registry',
-          children: [
-            { id: 'profile.fullstack-dev', name: 'Fullstack Dev', type: 'profile' },
-          ],
+          children: [{ id: 'profile.fullstack-dev', name: 'Fullstack Dev', type: 'profile' }],
           metadata: { count: 1 },
         },
       ],
@@ -144,7 +142,8 @@ export default function HomePage() {
           }}
         >
           <Typography variant="body2" color="text.secondary" align="center">
-            Built with Next.js, Material UI, and Monaco Editor • Following AGENTS.md architecture principles
+            Built with Next.js, Material UI, and Monaco Editor • Following AGENTS.md architecture
+            principles
           </Typography>
         </Paper>
       </Box>

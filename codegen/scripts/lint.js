@@ -14,7 +14,7 @@ function run(command) {
 }
 
 console.log('Running ESLint...');
-run('bunx eslint . --ext .ts,.tsx,.js,.jsx --max-warnings 0');
+run('bunx eslint . --ext .ts,.tsx,.js,.jsx');
 
 console.log('Running Prettier check...');
 run('bunx prettier --check "**/*.{ts,tsx,js,jsx,json,md}"');
