@@ -91,7 +91,7 @@ jobs:
       contents: read
 
     steps:
-      - name: Create issue for failing lint+tests (assigned to Codex + Copilot)
+      - name: Create issue for failing lint+tests (AI-routed)
         if: ${{ needs.lint.result == 'failure' && needs.smoke-test.result == 'failure' }}
         uses: actions/github-script@v7
         with:
@@ -101,20 +101,26 @@ jobs:
             const runUrl = `https://github.com/${owner}/${repo}/actions/runs/${context.runId}`;
             const title = `Fix CI failure (lint + tests) for run #${context.runNumber}`;
 
-            const labels = ['ci-failure', 'lint', 'tests'];
-
-            const assignees = [
-              'github-copilot',
-              'codex'
+            // AI + CI routing labels
+            const labels = [
+              'ci-failure',
+              'lint',
+              'tests',
+              'ai',
+              'ai-review',
+              'ai-fix-candidate'
             ];
 
-            // Dedupe by exact title
-            const existing = await github.paginate(github.rest.issues.listForRepo, {
-              owner,
-              repo,
-              state: 'open',
-              per_page: 100,
-            });
+            // Optional: real human maintainers only (bots cannot be assigned)
+            const desiredAssignees = [
+              // 'johndoe6345789'
+            ];
+
+            // De-dupe by exact title
+            const existing = await github.paginate(
+              github.rest.issues.listForRepo,
+              { owner, repo, state: 'open', per_page: 100 }
+            );
 
             const dup = existing.find(i => i.title === title);
             if (dup) {
@@ -123,29 +129,92 @@ jobs:
             }
 
             const body = [
-              'Automated alert: **both** lint and tests failed in CI.',
+              '🚨 **Automated CI Alert**',
+              '',
+              'Both **lint** and **tests** failed in the same CI run.',
               '',
               `- Run: [#${context.runNumber}](${runUrl})`,
               `- Commit: ${context.sha}`,
-              `- Branch: ${context.ref_name}`,
+              `- Branch: ${context.ref_name ?? context.ref ?? 'unknown'}`,
               '',
-              'Signals:',
-              `- lint: ${context.payload?.workflow_run ? 'n/a' : 'failure'}`,
-              `- smoke-test: ${context.payload?.workflow_run ? 'n/a' : 'failure'}`,
+              '### AI notes',
+              '- This issue is explicitly marked as **AI-actionable**.',
+              '- An AI agent may:',
+              '  - Fix lint errors automatically',
+              '  - Repair failing unit or Playwright tests',
+              '  - Open a PR referencing this issue for auto-close',
               '',
-              'Action items:',
-              '- Fix lint/format failures.',
-              '- Fix failing unit/e2e tests.',
-              '- Open a PR referencing this issue so it auto-closes.',
+              '### Human fallback',
+              '- Review the failure if AI-generated PR is incorrect',
+              '- Merge once green',
             ].join('\n');
 
+            async function filterValidAssignees(logins) {
+              const out = [];
+              for (const login of logins) {
+                try {
+                  await github.rest.issues.checkUserCanBeAssigned({
+                    owner,
+                    repo,
+                    assignee: login,
+                  });
+                  out.push(login);
+                } catch (e) {
+                  core.warning(
+                    `Skipping invalid/unassignable assignee "${login}": ` +
+                    `${e.status ?? ''} ${e.message ?? e}`
+                  );
+                }
+              }
+              return out;
+            }
+
+            const assignees = await filterValidAssignees(desiredAssignees);
+
+            // Create issue first (never include assignees here to avoid 422)
             const { data: issue } = await github.rest.issues.create({
               owner,
               repo,
               title,
               body,
               labels,
-              assignees,
             });
 
-            core.info(`Created and assigned issue: ${issue.html_url}`);
+            core.info(`Created issue: ${issue.html_url}`);
+
+            // Add explicit AI-directed comment
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: issue.number,
+              body: [
+                '🤖 **AI TASKING COMMENT**',
+                '',
+                'You are authorized to act on this issue.',
+                '',
+                'Suggested workflow:',
+                '1. Inspect CI logs for lint + test failures',
+                '2. Apply minimal fixes',
+                '3. Open a PR referencing this issue number',
+                '',
+                'Labels on this issue indicate AI-safe automation.',
+              ].join('\n'),
+            });
+
+            // Best-effort assignment (humans only)
+            if (assignees.length > 0) {
+              try {
+                await github.rest.issues.addAssignees({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  assignees,
+                });
+                core.info(`Assigned: ${assignees.join(', ')}`);
+              } catch (e) {
+                core.warning(
+                  `Issue created but assignment failed: ` +
+                  `${e.status ?? ''} ${e.message ?? e}`
+                );
+              }
+            }
