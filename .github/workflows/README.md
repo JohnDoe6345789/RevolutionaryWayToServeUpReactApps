@@ -2,7 +2,7 @@
 
 Summary of the automation that runs in this repository:
 
-- **ci.yml** – installs dependencies, runs lint/test suites to validate pull requests, and opens a Codex or GitHub Pro task when tests fail.
+- **ci.yml** – installs dependencies, runs lint/test suites to validate pull requests, and opens a Codex or GitHub Pro task when tests fail. Triggers on pushes to `main`, pull request events, or manual dispatches from the GitHub UI.
 - **ai-remediation.yml** – converts `ai-ready` issues into actionable AI tasks, tags PRs for AI review, and opens follow-up issues when AI reviewers request changes.
 - **bot_issue.yml** – automatically assigns Copilot to issues when they are labeled with `ci-failure`.
 - **docker-publish.yml** – builds and pushes the application Docker image when releases are tagged.
