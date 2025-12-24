@@ -1,6 +1,5 @@
+# Drive AI triage for CI failures and follow-up reviews.
 name: AI remediation loop
-
-description: Drive AI triage for CI failures and follow-up reviews.
 
 on:
   issues:
@@ -31,13 +30,20 @@ jobs:
           script: |
             const { owner, repo } = context.repo;
             const issueNumber = context.payload.issue.number;
-            const labelsToApply = ['ai-in-progress', 'ai-task'];
-            await github.rest.issues.addLabels({
-              owner,
-              repo,
-              issue_number: issueNumber,
-              labels: labelsToApply,
-            });
+            const existingLabels = Array.isArray(context.payload.issue.labels)
+              ? new Set(context.payload.issue.labels.map(label => label.name))
+              : new Set();
+            const desiredLabels = ['ai-in-progress', 'ai-task'];
+            const labelsToApply = desiredLabels.filter(label => !existingLabels.has(label));
+
+            if (labelsToApply.length > 0) {
+              await github.rest.issues.addLabels({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                labels: labelsToApply,
+              });
+            }
 
       - name: Outline AI work expectations
         uses: actions/github-script@v7
@@ -64,24 +70,30 @@ jobs:
               body: message,
             });
 
+      # Note: GitHub Actions treats unset secrets as empty strings, so checking != '' works correctly
       - name: Request Codex task pickup
         if: env.CODEX_WEBHOOK_URL != ''
         run: |
-          cat >payload.json <<'PAYLOAD'
-          {
-            "type": "ai-issue-pickup",
-            "source": "github-actions",
-            "repository": "${{ github.repository }}",
-            "issue": "${{ github.event.issue.number }}",
-            "url": "${{ github.event.issue.html_url }}",
-            "title": "${{ github.event.issue.title }}"
-          }
-PAYLOAD
+          jq -n \
+            --arg type "ai-issue-pickup" \
+            --arg source "github-actions" \
+            --arg repository "${{ github.repository }}" \
+            --arg issue "${{ github.event.issue.number }}" \
+            --arg url "${{ github.event.issue.html_url }}" \
+            --arg title "${{ github.event.issue.title }}" \
+            '{
+              type: $type,
+              source: $source,
+              repository: $repository,
+              issue: $issue,
+              url: $url,
+              title: $title
+            }' > payload.json
 
-          curl -X POST \
+          curl --fail --show-error --silent -X POST \
             -H "Content-Type: application/json" \
             --data @payload.json \
-            "$CODEX_WEBHOOK_URL"
+            "$CODEX_WEBHOOK_URL" || { echo "Codex webhook request failed"; exit 1; }
 
       - name: Log skipped Codex request
         if: env.CODEX_WEBHOOK_URL == ''
@@ -98,11 +110,22 @@ PAYLOAD
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const { owner, repo } = context.repo;
-            const issueNumber = context.payload.pull_request.number;
+            const prNumber = context.payload.pull_request.number;
+            
+            // Check if PR has AI-related labels
+            const prLabels = context.payload.pull_request.labels || [];
+            const aiLabels = ['ai-task', 'ai-in-progress', 'ai-follow-up'];
+            const hasAiLabel = prLabels.some(label => aiLabels.includes(label.name));
+            
+            if (!hasAiLabel) {
+              core.info(`PR #${prNumber} does not have AI-related labels; skipping ai-needs-review.`);
+              return;
+            }
+            
             await github.rest.issues.addLabels({
               owner,
               repo,
-              issue_number: issueNumber,
+              issue_number: prNumber,
               labels: ['ai-needs-review'],
             });
 
@@ -116,11 +139,13 @@ PAYLOAD
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const reviewer = context.payload.review.user.login.toLowerCase();
+            const reviewerUser = context.payload.review.user;
+            const reviewerLogin = reviewerUser.login.toLowerCase();
             const aiReviewers = ['github-copilot[bot]', 'codex-bot', 'codexai[bot]'];
-            const isAiReviewer = aiReviewers.includes(reviewer) || reviewer.endsWith('[bot]');
+            const isBotAccount = typeof reviewerUser.type === 'string' && reviewerUser.type.toLowerCase() === 'bot';
+            const isAiReviewer = isBotAccount || aiReviewers.includes(reviewerLogin);
             if (!isAiReviewer) {
-              core.info(`Reviewer ${reviewer} is not an AI bot; skipping follow-up issue.`);
+              core.info(`Reviewer ${reviewerLogin} is not an AI bot; skipping follow-up issue.`);
               return;
             }
 
