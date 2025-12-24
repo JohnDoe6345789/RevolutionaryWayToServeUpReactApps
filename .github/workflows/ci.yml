@@ -9,28 +9,22 @@ on:
       - main
 
 jobs:
-  lint:
-    name: Lint
-    uses: ./.github/workflows/task-lint.yml
+  ci-tasks:
+    name: CI Tasks
+    uses: ./.github/workflows/ci-tasks.yml
     with:
       bun-version: '1.3.4'
 
-  unit-tests:
-    name: Unit Tests
-    uses: ./.github/workflows/task-unit-tests.yml
-    with:
-      bun-version: '1.3.4'
-
-  smoke-test:
-    name: Smoke Test
-    uses: ./.github/workflows/task-smoke-test.yml
+  e2e-tasks:
+    name: E2E Tasks
+    uses: ./.github/workflows/e2e-tasks.yml
     with:
       bun-version: '1.3.4'
 
   create-test-failure-issue:
     name: Open issue when BOTH lint and tests fail
     runs-on: ubuntu-latest
-    needs: [lint, unit-tests, smoke-test]
+    needs: [ci-tasks, e2e-tasks]
     if: ${{ always() }}
     permissions:
       issues: write
@@ -38,7 +32,7 @@ jobs:
 
     steps:
       - name: Create issue for failing lint+tests (AI-routed)
-        if: ${{ needs.lint.result == 'failure' && (needs.unit-tests.result == 'failure' || needs.smoke-test.result == 'failure') }}
+        if: ${{ needs.ci-tasks.result == 'failure' || needs.e2e-tasks.result == 'failure' }}
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
