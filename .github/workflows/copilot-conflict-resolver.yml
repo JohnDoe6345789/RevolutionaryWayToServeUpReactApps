@@ -12,8 +12,6 @@ permissions:
 jobs:
   request-copilot-conflict-fix:
     runs-on: ubuntu-latest
-    env:
-      CODEX_WEBHOOK_URL: ${{ secrets.CODEX_WEBHOOK_URL }}
     steps:
       - name: Decide whether PR has merge conflicts
         id: detect
@@ -87,28 +85,6 @@ jobs:
 
           gh api -X POST "repos/$REPO/issues/$PR_NUMBER/comments" \
             -f "body=$body" >/dev/null
-
-      - name: Explain why Copilot was not requested
-        if: steps.detect.outputs.has_conflicts == 'true' && steps.detect.outputs.copilot_allowed != 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          SKIP_REASON: ${{ steps.detect.outputs.skip_reason }}
-        run: |
-          set -euo pipefail
-
-          reason_message="Copilot conflict resolution was skipped."
-          if [ -n "$SKIP_REASON" ]; then
-            reason_message+=" Reason: $SKIP_REASON."
-          fi
-
-          body=$(cat <<BODY
-          $reason_message
-
-          We detected merge conflicts but avoided auto-requesting Copilot. A Codex request will be sent if a webhook is configured.
-          BODY
-          )
 
           gh api -X POST "repos/$REPO/issues/$PR_NUMBER/comments" \
             -f "body=$body" >/dev/null
