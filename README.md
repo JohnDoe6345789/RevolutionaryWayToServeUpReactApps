@@ -63,6 +63,14 @@ chmod +x revolutionary-codegen.js
 ./revolutionary-codegen.js generate --spec-path my-project.json --enable-innovations --enable-typescript --enable-tests
 ```
 
+### Repo-wide linting
+
+Run both packages' lint suites together from the repository root:
+
+```bash
+bun run scripts/lint-all.ts
+```
+
 ## 📖 Project Specification
 
 The project is defined by a JSON specification file that includes:
