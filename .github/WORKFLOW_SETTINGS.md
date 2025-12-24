@@ -28,8 +28,8 @@ Our workflows are designed with security in mind:
 - **`pull_request` triggers**: Most CI workflows (`ci.yml`, `ci-tasks.yml`, `task-lint.yml`, etc.) use `pull_request` triggers, which run in the context of the PR branch without access to secrets. These workflows can run safely without approval.
 
 - **`pull_request_target` triggers**: Workflows that need to post comments or access secrets (`ai-code-review.yml`, `copilot-conflict-resolver.yml`) use `pull_request_target` with explicit fork detection:
-  - `copilot-conflict-resolver.yml` checks if the PR is from a fork and skips Copilot actions for forked PRs
-  - These workflows only perform safe actions like posting comments
+  - `copilot-conflict-resolver.yml` checks if the PR is from a fork and uses conditional logic to skip Copilot @-mentions for forked PRs while still posting informational comments
+  - `ai-code-review.yml` performs only safe, read-only operations with controlled outputs
 
 - **Protected workflows**: Workflows triggered by `push` to `main`, `release`, or `workflow_dispatch` do not require approval as they only run on branches within the repository.
 

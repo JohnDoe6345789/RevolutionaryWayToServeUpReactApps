@@ -2,9 +2,9 @@ name: Copilot conflict resolver
 
 # This workflow uses pull_request_target to have write permissions for posting
 # comments and labels. Security measures:
-# - Explicitly checks if PR is from a fork (line ~27-36)
-# - Skips Copilot actions for forked PRs to prevent secret exposure
-# - Only posts informational comments for fork PRs
+# - Explicitly checks if PR is from a fork (lines 37-46)
+# - Skips Copilot @-mention for forked PRs to prevent secret exposure
+# - Posts informational comments and may call Codex webhook for fork PRs
 #
 # This workflow may require approval for fork PRs depending on repository
 # settings, which is appropriate since it accesses secrets. Same-repo PRs
