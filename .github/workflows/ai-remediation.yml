@@ -82,10 +82,10 @@ jobs:
           }
 PAYLOAD
 
-          curl -X POST \
+          curl --fail --show-error --silent -X POST \
             -H "Content-Type: application/json" \
             --data @payload.json \
-            "$CODEX_WEBHOOK_URL"
+            "$CODEX_WEBHOOK_URL" || { echo "Codex webhook request failed"; exit 1; }
 
       - name: Log skipped Codex request
         if: env.CODEX_WEBHOOK_URL == ''
