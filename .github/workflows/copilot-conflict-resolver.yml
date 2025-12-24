@@ -26,7 +26,7 @@ jobs:
           # Only request Copilot when the PR branch is in this repository (avoid forks)
           head_repo="$(gh api repos/$REPO/pulls/$PR_NUMBER --jq '.head.repo.full_name')"
           base_repo="$(gh api repos/$REPO/pulls/$PR_NUMBER --jq '.base.repo.full_name')"
-          
+
           if [ "$head_repo" != "$base_repo" ]; then
             echo "copilot_allowed=false" >> "$GITHUB_OUTPUT"
             echo "skip_reason=forked_pull_request" >> "$GITHUB_OUTPUT"
@@ -40,7 +40,7 @@ jobs:
           for i in 1 2 3 4 5 6; do
             state="$(gh api repos/$REPO/pulls/$PR_NUMBER --jq '.mergeable_state // "unknown"')"
             echo "Attempt $i: mergeable_state=$state"
-            
+
             if [ "$state" != "unknown" ]; then
               break
             fi
@@ -48,7 +48,7 @@ jobs:
           done
 
           echo "mergeable_state=$state" >> "$GITHUB_OUTPUT"
-          
+
           if [ "$state" = "dirty" ]; then
             echo "has_conflicts=true" >> "$GITHUB_OUTPUT"
           else
@@ -89,4 +89,3 @@ jobs:
 
           gh api -X POST "repos/$REPO/issues/$PR_NUMBER/comments" \
             -f "body=$body" >/dev/null
-
