@@ -1,0 +1,22 @@
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  auto_assign_copilot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto assign Copilot
+        uses: actions/github-script@v6
+        with:
+          script: |
+            if (github.context.payload.label.name === 'ci-failure') {
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                assignees: ['copilot-swe-agent[bot]']
+              })
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
