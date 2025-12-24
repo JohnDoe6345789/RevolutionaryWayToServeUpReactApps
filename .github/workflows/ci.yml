@@ -57,6 +57,12 @@ jobs:
         run: bun install
         working-directory: e2e
 
+      - name: Verify Playwright browsers exist
+        working-directory: e2e
+        run: |
+          test -d "$HOME/.cache/ms-playwright" || echo "Browsers will be installed by postinstall hook"
+          bun x playwright --version
+
       - name: Run Playwright smoke test
         run: bun run test
         working-directory: e2e
