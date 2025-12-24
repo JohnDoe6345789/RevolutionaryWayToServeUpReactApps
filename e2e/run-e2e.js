@@ -1,7 +1,18 @@
 #!/usr/bin/env node
 
-const { spawn } = require("child_process");
-const config = require("../config.json");
+import { spawn } from "child_process";
+import { readFileSync, existsSync } from "fs";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const configPath = join(__dirname, "../config.json");
+let config = { server: {} };
+if (existsSync(configPath)) {
+  config = JSON.parse(readFileSync(configPath, "utf-8"));
+}
 
 const serverConfig = config.server || {};
 const host = serverConfig.host || "127.0.0.1";
