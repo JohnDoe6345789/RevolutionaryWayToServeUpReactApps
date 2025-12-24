@@ -29,14 +29,20 @@ jobs:
           script: |
             const { owner, repo } = context.repo;
             const issueNumber = context.payload.issue.number;
-            const labelsToApply = ['ai-in-progress', 'ai-task'];
-            await github.rest.issues.addLabels({
-              owner,
-              repo,
-              issue_number: issueNumber,
-              labels: labelsToApply,
-            });
+            const existingLabels = Array.isArray(context.payload.issue.labels)
+              ? new Set(context.payload.issue.labels.map(label => label.name))
+              : new Set();
+            const desiredLabels = ['ai-in-progress', 'ai-task'];
+            const labelsToApply = desiredLabels.filter(label => !existingLabels.has(label));
 
+            if (labelsToApply.length > 0) {
+              await github.rest.issues.addLabels({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                labels: labelsToApply,
+              });
+            }
       - name: Outline AI work expectations
         uses: actions/github-script@v7
         with:
